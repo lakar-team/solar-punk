@@ -12,6 +12,7 @@ interface PlanetProps {
 }
 
 export default function Planet({ project }: PlanetProps) {
+    const { setActivePlanet } = useStore();
     const meshRef = useRef<THREE.Mesh>(null);
     const groupRef = useRef<THREE.Group>(null);
     const [hovered, setHover] = useState(false);
