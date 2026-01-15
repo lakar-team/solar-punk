@@ -1,7 +1,7 @@
 'use client';
 
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Preload } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import { Suspense } from 'react';
 import Universe from './Universe';
 import CentralStar from './CentralStar';
@@ -29,7 +29,7 @@ export default function Scene() {
                         maxDistance={200}
                         minDistance={10}
                     />
-                    <Preload all />
+
                 </Suspense>
             </Canvas>
         </div>
