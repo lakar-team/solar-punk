@@ -43,7 +43,6 @@ export default function CentralStar() {
                 color="#ffffff"
                 anchorX="center"
                 anchorY="middle"
-                font="/fonts/Inter-Bold.woff" // Optional: need to handle fonts, defaulting to standard if not present
             >
                 {profile.name}
             </Text>
