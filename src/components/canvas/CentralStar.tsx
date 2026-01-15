@@ -1,6 +1,6 @@
 'use client';
 
-import { Sphere, MeshDistortMaterial, Text } from '@react-three/drei';
+import { Sphere, MeshDistortMaterial, Html } from '@react-three/drei';
 import { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -37,15 +37,12 @@ export default function CentralStar() {
             <pointLight distance={50} intensity={4} color="#f59e0b" />
 
             {/* Label above Star (Hidden unless close or consistently visible?) */}
-            <Text
-                position={[0, 6, 0]}
-                fontSize={0.8}
-                color="#ffffff"
-                anchorX="center"
-                anchorY="middle"
-            >
-                {profile.name}
-            </Text>
+            {/* Label above Star */}
+            <Html position={[0, 6, 0]} center>
+                <div className="pointer-events-none whitespace-nowrap text-sm font-bold text-white/90">
+                    {profile.name}
+                </div>
+            </Html>
         </group>
     );
 }
