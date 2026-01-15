@@ -5,6 +5,7 @@ import { useFrame } from '@react-three/fiber';
 import { Sphere, Text, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { Project } from '@/data/projects';
+import { useStore } from '@/store/useStore';
 
 interface PlanetProps {
     project: Project;
@@ -58,7 +59,10 @@ export default function Planet({ project }: PlanetProps) {
                 ref={meshRef}
                 onPointerOver={() => setHover(true)}
                 onPointerOut={() => setHover(false)}
-                onClick={() => console.log('Clicked', project.name)}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setActivePlanet(project.id);
+                }}
             >
                 <meshStandardMaterial
                     color={getColor(project.texture)}
