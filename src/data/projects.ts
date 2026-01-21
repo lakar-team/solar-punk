@@ -37,6 +37,7 @@ export const projects: Project[] = [
         description: 'Developed novel passive cooling hardware (50% efficiency gain). Synthesized global environmental data to validate product-market fit.',
         orbitRadius: 25,
         orbitSpeed: 0.35,
+        link: '/docs/phd-research.pdf',
     },
     {
         id: 'lakar-design',
@@ -48,6 +49,8 @@ export const projects: Project[] = [
         description: 'Founder & CEO. Bootstrapped to profitability with 100% YoY growth. Disrupted market by standardizing "affordable designer renovations" using UX strategy in physical spaces.',
         orbitRadius: 35,
         orbitSpeed: 0.25,
+        link: '/docs/lakar-projects.pdf',
+        image: '/textures/lakar-1.jpg',
     },
     {
         id: 'power-lunch',
