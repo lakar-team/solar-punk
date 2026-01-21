@@ -12,6 +12,7 @@ export interface Project {
     orbitRadius: number; // Distance from sun
     orbitSpeed: number; // Multiplier for orbit speed
     link?: string; // External or internal link
+    image?: string; // Path to thumbnail/texture image
 }
 
 export const projects: Project[] = [
@@ -93,6 +94,7 @@ export const projects: Project[] = [
         orbitRadius: 75,
         orbitSpeed: 0.08,
         link: '/games/demon-hunter.html',
+        image: '/textures/demon-hunter.png',
     },
     {
         id: 'momotaro-book',
@@ -105,6 +107,7 @@ export const projects: Project[] = [
         orbitRadius: 85,
         orbitSpeed: 0.06,
         link: 'https://www.amazon.com/dp/B0GCV34Z4S',
+        image: '/textures/momotaro.jpg',
     },
     {
         id: 'redbubble-shop',
@@ -117,6 +120,7 @@ export const projects: Project[] = [
         orbitRadius: 95,
         orbitSpeed: 0.04,
         link: 'https://www.redbubble.com/people/lakardesign/shop',
+        image: '/textures/merch-stellar.png',
     },
     {
         id: 'nature-vibe-channel',
@@ -129,5 +133,6 @@ export const projects: Project[] = [
         orbitRadius: 105,
         orbitSpeed: 0.03,
         link: 'https://www.youtube.com/@naturevibechannel',
+        image: '/textures/nature-vibe.jpg',
     },
 ];

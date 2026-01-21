@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Sphere, Html } from '@react-three/drei';
+import { Sphere, Html, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { Project } from '@/data/projects';
 import { useStore } from '@/store/useStore';
@@ -51,6 +51,7 @@ export default function Planet({ project }: PlanetProps) {
     };
 
     const isWIP = project.status === 'in-progress';
+    const texture = project.image ? useTexture(project.image) : null;
 
     return (
         <group ref={groupRef}>
@@ -66,12 +67,13 @@ export default function Planet({ project }: PlanetProps) {
                 }}
             >
                 <meshStandardMaterial
-                    color={getColor(project.texture)}
+                    color={texture ? '#ffffff' : getColor(project.texture)}
+                    map={texture}
                     wireframe={isWIP}
                     roughness={0.7}
                     metalness={0.3}
                     emissive={hovered ? getColor(project.texture) : '#000000'}
-                    emissiveIntensity={hovered ? 0.5 : 0}
+                    emissiveIntensity={hovered ? 0.3 : 0}
                 />
             </Sphere>
 

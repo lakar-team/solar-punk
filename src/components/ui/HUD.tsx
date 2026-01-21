@@ -65,6 +65,16 @@ export default function HUD() {
                                 {activeProject.description}
                             </p>
 
+                            {activeProject.image && (
+                                <div className="mt-4 rounded-lg overflow-hidden border border-white/10 aspect-video bg-white/5">
+                                    <img
+                                        src={activeProject.image}
+                                        alt={activeProject.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                            )}
+
                             {/* Placeholder for future extended content (images, links) */}
                             <div className="p-4 rounded bg-white/5 border border-white/5 mt-8">
                                 <p className="text-sm text-gray-400 italic">
