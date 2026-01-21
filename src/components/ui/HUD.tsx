@@ -14,8 +14,15 @@ export default function HUD() {
             {/* Header / Logo Area */}
             <header className="flex justify-between items-start pointer-events-auto">
                 <div>
-                    <h1 className="text-2xl font-bold tracking-tighter text-white/90">ADAM M. RAMAN</h1>
+                    <h1 className="text-2xl font-bold tracking-tighter text-white/90 uppercase">ADAM M. RAMAN</h1>
                     <p className="text-xs tracking-widest text-amber-500 uppercase">System Status: Nominal</p>
+                    <a
+                        href="/Adam_Tech_CV.pdf"
+                        download
+                        className="mt-2 inline-flex items-center text-[10px] text-white/40 hover:text-amber-400 border border-white/10 hover:border-amber-500/30 px-2 py-1 rounded transition-all uppercase tracking-widest bg-white/5"
+                    >
+                        <span className="mr-1.5">⬇</span> Download Tech CV
+                    </a>
                 </div>
                 {/* Helper Hint */}
                 {!activePlanetId && (

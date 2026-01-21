@@ -14,13 +14,15 @@ export interface Profile {
 
 export const profile: Profile = {
     name: 'Adam M. Raman',
-    title: 'Creative Technologist & Engineer',
-    tagline: 'Architecting the Future with Code and Design',
+    title: 'Product Strategy Lead | Built Environment & PropTech Innovation',
+    tagline: 'Ex-Founder & R&D Specialist driving Digital Transformation',
     skills: [
-        'Next.js', 'React Three Fiber', 'Typescript',
-        'AI Integration', 'Smart Home', 'Design Systems'
+        'Product Lifecycle Management', 'Agile Methodologies',
+        'Stakeholder Management', 'Go-to-Market Strategy',
+        'P&L Ownership', 'IoT & Smart Home Integration',
+        'Energy Data Analysis', 'AI-Assisted Workflow Design'
     ],
-    bio: 'Welcome to my galaxy. I traverse the intersection of design, technology, and research. Explore the planets to see my journey.',
+    bio: 'Ex-Founder and PhD Researcher with 10+ years of project leadership. I bridge the gap between technical engineering and business goals through human-centric design and automated operational workflows.',
     socials: {
         github: 'https://github.com/lakar-team',
         // Add other links here
