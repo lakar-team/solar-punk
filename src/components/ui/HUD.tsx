@@ -160,6 +160,23 @@ export default function HUD() {
                                 </div>
                             )}
 
+                            {/* Secondary Links */}
+                            {activeProject.secondaryLinks && activeProject.secondaryLinks.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mt-4">
+                                    {activeProject.secondaryLinks.map((secLink, i) => (
+                                        <a
+                                            key={i}
+                                            href={secLink.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="px-3 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded text-sm text-white/80 hover:text-white transition-colors"
+                                        >
+                                            {secLink.label}
+                                        </a>
+                                    ))}
+                                </div>
+                            )}
+
                             {activeProject.link && (
                                 <a
                                     href={activeProject.link}

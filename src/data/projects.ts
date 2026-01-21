@@ -13,6 +13,7 @@ export interface Project {
     orbitSpeed: number; // Multiplier for orbit speed
     link?: string; // External or internal link
     image?: string; // Path to thumbnail/texture image
+    secondaryLinks?: { label: string; url: string }[]; // Additional resource links
 }
 
 export const projects: Project[] = [
@@ -34,10 +35,13 @@ export const projects: Project[] = [
         size: 8,
         texture: 'planet-ice',
         status: 'complete',
-        description: 'Developed novel passive cooling hardware (50% efficiency gain). Synthesized global environmental data to validate product-market fit.',
+        description: 'Developed novel passive cooling hardware (50% efficiency gain). Synthesized global environmental data to validate product-market fit. Presented at 2024 Kyoto AIJ Conference.',
         orbitRadius: 25,
         orbitSpeed: 0.35,
         link: '/docs/phd-research.pdf',
+        secondaryLinks: [
+            { label: '2024 Kyoto Conference Paper', url: '/docs/kyoto-conference.pdf' },
+        ],
     },
     {
         id: 'lakar-design',
@@ -137,5 +141,32 @@ export const projects: Project[] = [
         orbitSpeed: 0.03,
         link: 'https://www.youtube.com/@naturevibechannel',
         image: '/textures/nature-vibe.jpg',
+    },
+    {
+        id: 'smart-home',
+        name: 'Smart Home Lab',
+        type: 'hobby',
+        size: 5,
+        texture: 'planet-tech',
+        status: 'complete',
+        description: 'IoT and home automation experiments. A personal smart home lab exploring connected living and energy monitoring.',
+        orbitRadius: 115,
+        orbitSpeed: 0.025,
+        link: '/docs/smart-home.pdf',
+        secondaryLinks: [
+            { label: '🎬 Watch Video Tour', url: 'https://drive.google.com/file/d/1234567890/view' },
+        ],
+    },
+    {
+        id: 'cultural-engagement',
+        name: 'Cultural Engagement',
+        type: 'research',
+        size: 5,
+        texture: 'planet-forest',
+        status: 'complete',
+        description: 'Malaysia-Japan architectural and cultural exchange. Presented at Japan Institute of Architects international symposium.',
+        orbitRadius: 125,
+        orbitSpeed: 0.02,
+        link: '/docs/malaysia-presentation.pdf',
     },
 ];
