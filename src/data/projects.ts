@@ -11,6 +11,7 @@ export interface Project {
     description: string;
     orbitRadius: number; // Distance from sun
     orbitSpeed: number; // Multiplier for orbit speed
+    link?: string; // External or internal link
 }
 
 export const projects: Project[] = [
@@ -70,14 +71,63 @@ export const projects: Project[] = [
         orbitSpeed: 0.12,
     },
     {
-        id: 'apps-games',
-        name: 'Apps & Games',
+        id: 'kanji-sniper',
+        name: 'Kanji Sniper',
         type: 'hobby',
-        size: 4,
+        size: 5,
         texture: 'planet-lava',
         status: 'complete',
-        description: 'Experimental applications and game jams exploring novel interaction patterns.',
+        description: 'An interactive Japanese learning game. Test your kanji speed and accuracy!',
         orbitRadius: 65,
+        orbitSpeed: 0.1,
+        link: '/games/kanji-sniper.html',
+    },
+    {
+        id: 'demon-hunter',
+        name: 'Demon Hunter',
+        type: 'hobby',
+        size: 4,
+        texture: 'planet-ice',
+        status: 'complete',
+        description: 'An experimental action game built with HTML/JS.',
+        orbitRadius: 75,
         orbitSpeed: 0.08,
+        link: '/games/demon-hunter.html',
+    },
+    {
+        id: 'momotaro-book',
+        name: 'Momotaro Kids Book',
+        type: 'hobby',
+        size: 5,
+        texture: 'planet-forest',
+        status: 'complete',
+        description: 'Bilingual Japanese-English children\'s book retelling the classic tale of Momotaro.',
+        orbitRadius: 85,
+        orbitSpeed: 0.06,
+        link: 'https://www.amazon.com/dp/B0GCV34Z4S',
+    },
+    {
+        id: 'redbubble-shop',
+        name: 'Lakar Design Shop',
+        type: 'merch',
+        size: 6,
+        texture: 'planet-desert',
+        status: 'complete',
+        description: 'Custom apparel and merch from Stellar to Climate Tech collections.',
+        orbitRadius: 95,
+        orbitSpeed: 0.04,
+        link: 'https://www.redbubble.com/people/lakardesign/shop',
+    },
+    {
+        id: 'nature-vibe-channel',
+        name: 'Nature Vibe YouTube',
+        type: 'hobby',
+        size: 4,
+        texture: 'planet-gas',
+        status: 'complete',
+        description: 'A YouTube channel dedicated to serene nature vibes and ambiance.',
+        orbitRadius: 105,
+        orbitSpeed: 0.03,
+        link: 'https://www.youtube.com/@naturevibechannel',
     },
 ];

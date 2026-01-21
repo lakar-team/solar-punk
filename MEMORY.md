@@ -26,9 +26,11 @@
 
 ---
 
-## 📈 CURRENT STATUS (Last Update: Jan 22, 2026)
+## 📈 CURRENT STATUS (Last Update: Jan 22, 2026 - 06:25)
 - **Tech CV Integrated**: Updated `profile.ts`, `projects.ts`, and added `Adam_Tech_CV.md`.
-- **HUD Update**: Added a functional download button for the CV.
+- **HUD Update**: Improved detail view with functional "Launch Experience" / "Visit Store" buttons.
+- **Micro-Apps Added**: Demo versions of *Kanji Sniper* and *Demon Hunter* hosted in `public/games/`.
+- **External Links Core**: Integrated Redbubble, YouTube, and Amazon book links.
 - **Environment**: Local environment is synced with GitHub `main`.
 
 ---
@@ -38,18 +40,21 @@
 - [x] Implemented 3D Scene with planet-based navigation.
 - [x] Integrated Tech CV content and created a markdown version in `public/`.
 - [x] Added "Download Tech CV" link to the HUD component.
+- [x] Integrated playable HTML games (Kanji Sniper, Demon Hunter).
+- [x] Linked external professional and creative assets (Shop, YouTube, Amazon).
 - [x] Pushed all latest changes to trigger Vercel deployment.
 
 ---
 
 ## 🚀 ROADMAP & NEXT STEPS
 1. **CV PDF**: User/AI needs to generate `Adam_Tech_CV.pdf` from the markdown and place it in `/public`.
-2. **Project Deep Dives**: Enhance planet data with more detailed descriptions or modals when clicked.
-3. **Refine HUD**: Add more interactive "System Status" feedback or animations.
+2. **Interactive Elements**: Add "System Status" animations or hover effects to the HUD.
+3. **Planet Textures**: Replace generic planet types with custom shaders or textures representing the project themes.
 4. **Adam Site Cleanup**: Safe to delete the redundant `Adam Site` folder once confirmed.
 
 ---
 
 ## 📝 SESSION LOGS
 *Short notes on what changed in recent sessions*
-- **2026-01-22**: Pushed Tech CV updates. Created `MEMORY.md`. Identified missing PDF asset.
+- **2026-01-22 (Early)**: Pushed Tech CV updates. Created `MEMORY.md`.
+- **2026-01-22 (Mid)**: Integrated Kanji Sniper and Demon Hunter HTML apps. Linked Redbubble, YouTube, and Momotaro book. Updated HUD with action buttons.

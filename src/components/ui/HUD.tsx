@@ -73,9 +73,16 @@ export default function HUD() {
                                 </p>
                             </div>
 
-                            <button className="mt-8 w-full py-4 bg-amber-600 hover:bg-amber-500 text-black font-bold uppercase tracking-wider transition-colors rounded">
-                                Initialize Project
-                            </button>
+                            {activeProject.link && (
+                                <a
+                                    href={activeProject.link}
+                                    target={activeProject.link.startsWith('http') ? '_blank' : '_self'}
+                                    rel={activeProject.link.startsWith('http') ? 'noopener noreferrer' : ''}
+                                    className="mt-8 block w-full py-4 bg-amber-600 hover:bg-amber-500 text-black text-center font-bold uppercase tracking-wider transition-colors rounded"
+                                >
+                                    {activeProject.type === 'merch' ? 'Visit Store' : activeProject.id.includes('book') ? 'View on Amazon' : 'Launch Experience'}
+                                </a>
+                            )}
                         </div>
                     </motion.div>
                 )}

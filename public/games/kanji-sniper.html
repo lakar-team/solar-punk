@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanji Sniper Lite v4.0</title>
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+    <style>
+        /* --- 1. CORE LAYOUT --- */
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #050505; font-family: 'Segoe UI', sans-serif; user-select: none; }
+        #app-container { position: relative; width: 100vw; height: 100vh; background: #000; display: flex; justify-content: center; align-items: center; outline: none; }
+        
+        video { width: 100%; height: 100%; object-fit: contain; opacity: 1.0; } 
+        
+        /* --- 2. LAYERS --- */
+        #sniper-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; }
+        #marquee-box  { position: absolute; border: 2px dashed #00ff66; background: rgba(0, 255, 100, 0.2); display: none; pointer-events: none; z-index: 200; }
+        
+        /* --- 3. TOP RIGHT HUD --- */
+        #top-right-hud {
+            position: fixed; top: 20px; right: 20px; z-index: 1000;
+            display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
+        }
+        
+        .hud-row { display: flex; gap: 5px; }
+
+        .brand-tag { color: #444; font-size: 10px; letter-spacing: 2px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
+        
+        .btn-main-scan {
+            background: rgba(0, 210, 255, 0.1); border: 1px solid #00d2ff; color: #00d2ff;
+            padding: 10px 20px; font-size: 14px; font-weight: bold; letter-spacing: 2px;
+            cursor: pointer; transition: all 0.2s; text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.1);
+        }
+        .btn-main-scan:hover { background: #00d2ff; color: #000; box-shadow: 0 0 20px #00d2ff; }
+        .btn-main-scan:active { transform: scale(0.98); }
+
+        .btn-mini {
+            background: transparent; border: 1px solid #333; color: #666;
+            width: 32px; height: 32px; border-radius: 4px;
+            font-size: 16px; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; font-weight: bold;
+        }
+        .btn-mini:hover { border-color: #00d2ff; color: #00d2ff; box-shadow: 0 0 10px rgba(0, 210, 255, 0.2); }
+        .btn-mini.active { background: #00d2ff; color: #000; border-color: #00d2ff; }
+
+        /* --- 4. INTRO SCREEN --- */
+        #intro-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 10, 15, 0.95);
+            z-index: 8000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .intro-card {
+            background: #0a1116; border: 1px solid #00d2ff;
+            padding: 60px 40px; border-radius: 8px;
+            box-shadow: 0 0 50px rgba(0, 210, 255, 0.1);
+            text-align: center; max-width: 500px; width: 80%; position: relative;
+        }
+        .intro-title { font-size: 32px; color: #00d2ff; letter-spacing: 4px; margin-bottom: 10px; font-weight: 300; }
+        
+        .big-start-btn {
+            background: #00d2ff; color: #000; border: none;
+            padding: 15px 40px; font-size: 18px; font-weight: bold;
+            cursor: pointer; letter-spacing: 1px; margin-top: 30px;
+            transition: all 0.2s; clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+        }
+        .big-start-btn:hover { background: #fff; box-shadow: 0 0 20px #00d2ff; transform: scale(1.05); }
+
+        /* --- 5. SETTINGS PANEL --- */
+        #settings-panel {
+            position: fixed; top: 100px; right: 60px;
+            background: rgba(10, 15, 20, 0.95); border: 1px solid #333;
+            padding: 15px; border-radius: 6px; z-index: 2000;
+            display: none; flex-direction: column; gap: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5); width: 250px;
+        }
+        .panel-section { display: flex; flex-direction: column; gap: 8px; }
+        .panel-label { color: #00d2ff; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #333; padding-bottom: 4px; margin-bottom: 4px; }
+        
+        .cv-controls { display: flex; flex-direction: column; gap: 8px; transition: all 0.3s; }
+        .blur-disabled { filter: blur(3px); opacity: 0.4; pointer-events: none; }
+
+        .slider-group { display: flex; align-items: center; justify-content: space-between; color: #888; font-size: 11px; }
+        input[type=range] { width: 55%; accent-color: #00d2ff; }
+        select { background: #222; color: #fff; border: 1px solid #444; padding: 4px; font-size: 11px; width: 100%; outline: none; }
+
+        .toggle-row { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: #ddd; margin-bottom: 5px; }
+        .toggle-switch { position: relative; display: inline-block; width: 34px; height: 18px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 18px; }
+        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #00d2ff; }
+        input:checked + .slider:before { transform: translateX(16px); }
+
+        .btn-switch {
+            background: #222; color: #ddd; border: 1px solid #444; padding: 8px;
+            border-radius: 3px; cursor: pointer; text-transform: uppercase; font-size: 11px; font-weight: bold; width: 100%;
+        }
+        .btn-switch:hover { background: #444; color: #fff; border-color: #fff; }
+
+        /* --- 6. HELP PANEL --- */
+        #help-panel {
+            position: fixed; top: 100px; right: 60px;
+            background: rgba(10, 15, 20, 0.98); border: 1px solid #00ff66;
+            padding: 20px; border-radius: 6px; z-index: 2000;
+            display: none; flex-direction: column; gap: 15px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.8); width: 300px;
+        }
+        .help-title { color: #00ff66; font-size: 14px; font-weight: bold; letter-spacing: 2px; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 5px; text-transform: uppercase; }
+        .help-item { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #aaa; border-bottom: 1px solid #222; padding-bottom: 8px; }
+        .help-key { background: #222; color: #fff; padding: 2px 6px; border-radius: 3px; border: 1px solid #444; font-family: monospace; font-size: 10px; min-width: 60px; text-align: center; }
+        .help-desc { text-align: right; width: 70%; line-height: 1.3; }
+
+        /* --- 7. UI COMPONENTS --- */
+        .candidate-box {
+            position: absolute; background: rgba(0, 10, 15, 0.95); border: 1px solid #00d2ff;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); z-index: 500;
+            display: flex; flex-direction: column; padding: 5px; gap: 4px;
+            min-width: 50px; max-width: 160px; max-height: 200px; overflow-y: auto;
+        }
+        .candidate-btn { background: #111; border: 1px solid #333; color: #fff; padding: 8px; font-size: 16px; cursor: pointer; text-align: center; flex-shrink: 0; }
+        .candidate-btn:hover { background: #00ff66; color: #000; border-color: #00ff66; }
+
+        #hud-tooltip { position: fixed; background: rgba(0, 20, 30, 0.95); border: 1px solid #00d2ff; color: #00d2ff; padding: 5px 10px; font-weight: bold; border-radius: 4px; pointer-events: none; display: none; z-index: 9999; white-space: nowrap; }
+        .hud-combo { border-color: #ffaa00 !important; color: #ffaa00 !important; }
+
+        #dict-window { position: fixed; top: 10%; right: 5%; width: 450px; height: 70%; background: #0a0a0a; border: 1px solid #00d2ff; box-shadow: 0 0 20px rgba(0,0,0,0.8); z-index: 9000; display: none; flex-direction: column; }
+        #dict-header { background: #002233; color: #00d2ff; padding: 8px 12px; font-weight: bold; display: flex; justify-content: space-between; cursor: grab; }
+        #dict-frame { flex: 1; border: none; background: #fff; }
+
+        .sniper-target { position: absolute; cursor: pointer; border-radius: 2px; z-index: 60; }
+        .target-auto   { background: transparent; border: none; }
+        .target-manual { border: 1px solid #00ff66; background: rgba(0, 255, 100, 0.1); box-shadow: 0 0 10px #00ff66; }
+
+        /* --- 8. BOTTOM BAR --- */
+        #bottom-bar { 
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 30px; 
+            background: #111; border-top: 1px solid #333; 
+            display: flex; align-items: center; justify-content: flex-end; 
+            padding: 0 20px; z-index: 1000; box-sizing: border-box;
+        }
+        #status-container { display: flex; align-items: center; gap: 10px; background: transparent; padding: 0 10px; min-width: 200px; justify-content: flex-end; }
+        #status-indicator { width: 6px; height: 6px; background: #333; border-radius: 50%; box-shadow: 0 0 5px #333; }
+        #status-indicator.active { background: #00ff66; box-shadow: 0 0 8px #00ff66; }
+        #status-indicator.busy { background: #ffaa00; box-shadow: 0 0 8px #ffaa00; }
+        
+        #overlay-msg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.8); color: #00d2ff; padding: 20px 40px; border: 1px solid #00d2ff; display: none; z-index: 5000; font-size: 18px; pointer-events: none; }
+    </style>
+</head>
+<body>
+
+    <div id="top-right-hud" style="display:none;">
+        <div class="brand-tag">&copy; ADAM RAMAN</div>
+        <button class="btn-main-scan" onclick="KS.OCR.scan()">Scan Page</button>
+        <div class="hud-row">
+            <button class="btn-mini" id="btn-help" onclick="KS.UI.toggleHelp()" title="Controls">?</button>
+            <button class="btn-mini" id="btn-settings" onclick="KS.UI.toggleSettings()" title="Settings">⚙</button>
+        </div>
+    </div>
+
+    <div id="intro-screen">
+        <div class="intro-card">
+            <div class="intro-title">KANJI SNIPER LITE</div>
+            <div style="color:#666; font-size:12px; margin-bottom:20px;">OPTICAL CHARACTER RECOGNITION SYSTEM</div>
+            <button class="big-start-btn" onclick="KS.Video.start()">SELECT SCREEN TO START</button>
+            <div style="margin-top: 30px; font-size: 12px; color: #444; letter-spacing: 1px;">&copy; 2025 ADAM RAMAN</div>
+        </div>
+    </div>
+
+    <div id="help-panel">
+        <div class="help-title">OPERATIONS MANUAL</div>
+        
+        <div class="help-item">
+            <span class="help-key">DRAG</span>
+            <span class="help-desc">Draw green box to <b>Scan</b> specific area</span>
+        </div>
+        <div class="help-item">
+            <span class="help-key">L-CLICK</span>
+            <span class="help-desc">Select kanji / Open Dictionary</span>
+        </div>
+        <div class="help-item">
+            <span class="help-key">SPACE</span>
+            <span class="help-desc"><b>Clear All:</b> Removes all highlights (No Scan)</span>
+        </div>
+        <div class="help-item">
+            <span class="help-key">ENTER</span>
+            <span class="help-desc">Search current Combo or hovered text</span>
+        </div>
+    </div>
+
+    <div id="settings-panel">
+        <div class="panel-section">
+            <div class="panel-label">Computer Vision Settings</div>
+            <div class="toggle-row">
+                <span>OPTIMIZE (Auto-Adjust)</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="chk-optimize" checked onchange="KS.Config.toggleOptimize(this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div id="cv-manual-group" class="cv-controls blur-disabled">
+                <select id="sel-profile" onchange="KS.Config.applyProfile()">
+                    <option value="0">User Settings (Sliders)</option>
+                    <option value="1">High Contrast (Text)</option>
+                    <option value="2">Dark Mode (Inverted)</option>
+                    <option value="3">Blueprint / Schematic</option>
+                </select>
+                <div class="slider-group">
+                    <span>Contrast</span> <input type="range" id="sl-contrast" min="100" max="500" value="100">
+                </div>
+                <div class="slider-group">
+                    <span>Bright</span> <input type="range" id="sl-bright" min="50" max="200" value="100">
+                </div>
+            </div>
+        </div>
+
+        <div class="panel-section">
+            <div class="panel-label">Automation</div>
+            <div class="slider-group">
+                <span>Auto Scan</span>
+                <select id="sel-autoscan" style="width:60%;" onchange="KS.Video.setAutoScan(this.value)">
+                    <option value="0" selected>OFF (Manual)</option>
+                    <option value="2">Every 2 Seconds</option>
+                    <option value="5">Every 5 Seconds</option>
+                    <option value="10">Every 10 Seconds</option>
+                </select>
+            </div>
+        </div>
+        <div style="border-top:1px solid #333; padding-top:10px;">
+            <button class="btn-switch" onclick="KS.Video.reset()">Switch Window</button>
+        </div>
+    </div>
+
+    <div id="overlay-msg">INITIALIZING SYSTEM...</div>
+    <div id="hud-tooltip"></div>
+    <div id="marquee-box"></div>
+
+    <div id="dict-window">
+        <div id="dict-header">
+            <span id="dict-title">Dictionary</span>
+            <div>
+                <span onclick="KS.UI.popDict()" style="cursor:pointer;margin-right:10px;">⇱</span>
+                <span onclick="KS.UI.toggleDict(false)" style="cursor:pointer;">✕</span>
+            </div>
+        </div>
+        <iframe id="dict-frame" src=""></iframe>
+    </div>
+
+    <div id="app-container" tabindex="0">
+        <video id="video" autoplay playsinline></video>
+        <div id="sniper-layer"></div>
+    </div>
+
+    <div id="bottom-bar">
+        <div id="status-container">
+            <span id="status-text" style="color: #666; font-size: 11px; font-family:monospace;">SYSTEM IDLE</span>
+            <div id="status-indicator"></div>
+        </div>
+    </div>
+
+    <canvas id="proc-canvas" style="display:none;"></canvas>
+
+    <script>
+        /** * KANJI SNIPER v4.0 LITE */
+        const KS = {
+            Config: {
+                maxVideoWidth: 2500,
+                dragThreshold: 10,
+                isOptimized: true, 
+                profiles: [
+                    { name: "User", filter: (c, b) => `grayscale(100%) contrast(${c}%) brightness(${b}%)` },
+                    { name: "High Contrast", filter: () => `grayscale(100%) contrast(200%) brightness(150%)` },
+                    { name: "Dark Mode", filter: () => `invert(100%) grayscale(100%) contrast(200%) brightness(120%)` },
+                    { name: "Blueprint", filter: () => `grayscale(100%) contrast(300%) brightness(90%) invert(0%)` }
+                ],
+                
+                toggleOptimize: (isActive) => {
+                    KS.Config.isOptimized = isActive;
+                    const group = document.getElementById('cv-manual-group');
+                    if (isActive) {
+                        group.classList.add('blur-disabled');
+                    } else {
+                        group.classList.remove('blur-disabled');
+                    }
+                },
+                
+                applyProfile: () => {
+                    const idx = document.getElementById('sel-profile').value;
+                }
+            },
+
+            State: {
+                isBusy: false,
+                comboBuffer: [],
+                hoveredText: null,
+                dictUrl: '',
+                streamTrack: null,
+                autoScanTimer: null,
+                worker: null,
+                view: { scale: 1, renderX: 0, renderY: 0, vidW: 0, vidH: 0, scaleX: 1, scaleY: 1 }
+            },
+
+            DOM: {},
+
+            Core: {
+                init: async () => {
+                    const ids = ['video', 'sniper-layer', 'status-text', 'overlay-msg', 'btn-settings', 'btn-help',
+                                 'settings-panel', 'help-panel', 'proc-canvas', 'sl-contrast', 'sl-bright', 'dict-window', 
+                                 'dict-frame', 'dict-title', 'hud-tooltip', 'marquee-box', 
+                                 'app-container', 'intro-screen', 'status-indicator', 'top-right-hud'];
+                    ids.forEach(id => KS.DOM[id.replace(/-([a-z])/g, g => g[1].toUpperCase())] = document.getElementById(id));
+
+                    await KS.OCR.init();
+                    KS.Input.init();
+                    window.addEventListener('resize', KS.Geo.updateMetrics);
+                    
+                    KS.UI.msg(null);
+                    KS.UI.setStatus("WAITING FOR STREAM", "idle");
+                }
+            },
+
+            Geo: {
+                updateMetrics: () => {
+                    const vid = KS.DOM.video;
+                    if (!vid.videoWidth) return;
+                    
+                    const maxW = KS.Config.maxVideoWidth;
+                    const finalScale = (vid.videoWidth > maxW) ? (maxW / vid.videoWidth) : 1.0;
+                    
+                    const rect = vid.getBoundingClientRect();
+                    const vidRatio = vid.videoWidth / vid.videoHeight;
+                    const screenRatio = rect.width / rect.height;
+                    
+                    let rW, rH, rX, rY;
+                    if (screenRatio > vidRatio) {
+                        rH = rect.height; rW = rH * vidRatio;
+                        rY = rect.top; rX = rect.left + (rect.width - rW) / 2;
+                    } else {
+                        rW = rect.width; rH = rW / vidRatio;
+                        rX = rect.left; rY = rect.top + (rect.height - rH) / 2;
+                    }
+
+                    KS.State.view = {
+                        scale: finalScale, renderX: rX, renderY: rY,
+                        scaleX: rW / (vid.videoWidth * finalScale),
+                        scaleY: rH / (vid.videoHeight * finalScale)
+                    };
+                },
+
+                toVideoRect: (x, y, w, h) => {
+                    const v = KS.State.view;
+                    return {
+                        x: (x - v.renderX) / v.scaleX,
+                        y: (y - v.renderY) / v.scaleY,
+                        w: w / v.scaleX,
+                        h: h / v.scaleY
+                    };
+                }
+            },
+
+            Video: {
+                start: async () => {
+                    try {
+                        const stream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: "always" }, audio: false });
+                        KS.DOM.video.srcObject = stream;
+                        KS.State.streamTrack = stream.getVideoTracks()[0];
+                        KS.State.streamTrack.onended = KS.Video.reset;
+                        
+                        KS.DOM.introScreen.style.display = 'none';
+                        KS.DOM.topRightHud.style.display = 'flex';
+                        KS.DOM.appContainer.focus();
+
+                        KS.DOM.video.onloadedmetadata = () => {
+                            KS.Geo.updateMetrics();
+                            // MODIFICATION: No auto-scan on load. Wait for user input.
+                            KS.UI.setStatus("READY: DRAG BOX TO SCAN", "active"); 
+                            
+                            // Initialize Defaults
+                            const autoVal = document.getElementById('sel-autoscan').value;
+                            KS.Video.setAutoScan(autoVal);
+                            
+                            // Force Optimize State
+                            const optVal = document.getElementById('chk-optimize').checked;
+                            KS.Config.toggleOptimize(optVal);
+                        };
+                    } catch(e) { console.error("Stream Error", e); }
+                },
+                reset: () => {
+                    if (KS.State.streamTrack) {
+                        KS.State.streamTrack.stop();
+                        KS.State.streamTrack = null;
+                    }
+                    if (KS.State.autoScanTimer) clearInterval(KS.State.autoScanTimer);
+                    
+                    KS.DOM.video.srcObject = null;
+                    KS.DOM.introScreen.style.display = 'flex';
+                    KS.DOM.topRightHud.style.display = 'none';
+                    KS.UI.clearLayer(false); 
+                    KS.DOM.settingsPanel.style.display = 'none'; 
+                    KS.DOM.helpPanel.style.display = 'none';
+                    KS.DOM.btnSettings.classList.remove('active');
+                    KS.DOM.btnHelp.classList.remove('active');
+                    KS.UI.setStatus("STREAM ENDED", "idle");
+                },
+                setAutoScan: (val) => {
+                    if (KS.State.autoScanTimer) clearInterval(KS.State.autoScanTimer);
+                    const seconds = parseInt(val);
+                    if (seconds > 0) {
+                        KS.State.autoScanTimer = setInterval(() => {
+                            if (KS.State.streamTrack && !KS.State.isBusy) KS.OCR.scan(null, true);
+                        }, seconds * 1000);
+                        KS.UI.setStatus(`AUTO-SCAN: ${seconds}s`, "active");
+                    } else {
+                        // Don't overwrite status if we are just starting
+                        if(KS.State.streamTrack) KS.UI.setStatus("READY: DRAG BOX TO SCAN", "active");
+                    }
+                }
+            },
+
+            OCR: {
+                init: async () => {
+                    KS.UI.msg("LOADING TESSERACT...");
+                    KS.State.worker = await Tesseract.createWorker('jpn');
+                    await KS.State.worker.setParameters({ tessedit_pageseg_mode: Tesseract.PSM.SPARSE_TEXT });
+                },
+
+                scan: async (manualRect = null, isAuto = false) => {
+                    if (KS.State.isBusy) return;
+                    KS.State.isBusy = true;
+                    KS.Geo.updateMetrics(); 
+
+                    if (manualRect) {
+                        await KS.OCR.runDeepScan(manualRect);
+                    } else {
+                        await KS.OCR.runFastScan(isAuto);
+                    }
+                    KS.State.isBusy = false;
+                },
+
+                runFastScan: async (isAuto) => {
+                    if(!isAuto) KS.UI.flash();
+                    KS.UI.clearLayer(isAuto);
+                    KS.UI.setStatus(KS.Config.isOptimized ? "OPTIMIZING..." : "SCANNING...", "busy");
+
+                    const ctx = KS.DOM.procCanvas.getContext('2d');
+                    const v = KS.State.view;
+                    KS.DOM.procCanvas.width = KS.DOM.video.videoWidth * v.scale;
+                    KS.DOM.procCanvas.height = KS.DOM.video.videoHeight * v.scale;
+                    
+                    await KS.State.worker.setParameters({ tessedit_pageseg_mode: Tesseract.PSM.SPARSE_TEXT });
+
+                    let passes = [];
+                    if (KS.Config.isOptimized) {
+                        passes = [
+                            KS.Config.profiles[1].filter(), 
+                            KS.Config.profiles[2].filter() 
+                        ];
+                    } else {
+                        const idx = document.getElementById('sel-profile').value;
+                        const prof = KS.Config.profiles[idx];
+                        passes = [ (idx == 0) ? prof.filter(KS.DOM.slContrast.value, KS.DOM.slBright.value) : prof.filter() ];
+                    }
+
+                    let allWords = [];
+                    for (let filterStr of passes) {
+                        ctx.filter = filterStr;
+                        ctx.drawImage(KS.DOM.video, 0, 0, KS.DOM.procCanvas.width, KS.DOM.procCanvas.height);
+                        const { data } = await KS.State.worker.recognize(KS.DOM.procCanvas);
+                        if (data.words) allWords.push(...data.words);
+                    }
+                    
+                    let count = 0;
+                    allWords.flatMap(w => w.symbols || []).forEach(s => {
+                        const t = s.text.replace(/\s+/g, '');
+                        if (/[一-龯ぁ-んァ-ンー]/.test(t)) {
+                            const sx = v.renderX + (s.bbox.x0 * v.scaleX);
+                            const sy = v.renderY + (s.bbox.y0 * v.scaleY);
+                            KS.UI.createTarget(sx, sy, (s.bbox.x1 - s.bbox.x0) * v.scaleX, (s.bbox.y1 - s.bbox.y0) * v.scaleY, t, false);
+                            count++;
+                        }
+                    });
+                    
+                    KS.UI.setStatus(`READY (${count} TARGETS)`, "active");
+                },
+
+                runDeepScan: async (rect) => {
+                    const vr = KS.Geo.toVideoRect(rect.x, rect.y, rect.w, rect.h);
+                    const v = KS.State.view;
+                    const ctx = KS.DOM.procCanvas.getContext('2d');
+                    KS.DOM.procCanvas.width = vr.w;
+                    KS.DOM.procCanvas.height = vr.h;
+
+                    await KS.State.worker.setParameters({ tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK });
+
+                    let allCandidates = new Set();
+                    const profiles = KS.Config.profiles;
+
+                    for (let i = 0; i < profiles.length; i++) {
+                        const prof = profiles[i];
+                        if(i===0) continue; 
+                        KS.UI.setStatus(`DEEP SCAN: ${prof.name}`, "busy");
+                        ctx.filter = prof.filter();
+                        ctx.drawImage(KS.DOM.video, vr.x / v.scale, vr.y / v.scale, vr.w / v.scale, vr.h / v.scale, 0, 0, vr.w, vr.h);
+
+                        try {
+                            const { data } = await KS.State.worker.recognize(KS.DOM.procCanvas);
+                            const rawText = data.text.replace(/\s+/g, '');
+                            const symbols = data.words.flatMap(w => w.symbols || []).map(s => s.text);
+                            [...symbols, rawText].forEach(c => {
+                                if (c && c.length > 0 && ![' ', '|', '—'].includes(c)) allCandidates.add(c);
+                            });
+                        } catch(e) { console.error(e); }
+                    }
+
+                    const results = [...allCandidates];
+                    if (results.length > 0) {
+                        KS.UI.showCandidates(rect, results);
+                        KS.UI.setStatus(`FOUND ${results.length} RESULTS`, "active");
+                    } else {
+                        KS.UI.setStatus("NO TEXT DETECTED", "active");
+                    }
+                }
+            },
+
+            UI: {
+                msg: (txt) => {
+                    KS.DOM.overlayMsg.style.display = txt ? 'block' : 'none';
+                    if(txt) KS.DOM.overlayMsg.innerText = txt;
+                },
+                setStatus: (txt, state) => {
+                    KS.DOM.statusText.innerText = txt;
+                    KS.DOM.statusIndicator.className = '';
+                    if(state) KS.DOM.statusIndicator.classList.add(state);
+                    
+                    if (state === 'active') KS.DOM.statusText.style.color = '#00ff66';
+                    else if (state === 'busy') KS.DOM.statusText.style.color = '#ffaa00';
+                    else KS.DOM.statusText.style.color = '#666';
+                },
+                flash: () => {
+                    KS.DOM.appContainer.classList.remove('flash-active');
+                    void KS.DOM.appContainer.offsetWidth; 
+                    KS.DOM.appContainer.classList.add('flash-active');
+                },
+                clearLayer: (keepManual) => {
+                    if (keepManual) {
+                        const autos = document.querySelectorAll('.target-auto');
+                        autos.forEach(el => el.remove());
+                    } else {
+                        KS.DOM.sniperLayer.innerHTML = '';
+                        KS.State.comboBuffer = [];
+                        KS.State.hoveredText = null;
+                        KS.UI.tooltip(null);
+                    }
+                },
+                clearManualTargets: () => {
+                    const manuals = document.querySelectorAll('.target-manual');
+                    manuals.forEach(el => el.remove());
+                    const candidates = document.querySelectorAll('.candidate-box');
+                    candidates.forEach(el => el.remove());
+                },
+                createTarget: (x, y, w, h, text, isManual) => {
+                    const d = document.createElement('div');
+                    d.className = isManual ? 'sniper-target target-manual' : 'sniper-target target-auto';
+                    Object.assign(d.style, { left: x+'px', top: y+'px', width: w+'px', height: h+'px' });
+                    d.dataset.text = text; 
+                    KS.DOM.sniperLayer.appendChild(d);
+                },
+                showCandidates: (rect, candidates) => {
+                    const box = document.createElement('div');
+                    box.className = 'candidate-box';
+                    Object.assign(box.style, { left: (rect.x + rect.w + 10)+'px', top: rect.y+'px' });
+                    
+                    let html = `<div class="candidate-title">RESULTS</div>`;
+                    candidates.forEach(c => html += `<div class="candidate-btn" onclick="KS.UI.selectCandidate(this, '${c}', ${rect.x}, ${rect.y}, ${rect.w}, ${rect.h})">${c}</div>`);
+                    html += `<div class="candidate-btn" style="color:#ff4444" onclick="this.parentNode.remove()">✕</div>`;
+                    
+                    box.innerHTML = html;
+                    KS.DOM.sniperLayer.appendChild(box);
+                },
+                selectCandidate: (el, char, x, y, w, h) => {
+                    KS.UI.createTarget(x, y, w, h, char, true);
+                    el.parentNode.remove();
+                },
+                tooltip: (text, isCombo) => {
+                    const tt = KS.DOM.hudTooltip;
+                    if (!text) { tt.style.display = 'none'; return; }
+                    tt.style.display = 'block';
+                    tt.innerHTML = text;
+                    isCombo ? tt.classList.add('hud-combo') : tt.classList.remove('hud-combo');
+                },
+                toggleDict: (show, text) => {
+                    if (!show) { KS.DOM.dictWindow.style.display = 'none'; return; }
+                    if (text) {
+                        KS.DOM.dictTitle.innerText = `Jisho: ${text}`;
+                        KS.State.dictUrl = `https://jisho.org/search/${text}`;
+                        KS.DOM.dictFrame.src = KS.State.dictUrl;
+                    }
+                    KS.DOM.dictWindow.style.display = 'flex';
+                },
+                popDict: () => {
+                    if(KS.State.dictUrl) window.open(KS.State.dictUrl, 'JishoPop', 'width=500,height=600');
+                },
+                toggleSettings: () => {
+                    const p = KS.DOM.settingsPanel;
+                    const b = KS.DOM.btnSettings;
+                    // Close help if open
+                    if (KS.DOM.helpPanel.style.display === 'flex') {
+                        KS.DOM.helpPanel.style.display = 'none';
+                        KS.DOM.btnHelp.classList.remove('active');
+                    }
+                    if (p.style.display === 'flex') {
+                        p.style.display = 'none';
+                        b.classList.remove('active');
+                    } else {
+                        p.style.display = 'flex';
+                        b.classList.add('active');
+                    }
+                },
+                toggleHelp: () => {
+                    const p = KS.DOM.helpPanel;
+                    const b = KS.DOM.btnHelp;
+                    // Close settings if open
+                    if (KS.DOM.settingsPanel.style.display === 'flex') {
+                        KS.DOM.settingsPanel.style.display = 'none';
+                        KS.DOM.btnSettings.classList.remove('active');
+                    }
+                    if (p.style.display === 'flex') {
+                        p.style.display = 'none';
+                        b.classList.remove('active');
+                    } else {
+                        p.style.display = 'flex';
+                        b.classList.add('active');
+                    }
+                }
+            },
+
+            Input: {
+                drag: null,
+                init: () => {
+                    document.addEventListener('mousemove', (e) => {
+                        const tt = KS.DOM.hudTooltip;
+                        if (tt.style.display === 'block') {
+                            tt.style.left = (e.clientX + 15) + 'px';
+                            tt.style.top = (e.clientY + 15) + 'px';
+                        }
+                        KS.Input.handleDrag(e);
+                    });
+
+                    document.addEventListener('click', (e) => {
+                        if (e.target.closest('#sniper-layer') || e.target.tagName === 'BODY') {
+                            KS.DOM.appContainer.focus();
+                        }
+                    });
+
+                    const layer = KS.DOM.sniperLayer;
+                    layer.addEventListener('mouseover', KS.Input.onHover);
+                    layer.addEventListener('mouseout', KS.Input.onHoverOut);
+                    layer.addEventListener('click', KS.Input.onClick);
+                    layer.addEventListener('contextmenu', KS.Input.onRightClick);
+
+                    document.addEventListener('mousedown', KS.Input.onMouseDown);
+                    document.addEventListener('mouseup', KS.Input.onMouseUp);
+
+                    document.addEventListener('keydown', (e) => {
+                        if (e.code === 'Space') { 
+                            e.preventDefault(); 
+                            // MODIFICATION: Space now only clears the layer
+                            KS.UI.clearLayer(false); 
+                            KS.UI.clearManualTargets();
+                            KS.UI.msg("SCREEN CLEARED");
+                            setTimeout(() => KS.UI.msg(null), 500);
+                        }
+                        if (e.code === 'Enter' || e.code === 'NumpadEnter') {
+                            e.preventDefault();
+                            let searchTerm = KS.State.comboBuffer.length > 0 ? KS.State.comboBuffer.join('') : null;
+                            if (!searchTerm && KS.State.hoveredText) searchTerm = KS.State.hoveredText;
+
+                            if (searchTerm) {
+                                KS.UI.toggleDict(true, searchTerm);
+                                KS.State.comboBuffer = [];
+                                KS.UI.tooltip(null);
+                            } else {
+                                KS.UI.msg("NO TARGET SELECTED");
+                                setTimeout(() => KS.UI.msg(null), 600);
+                            }
+                        }
+                        if (e.code === 'Backspace') {
+                            if (KS.State.comboBuffer.length > 0) {
+                                KS.State.comboBuffer.pop();
+                                const combo = KS.State.comboBuffer;
+                                if (combo.length > 0) {
+                                    KS.UI.tooltip(`Combo: ${combo.join('')}`, true);
+                                } else {
+                                    if(KS.State.hoveredText) KS.UI.tooltip(KS.State.hoveredText, false);
+                                    else KS.UI.tooltip(null);
+                                }
+                            }
+                        }
+                        if (e.code === 'Escape') {
+                            e.preventDefault();
+                            KS.State.comboBuffer = [];
+                            KS.UI.tooltip(null);
+                            KS.UI.toggleDict(false);
+                            
+                            KS.DOM.settingsPanel.style.display = 'none';
+                            KS.DOM.btnSettings.classList.remove('active');
+                            KS.DOM.helpPanel.style.display = 'none';
+                            KS.DOM.btnHelp.classList.remove('active');
+                            
+                            KS.UI.clearManualTargets();
+                            
+                            KS.DOM.marqueeBox.style.display = 'none';
+                            KS.Input.drag = null;
+                        }
+                    });
+                },
+
+                onHover: (e) => {
+                    if (!e.target.classList.contains('sniper-target')) return;
+                    const txt = e.target.dataset.text;
+                    KS.State.hoveredText = txt;
+                    const combo = KS.State.comboBuffer;
+                    KS.UI.tooltip(combo.length ? `Combo: ${combo.join('')}<span style='opacity:0.5'> + ${txt}</span>` : txt, combo.length > 0);
+                },
+                onHoverOut: (e) => {
+                    if (!e.target.classList.contains('sniper-target')) return;
+                    KS.State.hoveredText = null;
+                    const combo = KS.State.comboBuffer;
+                    KS.UI.tooltip(combo.length ? `Combo: ${combo.join('')}` : null, true);
+                },
+                onClick: (e) => {
+                    if (e.target.closest('.candidate-box')) return;
+                    const t = e.target.closest('.sniper-target');
+                    if (!t) return;
+                    e.stopPropagation();
+                    const txt = t.dataset.text;
+                    if (KS.State.comboBuffer.length > 0) {
+                        KS.UI.toggleDict(true, KS.State.comboBuffer.join(''));
+                        KS.State.comboBuffer = [];
+                    } else {
+                        KS.UI.toggleDict(true, txt);
+                    }
+                    KS.UI.tooltip(null);
+                },
+                onRightClick: (e) => {
+                    e.preventDefault();
+                    const t = e.target.closest('.sniper-target');
+                    if (!t) return;
+                    KS.State.comboBuffer.push(t.dataset.text);
+                    KS.UI.tooltip(`Combo: ${KS.State.comboBuffer.join('')}`, true);
+                },
+                onMouseDown: (e) => {
+                    if (e.target.tagName === 'BUTTON' || e.target.closest('.candidate-box') || e.target.closest('#settings-panel') || e.target.closest('#help-panel')) return;
+                    if (e.target.closest('#dict-header')) {
+                        const r = KS.DOM.dictWindow.getBoundingClientRect();
+                        KS.Input.drag = { type: 'win', sx: e.clientX, sy: e.clientY, ix: r.left, iy: r.top };
+                        return;
+                    }
+                    if (e.target === KS.DOM.sniperLayer) {
+                        KS.Input.drag = { type: 'select', sx: e.clientX, sy: e.clientY };
+                        Object.assign(KS.DOM.marqueeBox.style, { display: 'block', width: '0px', height: '0px', left: e.clientX+'px', top: e.clientY+'px' });
+                    }
+                },
+                onMouseUp: () => {
+                    const d = KS.Input.drag;
+                    if (!d) return;
+                    
+                    if (d.type === 'select') {
+                        const box = KS.DOM.marqueeBox;
+                        const w = parseInt(box.style.width);
+                        const h = parseInt(box.style.height);
+                        const l = parseInt(box.style.left);
+                        const t = parseInt(box.style.top);
+                        box.style.display = 'none';
+                        if (w > KS.Config.dragThreshold && h > KS.Config.dragThreshold) KS.OCR.scan({ x: l, y: t, w: w, h: h });
+                    }
+                    KS.Input.drag = null;
+                },
+                handleDrag: (e) => {
+                    const d = KS.Input.drag;
+                    if (!d) return;
+
+                    if (d.type === 'win') {
+                        KS.DOM.dictWindow.style.left = `${d.ix + (e.clientX - d.sx)}px`;
+                        KS.DOM.dictWindow.style.top = `${d.iy + (e.clientY - d.sy)}px`;
+                    } else if (d.type === 'select') {
+                        const w = Math.abs(e.clientX - d.sx);
+                        const h = Math.abs(e.clientY - d.sy);
+                        const l = Math.min(e.clientX, d.sx);
+                        const t = Math.min(e.clientY, d.sy);
+                        Object.assign(KS.DOM.marqueeBox.style, { width: w+'px', height: h+'px', left: l+'px', top: t+'px' });
+                    }
+                }
+            }
+        };
+
+        KS.Core.init();
+    </script>
+</body>
+</html>
