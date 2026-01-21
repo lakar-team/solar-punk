@@ -51,7 +51,12 @@ export default function Planet({ project }: PlanetProps) {
     };
 
     const isWIP = project.status === 'in-progress';
-    const texture = project.image ? useTexture(project.image) : null;
+    const mainTexture = project.texturePath ? useTexture(project.texturePath) : null;
+    const projectImage = project.image ? useTexture(project.image) : null;
+
+    // Use projectImage if available, else abstract texture, else fallback color
+    const activeTexture = projectImage || mainTexture;
+    const baseEmissive = project.emissiveColor || '#22d3ee';
 
     return (
         <group ref={groupRef}>
@@ -67,14 +72,22 @@ export default function Planet({ project }: PlanetProps) {
                 }}
             >
                 <meshStandardMaterial
-                    color={texture ? '#ffffff' : getColor(project.texture)}
-                    map={texture}
-                    roughness={0.7}
-                    metalness={0.3}
-                    emissive={hovered ? getColor(project.texture) : '#000000'}
-                    emissiveIntensity={hovered ? 0.3 : 0}
+                    map={activeTexture}
+                    color={activeTexture ? '#ffffff' : getColor(project.texture)}
+                    roughness={0.4}
+                    metalness={0.6}
+                    emissive={baseEmissive}
+                    emissiveIntensity={hovered ? 2.5 : 1.5} // High intensity for brightness
                 />
             </Sphere>
+
+            {/* Subtle light to make the planet pop */}
+            <pointLight
+                color={baseEmissive}
+                intensity={2.0}
+                distance={project.size * 3}
+                decay={1.2}
+            />
 
             {/* Orbit Ring (Visual aid) */}
             {/* Note: This would be better as a shared geometry in the parent system to save draw calls, but putting here for simplicity first */}

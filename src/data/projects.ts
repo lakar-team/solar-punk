@@ -6,7 +6,9 @@ export interface Project {
     name: string;
     type: ProjectType;
     size: number; // 1-10 scale
-    texture: string; // Placeholder for texture path or procedural color ID
+    texture: string; // Style ID
+    texturePath?: string; // Path to generated abstract texture
+    emissiveColor?: string; // Bright color for visibility
     status: ProjectStatus;
     description: string;
     orbitRadius: number; // Distance from sun
@@ -23,6 +25,8 @@ export const projects: Project[] = [
         type: 'work',
         size: 7,
         texture: 'planet-tech',
+        texturePath: '/textures/planet-tech.png',
+        emissiveColor: '#3b82f6',
         status: 'in-progress',
         description: 'Product & Innovation Consultant driving digital transformation. Creating automated workflows and bridging the gap between engineering teams and business goals.',
         orbitRadius: 15,
@@ -34,6 +38,8 @@ export const projects: Project[] = [
         type: 'research',
         size: 8,
         texture: 'planet-ice',
+        texturePath: '/textures/planet-arctic.png',
+        emissiveColor: '#a5f3fc',
         status: 'complete',
         description: 'Developed novel passive cooling hardware (50% efficiency gain). Synthesized global environmental data to validate product-market fit. Presented at 2024 Kyoto AIJ Conference.',
         orbitRadius: 25,
@@ -49,6 +55,8 @@ export const projects: Project[] = [
         type: 'work',
         size: 9,
         texture: 'planet-desert',
+        texturePath: '/textures/planet-desert.png',
+        emissiveColor: '#fb923c',
         status: 'complete',
         description: 'Founder & CEO. Bootstrapped to profitability with 100% YoY growth. Disrupted market by standardizing "affordable designer renovations" using UX strategy in physical spaces.',
         orbitRadius: 35,
@@ -62,6 +70,8 @@ export const projects: Project[] = [
         type: 'work',
         size: 6,
         texture: 'planet-scaffold',
+        texturePath: '/textures/planet-tech.png',
+        emissiveColor: '#3b82f6',
         status: 'in-progress',
         description: 'A dynamic host listing system for professional meetups. Integrating Stripe and Supabase for seamless user interactions.',
         orbitRadius: 45,
@@ -74,6 +84,8 @@ export const projects: Project[] = [
         type: 'work',
         size: 6,
         texture: 'planet-scaffold',
+        texturePath: '/textures/planet-tech.png',
+        emissiveColor: '#fef08a',
         status: 'in-progress',
         description: 'An AI-driven robotic companion project. Focusing on hardware-software integration and interactive persona design.',
         orbitRadius: 55,
@@ -85,6 +97,8 @@ export const projects: Project[] = [
         type: 'hobby',
         size: 5,
         texture: 'planet-lava',
+        texturePath: '/textures/planet-desert.png',
+        emissiveColor: '#ef4444',
         status: 'complete',
         description: 'An interactive Japanese learning game. Test your kanji speed and accuracy!',
         orbitRadius: 65,
@@ -97,6 +111,8 @@ export const projects: Project[] = [
         type: 'hobby',
         size: 4,
         texture: 'planet-ice',
+        texturePath: '/textures/planet-arctic.png',
+        emissiveColor: '#22d3ee',
         status: 'complete',
         description: 'An experimental action game built with HTML/JS.',
         orbitRadius: 75,
@@ -110,6 +126,8 @@ export const projects: Project[] = [
         type: 'hobby',
         size: 5,
         texture: 'planet-forest',
+        texturePath: '/textures/planet-forest.png',
+        emissiveColor: '#4ade80',
         status: 'complete',
         description: 'Bilingual Japanese-English children\'s book retelling the classic tale of Momotaro.',
         orbitRadius: 85,
@@ -123,6 +141,8 @@ export const projects: Project[] = [
         type: 'merch',
         size: 6,
         texture: 'planet-desert',
+        texturePath: '/textures/planet-desert.png',
+        emissiveColor: '#fde047',
         status: 'complete',
         description: 'Custom apparel and merch from Stellar to Climate Tech collections.',
         orbitRadius: 95,
@@ -136,6 +156,8 @@ export const projects: Project[] = [
         type: 'hobby',
         size: 4,
         texture: 'planet-gas',
+        texturePath: '/textures/planet-arctic.png',
+        emissiveColor: '#c084fc',
         status: 'complete',
         description: 'A YouTube channel dedicated to serene nature vibes and ambiance.',
         orbitRadius: 105,
@@ -149,13 +171,15 @@ export const projects: Project[] = [
         type: 'hobby',
         size: 5,
         texture: 'planet-tech',
+        texturePath: '/textures/planet-tech.png',
+        emissiveColor: '#fbbf24',
         status: 'complete',
         description: 'IoT and home automation experiments. A personal smart home lab exploring connected living and energy monitoring.',
         orbitRadius: 115,
         orbitSpeed: 0.025,
         link: '/docs/smart-home.pdf',
         secondaryLinks: [
-            { label: '🎬 Watch Video Tour', url: 'https://drive.google.com/file/d/1234567890/view' },
+            { label: '🎬 Watch Video Tour', url: 'https://drive.google.com/file/d/13btXTHvz0uGBelzHlF5YX623mW48Un44/view?usp=sharing' },
         ],
     },
     {
@@ -164,6 +188,8 @@ export const projects: Project[] = [
         type: 'research',
         size: 5,
         texture: 'planet-forest',
+        texturePath: '/textures/planet-forest.png',
+        emissiveColor: '#86efac',
         status: 'complete',
         description: 'Malaysia-Japan architectural and cultural exchange. Presented at Japan Institute of Architects international symposium.',
         orbitRadius: 125,

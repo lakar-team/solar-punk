@@ -23,6 +23,7 @@ export default function CentralStar() {
         <group>
             {/* The Star Itself */}
             <Sphere args={[5, 64, 64]} ref={meshRef}
+                rotation={[0, Math.PI / 1.5, 0]} // Initial rotation to face camera
                 onPointerOver={() => setHover(true)}
                 onPointerOut={() => setHover(false)}
                 onClick={(e) => {
@@ -32,9 +33,10 @@ export default function CentralStar() {
             >
                 <meshStandardMaterial
                     map={sunTexture}
-                    emissive={hovered ? "#fbbf24" : "#d97706"}
+                    emissive={hovered ? "#fbbf24" : "#ffffff"} // White emissive makes the texture show better
+                    emissiveMap={sunTexture} // Use texture as emissive map too
                     emissiveIntensity={hovered ? 1.5 : 0.8}
-                    roughness={0.3}
+                    roughness={0.5}
                 />
             </Sphere>
 
