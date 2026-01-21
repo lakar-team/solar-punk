@@ -26,12 +26,12 @@
 
 ---
 
-## 📈 CURRENT STATUS (Last Update: Jan 22, 2026 - 06:25)
-- **Tech CV Integrated**: Updated `profile.ts`, `projects.ts`, and added `Adam_Tech_CV.md`.
-- **HUD Update**: Improved detail view with functional "Launch Experience" / "Visit Store" buttons.
-- **Micro-Apps Added**: Demo versions of *Kanji Sniper* and *Demon Hunter* hosted in `public/games/`.
-- **External Links Core**: Integrated Redbubble, YouTube, and Amazon book links.
-- **Environment**: Local environment is synced with GitHub `main`.
+## 📈 CURRENT STATUS (Last Update: Jan 22, 2026 - 07:25)
+- **Interactive Sun**: Sun now uses custom face texture and opens an embedded CV viewer when clicked.
+- **Orbit Rings**: Visual orbit paths now connect all planets around the sun.
+- **Lakar Project Photos**: Added professional project photos from `G:\My Drive\Work\Project Photo`.
+- **Linktree Documents**: Pulled PDFs from Linktree folder for PhD research, Lakar projects, and profile background.
+- **Tech CV**: PDF is now live at `/public/Adam_Tech_CV.pdf` with embedded viewer in the sun panel.
 
 ---
 
@@ -42,14 +42,17 @@
 - [x] Added "Download Tech CV" link to the HUD component.
 - [x] Integrated playable HTML games (Kanji Sniper, Demon Hunter).
 - [x] Linked external professional and creative assets (Shop, YouTube, Amazon).
-- [x] Pushed all latest changes to trigger Vercel deployment.
+- [x] Added orbit rings to visually connect planets.
+- [x] Interactive sun with smiling face texture and CV viewer.
+- [x] Added Lakar Design project photos (`lakar-1.jpg`, etc.).
+- [x] Integrated Linktree presentation PDFs (PhD, Lakar, Profile Background).
 
 ---
 
 ## 🚀 ROADMAP & NEXT STEPS
-1. **CV PDF**: User/AI needs to generate `Adam_Tech_CV.pdf` from the markdown and place it in `/public`.
-2. **Interactive Elements**: Add "System Status" animations or hover effects to the HUD.
-3. **Planet Textures**: Replace generic planet types with custom shaders or textures representing the project themes.
+1. **Camera Improvements**: Add zoom/pan controls or guided camera paths for better UX.
+2. **Mobile Optimization**: Ensure touch-friendly interactions and responsive HUD.
+3. **Planet Details**: Add more project-specific content (galleries, videos) to each planet overlay.
 4. **Adam Site Cleanup**: Safe to delete the redundant `Adam Site` folder once confirmed.
 
 ---
@@ -58,3 +61,4 @@
 *Short notes on what changed in recent sessions*
 - **2026-01-22 (Early)**: Pushed Tech CV updates. Created `MEMORY.md`.
 - **2026-01-22 (Mid)**: Integrated Kanji Sniper and Demon Hunter HTML apps. Linked Redbubble, YouTube, and Momotaro book. Updated HUD with action buttons.
+- **2026-01-22 (Late)**: Added orbit rings, interactive sun with face texture and CV viewer, Lakar project photos, and Linktree presentation PDFs.
