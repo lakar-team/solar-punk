@@ -23,6 +23,12 @@
 3. **Asset Management**:
    - ✅ The site relies on a `public/Adam_Tech_CV.pdf` for the download button.
    - ❌ DO NOT commit the `.md` version only; the HUD specifically expects the `.pdf`.
+4. **Local Development**:
+   - ❌ DO NOT run `npm run dev` on Google Drive paths - it does not work properly.
+   - ✅ Rely on Vercel deployment for testing builds.
+5. **React Three Fiber**:
+   - ❌ DO NOT use `<line>` element directly - it conflicts with SVG types.
+   - ✅ Use `<primitive object={new THREE.Line(...)} />` instead.
 
 ---
 
