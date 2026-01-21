@@ -69,7 +69,6 @@ export default function Planet({ project }: PlanetProps) {
                 <meshStandardMaterial
                     color={texture ? '#ffffff' : getColor(project.texture)}
                     map={texture}
-                    wireframe={isWIP}
                     roughness={0.7}
                     metalness={0.3}
                     emissive={hovered ? getColor(project.texture) : '#000000'}

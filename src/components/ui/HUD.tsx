@@ -4,9 +4,11 @@ import { useStore } from '@/store/useStore';
 import { projects } from '@/data/projects';
 import { profile } from '@/data/profile';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
 
 export default function HUD() {
     const { activePlanetId, setActivePlanet } = useStore();
+    const [showNav, setShowNav] = useState(false);
 
     const activeProject = projects.find(p => p.id === activePlanetId);
     const isCVView = activePlanetId === 'cv-core';
@@ -137,7 +139,7 @@ export default function HUD() {
                         <div className="flex-1 space-y-6">
                             <div>
                                 <span className={`inline-block px-2 py-1 bg-white/10 rounded text-[10px] uppercase tracking-wider mb-2 ${activeProject.status === 'in-progress' ? 'text-amber-400 border border-amber-500/30' : 'text-blue-300'}`}>
-                                    {activeProject.type} • {activeProject.status}
+                                    {activeProject.type}{activeProject.status === 'in-progress' ? ' • WIP' : ''}
                                 </span>
                                 <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50 mb-2">
                                     {activeProject.name}
@@ -187,6 +189,54 @@ export default function HUD() {
                                     {activeProject.type === 'merch' ? 'Visit Store' : activeProject.id.includes('book') ? 'View on Amazon' : 'Launch Experience'}
                                 </a>
                             )}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Navigation Panel Toggle */}
+            <div className="pointer-events-auto fixed bottom-6 left-6 z-20">
+                <button
+                    onClick={() => setShowNav(!showNav)}
+                    className="px-4 py-2 bg-black/60 backdrop-blur-md border border-white/20 rounded-full text-xs uppercase tracking-widest text-white/80 hover:text-amber-400 hover:border-amber-500/30 transition-all"
+                >
+                    {showNav ? '✕ Close' : '☰ Navigate'}
+                </button>
+            </div>
+
+            {/* Navigation Panel */}
+            <AnimatePresence>
+                {showNav && (
+                    <motion.div
+                        initial={{ y: '100%', opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: '100%', opacity: 0 }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                        className="pointer-events-auto fixed bottom-16 left-6 z-20 w-72 max-h-[60vh] overflow-y-auto bg-black/80 backdrop-blur-md border border-white/10 rounded-lg p-4 shadow-2xl"
+                    >
+                        <div className="mb-3 text-xs uppercase tracking-widest text-white/50">Quick Navigation</div>
+
+                        {/* Sun/CV */}
+                        <button
+                            onClick={() => { setActivePlanet('cv-core'); setShowNav(false); }}
+                            className="w-full text-left px-3 py-2 rounded hover:bg-amber-500/20 text-amber-400 text-sm mb-2 border border-amber-500/20"
+                        >
+                            ☀️ Core Profile (CV)
+                        </button>
+
+                        {/* Planets */}
+                        <div className="space-y-1">
+                            {projects.map((project) => (
+                                <button
+                                    key={project.id}
+                                    onClick={() => { setActivePlanet(project.id); setShowNav(false); }}
+                                    className={`w-full text-left px-3 py-2 rounded hover:bg-white/10 text-sm transition-colors ${project.status === 'in-progress' ? 'text-amber-300' : 'text-white/80'
+                                        }`}
+                                >
+                                    {project.name}
+                                    {project.status === 'in-progress' && <span className="ml-2 text-[10px] text-amber-400">(WIP)</span>}
+                                </button>
+                            ))}
                         </div>
                     </motion.div>
                 )}

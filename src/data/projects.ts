@@ -66,6 +66,7 @@ export const projects: Project[] = [
         description: 'A dynamic host listing system for professional meetups. Integrating Stripe and Supabase for seamless user interactions.',
         orbitRadius: 45,
         orbitSpeed: 0.18,
+        link: 'https://power-lunch.pages.dev/',
     },
     {
         id: 'project-aibo',
