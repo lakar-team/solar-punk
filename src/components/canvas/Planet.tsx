@@ -12,7 +12,7 @@ interface PlanetProps {
 }
 
 export default function Planet({ project }: PlanetProps) {
-    const { setActivePlanet } = useStore();
+    const { setActivePlanet, setFocusedPlanet, focusedPlanetId, setPlanetPosition } = useStore();
     const meshRef = useRef<THREE.Mesh>(null);
     const groupRef = useRef<THREE.Group>(null);
     const [hovered, setHover] = useState(false);
@@ -31,12 +31,26 @@ export default function Planet({ project }: PlanetProps) {
             groupRef.current.position.x = Math.cos(angle) * radius;
             groupRef.current.position.z = Math.sin(angle) * radius;
 
+            // Publish position to store for camera tracking
+            setPlanetPosition(project.id, groupRef.current.position);
+
             // Rotate planet itself
             if (meshRef.current) {
                 meshRef.current.rotation.y += 0.01;
             }
         }
     });
+
+    const handleClick = (e: any) => {
+        e.stopPropagation();
+        if (focusedPlanetId === project.id) {
+            // Already focused, open HUD
+            setActivePlanet(project.id);
+        } else {
+            // Focus on this planet first
+            setFocusedPlanet(project.id);
+        }
+    };
 
     const getColor = (textureType: string) => {
         // Temp placeholder colors until textures are loaded
@@ -51,6 +65,7 @@ export default function Planet({ project }: PlanetProps) {
     };
 
     const isWIP = project.status === 'in-progress';
+    const isFocused = focusedPlanetId === project.id;
     const mainTexture = project.texturePath ? useTexture(project.texturePath) : null;
     const projectImage = project.image ? useTexture(project.image) : null;
 
@@ -66,10 +81,7 @@ export default function Planet({ project }: PlanetProps) {
                 ref={meshRef}
                 onPointerOver={() => setHover(true)}
                 onPointerOut={() => setHover(false)}
-                onClick={(e) => {
-                    e.stopPropagation();
-                    setActivePlanet(project.id);
-                }}
+                onClick={handleClick}
             >
                 <meshStandardMaterial
                     map={activeTexture}
@@ -77,14 +89,14 @@ export default function Planet({ project }: PlanetProps) {
                     roughness={0.4}
                     metalness={0.6}
                     emissive={baseEmissive}
-                    emissiveIntensity={hovered ? 2.5 : 1.5} // High intensity for brightness
+                    emissiveIntensity={isFocused ? 3.5 : hovered ? 2.5 : 1.5} // Extra glow when focused
                 />
             </Sphere>
 
             {/* Subtle light to make the planet pop */}
             <pointLight
                 color={baseEmissive}
-                intensity={2.0}
+                intensity={isFocused ? 3.0 : 2.0}
                 distance={project.size * 3}
                 decay={1.2}
             />
@@ -94,9 +106,10 @@ export default function Planet({ project }: PlanetProps) {
 
             {/* Label */}
             <Html distanceFactor={15}>
-                <div className={`pointer-events-none select-none text-xs font-bold text-white transition-opacity duration-300 ${hovered ? 'opacity-100' : 'opacity-60'}`}>
+                <div className={`pointer-events-none select-none text-xs font-bold text-white transition-opacity duration-300 ${isFocused ? 'opacity-100 text-amber-400' : hovered ? 'opacity-100' : 'opacity-60'}`}>
                     {project.name}
                     {isWIP && <span className="block text-[10px] text-yellow-400">(WIP)</span>}
+                    {isFocused && <span className="block text-[10px] text-amber-300">Click to open</span>}
                 </div>
             </Html>
         </group>

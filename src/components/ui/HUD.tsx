@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 
 export default function HUD() {
-    const { activePlanetId, setActivePlanet } = useStore();
+    const { activePlanetId, setActivePlanet, setFocusedPlanet, focusedPlanetId } = useStore();
     const [showNav, setShowNav] = useState(false);
 
     const activeProject = projects.find(p => p.id === activePlanetId);
@@ -187,8 +187,8 @@ export default function HUD() {
                 )}
             </AnimatePresence>
 
-            {/* Navigation Panel Toggle */}
-            <div className="pointer-events-auto fixed bottom-6 left-6 z-20">
+            {/* Navigation Panel Toggle - At top for easy access */}
+            <div className="pointer-events-auto fixed top-20 left-6 z-20">
                 <button
                     onClick={() => setShowNav(!showNav)}
                     className="px-4 py-2 bg-black/60 backdrop-blur-md border border-white/20 rounded-full text-xs uppercase tracking-widest text-white/80 hover:text-amber-400 hover:border-amber-500/30 transition-all"
@@ -197,15 +197,15 @@ export default function HUD() {
                 </button>
             </div>
 
-            {/* Navigation Panel */}
+            {/* Navigation Panel - Opens from top */}
             <AnimatePresence>
                 {showNav && (
                     <motion.div
-                        initial={{ y: '100%', opacity: 0 }}
+                        initial={{ y: '-100%', opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: '100%', opacity: 0 }}
+                        exit={{ y: '-100%', opacity: 0 }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="pointer-events-auto fixed bottom-16 left-6 z-20 w-72 max-h-[60vh] overflow-y-auto bg-black/80 backdrop-blur-md border border-white/10 rounded-lg p-4 shadow-2xl"
+                        className="pointer-events-auto fixed top-32 left-6 z-20 w-72 max-h-[60vh] overflow-y-auto bg-black/80 backdrop-blur-md border border-white/10 rounded-lg p-4 shadow-2xl"
                     >
                         <div className="mb-3 text-xs uppercase tracking-widest text-white/50">Quick Navigation</div>
 
@@ -217,17 +217,25 @@ export default function HUD() {
                             ☀️ Core Profile (CV)
                         </button>
 
-                        {/* Planets */}
+                        {/* Planets - Focus first, then click again to open */}
                         <div className="space-y-1">
                             {projects.map((project) => (
                                 <button
                                     key={project.id}
-                                    onClick={() => { setActivePlanet(project.id); setShowNav(false); }}
-                                    className={`w-full text-left px-3 py-2 rounded hover:bg-white/10 text-sm transition-colors ${project.status === 'in-progress' ? 'text-amber-300' : 'text-white/80'
+                                    onClick={() => {
+                                        if (focusedPlanetId === project.id) {
+                                            setActivePlanet(project.id);
+                                        } else {
+                                            setFocusedPlanet(project.id);
+                                        }
+                                        setShowNav(false);
+                                    }}
+                                    className={`w-full text-left px-3 py-2 rounded hover:bg-white/10 text-sm transition-colors ${focusedPlanetId === project.id ? 'text-amber-400 bg-amber-500/10' : project.status === 'in-progress' ? 'text-amber-300' : 'text-white/80'
                                         }`}
                                 >
                                     {project.name}
                                     {project.status === 'in-progress' && <span className="ml-2 text-[10px] text-amber-400">(WIP)</span>}
+                                    {focusedPlanetId === project.id && <span className="ml-2 text-[10px] text-amber-300">● focused</span>}
                                 </button>
                             ))}
                         </div>
