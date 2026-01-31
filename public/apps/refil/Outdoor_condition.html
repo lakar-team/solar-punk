@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adamの外気温度補正</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #e74c3c;
+            --bg: #f8f9fa;
+            --panel: #ffffff;
+            --text: #333;
+            --ghp: #e67e22;
+            --ehp: #2980b9;
+            --ghp-light: #fdf2e9;
+            --ehp-light: #eaf4fb;
+        }
+        body {
+            font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: var(--panel);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 950px;
+        }
+
+        /* --- Tabs --- */
+        .tabs {
+            display: flex;
+            background: #e0e0e0;
+            border-bottom: 1px solid #ccc;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px 10px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            min-width: 140px;
+            line-height: 1.4;
+        }
+        .tab-btn:hover { background: #d0d0d0; }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            border-bottom: 4px solid var(--accent);
+        }
+
+        /* --- Content Area --- */
+        .content {
+            padding: 30px;
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .content.active { display: block; }
+        
+        .graph-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- Main Dashboard Styles --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr; /* Adjusted for larger summary */
+            gap: 30px;
+        }
+        .card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        .card h3 { 
+            margin-top: 0; 
+            color: var(--primary); 
+            border-bottom: 2px solid #eee; 
+            padding-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; font-size: 0.9rem;}
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box; 
+        }
+        
+        /* Button Group Updates */
+        .btn-group { display: flex; gap: 10px; }
+        .type-btn {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            background: #f8f9fa;
+            cursor: pointer;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.2s;
+            color: #777;
+        }
+        /* Explicit Active States */
+        .type-btn.ghp.active { 
+            background: var(--ghp); 
+            color: white; 
+            border-color: var(--ghp); 
+            box-shadow: 0 4px 10px rgba(230, 126, 34, 0.3);
+        }
+        .type-btn.ehp.active { 
+            background: var(--ehp); 
+            color: white; 
+            border-color: var(--ehp);
+            box-shadow: 0 4px 10px rgba(41, 128, 185, 0.3);
+        }
+
+        /* --- New Summary Grid Design --- */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .summary-box {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            background: #fff;
+            transition: transform 0.2s;
+        }
+        .summary-box:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        
+        .sum-title { font-size: 0.8rem; font-weight: bold; color: #777; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; min-height: 2.4em; display:flex; align-items:center; justify-content:center;}
+        
+        .sum-cond-label { font-size: 0.75rem; color: #999; margin-bottom: 2px; }
+        .sum-cond-val { font-size: 1rem; font-weight: 600; color: #333; margin-bottom: 10px; }
+        
+        .sum-result {
+            display: block;
+            font-family: 'Consolas', monospace; 
+            font-size: 1.6rem;
+            font-weight: bold;
+            padding: 10px 5px;
+            border-radius: 6px;
+            color: #fff;
+            margin-top: auto;
+        }
+
+        /* --- Graph Specific --- */
+        .graph-header-box {
+            text-align: center;
+            background: #f0f4f8;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: var(--primary);
+            border: 1px solid #dcebf7;
+        }
+        
+        .graph-wrapper {
+            position: relative;
+            height: 500px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 10px;
+            background: white;
+        }
+        .remarks-box {
+            margin-top: 15px;
+            padding: 10px;
+            background: #fff8e1;
+            border: 1px solid #ffe0b2;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: #795548;
+        }
+        .slider-group {
+            background: #f1f8ff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #d0e1f5;
+            margin-bottom: 20px;
+        }
+        .data-list .data-row {
+            display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0;
+            font-size: 0.8rem;
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px;}
+
+        @media (max-width: 768px) {
+            .graph-layout, .dashboard-grid { grid-template-columns: 1fr; }
+            .summary-grid { grid-template-columns: 1fr 1fr; } /* Keep 2x2 on mobile if possible, or 1fr */
+            .tab-btn { flex: 1 1 50%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('main')">MAIN / メイン<br>Location & Summary</button>
+        <button class="tab-btn" onclick="switchTab('5-22')">Fig 5-22<br>Cooling (冷房)</button>
+        <button class="tab-btn" onclick="switchTab('5-23')">Fig 5-23<br>Heating (暖房)</button>
+        <button class="tab-btn" onclick="switchTab('5-24')">Fig 5-24<br>Cooling (冷房)</button>
+        <button class="tab-btn" onclick="switchTab('5-25')">Fig 5-25<br>Heating (暖房)</button>
+    </div>
+
+    <div id="tab-main" class="content active">
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3>1. Conditions Setting / 条件設定</h3>
+                
+                <div class="form-group">
+                    <label>Location (City) / 地域 (都市)</label>
+                    <select id="citySelect" class="form-control" onchange="updateDashboard()">
+                        </select>
+                    <div id="cityInfo" style="margin-top:12px; font-size:0.9em; color:#555; line-height:1.6; background:#f4f4f4; padding:10px; border-radius:4px;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Equipment Type / 機器タイプ</label>
+                    <div class="btn-group">
+                        <button class="type-btn ghp active" id="btnGHP" onclick="setAcType('GHP')">GHP</button>
+                        <button class="type-btn ehp" id="btnEHP" onclick="setAcType('EHP')">EHP</button>
+                    </div>
+                </div>
+
+                <div class="form-group" style="display:flex; gap:15px;">
+                    <div style="flex:1;">
+                        <label>Indoor Intake Temp (Cooling)<br>室内吸込温度 (冷房) (°C)</label>
+                        <input type="number" id="inCool" class="form-control" value="19" oninput="updateDashboard()">
+                    </div>
+                    <div style="flex:1;">
+                        <label>Indoor Intake Temp (Heating)<br>室内吸込温度 (暖房) (°C)</label>
+                        <input type="number" id="inHeat" class="form-control" value="20" oninput="updateDashboard()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>2. Efficiency Summary / 効率サマリー</h3>
+                
+                <div class="summary-grid" id="summaryGrid">
+                    </div>
+
+                <p style="margin-top:20px; font-size:0.8em; color:#999; text-align:center;">
+                    *Calculated based on city climate & curve.<br>
+                    *選択された都市の気象データと機器カーブに基づく計算値。
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-graph" class="content">
+        <div id="graphHeader" class="graph-header-box"></div>
+
+        <div class="graph-layout">
+            <div class="graph-wrapper">
+                <canvas id="chartCanvas"></canvas>
+            </div>
+            <div class="control-panel">
+                <div class="slider-group">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-weight:bold; color:var(--primary);">
+                        <span id="axisLabel">Temp</span>
+                        <span id="tempDisplay">-- °C</span>
+                    </div>
+                    <input type="range" id="tempSlider" step="0.1" oninput="manualSliderChange()">
+                    <div style="font-size:0.8em; color:#666; margin-top:5px; text-align:right;">
+                        (Manual Override / 手動調整)
+                    </div>
+                </div>
+                
+                <div class="data-list" id="outputList"></div>
+
+                <div id="graphRemarks" class="remarks-box"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- 1. DATA: City Climate Database ---
+    // Format: [CityName_En, CityName_Jp, Cool_DB(Col C), Heat_WB(Col AB), Heat_RH(Col AD)]
+    let rawCityData = [
+        ["Hamamatsu", "浜松", 34.9, -1.5, 41.5], ["Nagoya", "名古屋", 36.5, 0.4, 56.3], ["Takayama", "高山", 34.9, -7.7, 84.7], 
+        ["Gifu", "岐阜", 36.8, 0.3, 62.7], ["Tsu", "津", 35.2, 1.4, 59.8], ["Owase", "尾鷲", 34.5, 3.2, 43.6], 
+        ["Fukui", "福井", 35.4, -2, 81.4], ["Tsuruga", "敦賀", 34.7, -0.9, 77.6], ["Hikone", "彦根", 34.5, -1.6, 77.2], 
+        ["Kyoto", "京都", 36.9, -1.5, 65.9], ["Osaka", "大阪", 35.7, -0.7, 58.7], ["Kobe", "神戸", 34.6, -0.9, 57.1], 
+        ["Nara", "奈良", 35.6, 0.3, 67.2], ["Wakayama", "和歌山", 35, -0.6, 61.9], ["Shionomisaki", "潮岬", 30.9, 3.1, 50.3], 
+        ["Okayama", "岡山", 35.7, 0, 67.4], ["Hiroshima", "広島", 35.2, -0.2, 69.9], ["Saigo", "西鄉", 32.4, -1.7, 77.4], 
+        ["Matsue", "松江", 34.8, 0.2, 76.5], ["Hamada", "浜田", 33.2, 1.1, 62.8], ["Tottori", "鳥取", 36, -0.6, 80.8], 
+        ["Shimonoseki", "下関", 33.5, 1.9, 54.5], ["Tokushima", "徳島", 34.6, 1.7, 62.1], ["Takamatsu", "高松", 35.6, 1.4, 63], 
+        ["Matsuyama", "松山", 34.6, 1.5, 56.4], ["Kochi", "高知", 33.8, 1.5, 58.5], ["Murotomisaki", "室戸岬", 30.7, 2.1, 51], 
+        ["Shimizu", "清水", 31.5, 3.6, 53.6], ["Fukuoka", "福岡", 35.2, 1.6, 58.4], ["Oita", "大分", 34.7, 1.4, 55.1], 
+        ["Izuhara", "厳原", 33.2, 0, 50.3], ["Nagasaki", "長崎", 34, 1.3, 67.4], ["Fukue", "福江", 33, 0.1, 61.8], 
+        ["Saga", "佐賀", 36, 0, 74.7], ["Kumamoto", "熊本", 35.7, -0.3, 73.1], ["Miyazaki", "宮崎", 34.5, -0.5, 60.3], 
+        ["Kagoshima", "鹿児島", 34.6, 0.6, 62], ["Naze", "名瀬", 33.3, 7.4, 61.2], ["Naha", "那覇", 32.9, 8.6, 54.2], 
+        ["Wakkanai", "稚内", 25.7, -10.7, 74.6], ["Asahikawa", "旭川", 31.4, -16.5, 83.4], ["Rumoi", "留萌", 28.1, -12, 76.4], 
+        ["Sapporo", "札幌", 30.7, -8.1, 66.1], ["Suttsu", "寿都", 28.2, -8.5, 72.3], ["Abashiri", "網走", 29.2, -12.1, 64.6], 
+        ["Nemuro", "根室", 26.7, -8.4, 65.3], ["Kushiro", "釧路", 25, -12.7, 68.7], ["Obihiro", "帯広", 32.5, -16.3, 76.8], 
+        ["Urakawa", "浦河", 26, -7, 52.5], ["Hakodate", "函館", 29.6, -7.4, 78], ["Aomori", "青森", 32.1, -6.2, 83.7], 
+        ["Akita", "秋田", 33.2, -5.1, 75.3], ["Morioka", "盛岡", 33.4, -7.1, 84.1], ["Miyako", "宮古", 32, -5.8, 53.8], 
+        ["Sendai", "仙台", 33.2, -3.6, 68.8], ["Sakata", "酒田", 33.3, -3.6, 74.1], ["Yamagata", "山形", 35.1, -4.2, 82.5], 
+        ["Fukushima", "福島", 35.8, -2.6, 69.8], ["Onahama", "小名浜", 30.1, 1, 47.1], ["Mito", "水戸", 34.3, -0.6, 60.9], 
+        ["Utsunomiya", "宇都宮", 34.9, -3.2, 56.7], ["Maebashi", "前橋", 36.6, -2.8, 47.3], ["Kumagaya", "熊谷", 37.1, 0.5, 49.4], 
+        ["Tokyo", "東京", 34.8, 1.7, 41.7], ["Oshima", "大島", 31.5, 3.7, 55.5], ["Hachijojima", "八丈島", 30.9, 2.8, 59.8], 
+        ["Choshi", "銚子", 31.3, 2.6, 47], ["Yokohama", "横浜", 34, -1.4, 44.9], ["Aikawa", "相川", 32.1, -2.1, 70.7], 
+        ["Niigata", "新潟", 33.6, -2.5, 76.8], ["Takada", "高田", 34.4, -1.4, 77.6], ["Toyama", "富山", 35.1, -1.4, 78.1], 
+        ["Wajima", "輪島", 33.6, -0.8, 69.3], ["Kanazawa", "金沢", 34.1, -0.8, 79.5], ["Nagano", "長野", 34.5, -6.2, 79.4], 
+        ["Karuizawa", "軽井沢", 30.1, -8.1, 91.2], ["Matsumoto", "松本", 34.7, -7.4, 71.5], ["Iida", "飯田", 35.2, -6.2, 71], 
+        ["Kofu", "甲府", 36.7, -4.7, 50.9], ["Shizuoka", "静岡", 33.9, -0.8, 36.9]
+    ];
+
+    // SORT ALPHABETICALLY BY ENGLISH NAME
+    rawCityData.sort((a, b) => a[0].localeCompare(b[0]));
+
+    // --- 2. GRAPH DEFINITIONS ---
+    const graphs = [
+        {
+            id: "5-22",
+            header: "外気温度による補正 (屋外機)<br>(Correction by outdoor air temperature - Outdoor unit)",
+            title: "図5-22 冷房 (Fig 5-22 Cooling)",
+            labelShort: "Cooling / Outdoor<br>冷房 / 外気",
+            xLabel: "外気温度 (DB) [°C]<br>(Outdoor air temperature (DB) [°C])",
+            yLabel: "能力比及び入力比 [%]<br>(Capacity ratio and Input ratio [%])",
+            remarks: "Indoor Condition: 室内吸込空気温度 (Indoor intake air temperature): 27°C (DB) / 19°C (WB)",
+            xRange: [20, 40],
+            lines: [
+                { name: "冷房能力 GHP (Cooling capacity GHP)", type:"GHP", mode:"Cap", color: "#e67e22", data: [{x:20,y:113.3},{x:21,y:112.4},{x:22,y:111.6},{x:23,y:110.7},{x:24,y:109.8},{x:25,y:108.9},{x:26,y:108.1},{x:27,y:107.2},{x:28,y:106.3},{x:29,y:105.4},{x:30,y:104.6},{x:31,y:103.7},{x:32,y:102.8},{x:33,y:101.9},{x:34,y:101.1},{x:35,y:100.2},{x:36,y:98.3},{x:37,y:96.4},{x:38,y:94.4},{x:39,y:92.5},{x:40,y:90.6}] },
+                { name: "燃料消費量 GHP (Fuel consumption GHP)", type:"GHP", mode:"Fuel", color: "#f39c12", dash:[5,5], data: [{x:20,y:86.7},{x:21,y:87.6},{x:22,y:88.5},{x:23,y:89.4},{x:24,y:90.2},{x:25,y:91.1},{x:26,y:92.0},{x:27,y:92.9},{x:28,y:93.8},{x:29,y:94.7},{x:30,y:95.6},{x:31,y:96.5},{x:32,y:97.3},{x:33,y:98.2},{x:34,y:99.1},{x:35,y:100.0},{x:36,y:100.8},{x:37,y:101.7},{x:38,y:102.5},{x:39,y:103.4},{x:40,y:104.2}] },
+                { name: "冷房能力 EHP (Cooling capacity EHP)", type:"EHP", mode:"Cap", color: "#2980b9", data: [{x:20,y:100},{x:21,y:100},{x:22,y:100},{x:23,y:100},{x:24,y:100},{x:25,y:100},{x:26,y:100},{x:27,y:100},{x:28,y:100},{x:29,y:100},{x:30,y:100},{x:31,y:100},{x:32,y:100},{x:33,y:100},{x:34,y:100},{x:35,y:100},{x:36,y:98},{x:37,y:96},{x:38,y:94},{x:39,y:92},{x:40,y:90}] },
+                { name: "入力 EHP (Input EHP)",    type:"EHP", mode:"Input", color: "#3498db", dash:[5,5], data: [{x:20,y:81},{x:21,y:82.1},{x:22,y:83.2},{x:23,y:84.4},{x:24,y:85.5},{x:25,y:86.6},{x:26,y:87.7},{x:27,y:88.9},{x:28,y:90.0},{x:29,y:91.1},{x:30,y:92.6},{x:31,y:94.1},{x:32,y:95.7},{x:33,y:97.2},{x:34,y:98.7},{x:35,y:100.2},{x:36,y:103.8},{x:37,y:107.3},{x:38,y:110.9},{x:39,y:114.4},{x:40,y:118.0}] }
+            ]
+        },
+        {
+            id: "5-23",
+            header: "外気温度による補正 (屋外機)<br>(Correction by outdoor air temperature - Outdoor unit)",
+            title: "図5-23 暖房 (Fig 5-23 Heating)",
+            labelShort: "Heating / Outdoor<br>暖房 / 外気",
+            xLabel: "外気温度 (WB) [°C]<br>(Outdoor air temperature (WB) [°C])",
+            yLabel: "能力比及び入力比 [%]<br>(Capacity ratio and Input ratio [%])",
+            remarks: "Indoor Condition: 室内吸込空気温度 (Indoor intake air temperature (温度)) 20°C (DB)",
+            xRange: [-10, 16],
+            lines: [
+                { name: "暖房能力 GHP (Heating capacity GHP)", type:"GHP", mode:"Cap", color: "#e67e22", data: [{x:-10,y:89.5},{x:-9,y:90},{x:-8,y:90.7},{x:-7,y:91.3},{x:-6,y:92},{x:-5,y:92.7},{x:-4,y:93.3},{x:-3,y:94},{x:-2,y:94.7},{x:-1,y:95.3},{x:0,y:96},{x:1,y:96.7},{x:2,y:97.3},{x:3,y:98},{x:4,y:98.7},{x:5,y:99.3},{x:6,y:100},{x:7,y:100.1},{x:8,y:100.2},{x:9,y:100.3},{x:10,y:100.4},{x:11,y:100.6},{x:12,y:100.7},{x:13,y:100.8},{x:14,y:100.9},{x:15,y:101.0},{x:16,y:101.1}] },
+                { name: "燃料消費量 GHP (Fuel consumption GHP)",     type:"GHP", mode:"Fuel", color: "#f39c12", dash:[5,5], data: [{x:-10,y:132},{x:-9,y:131.7},{x:-8,y:131.4},{x:-7,y:131.2},{x:-6,y:130.9},{x:-5,y:130.6},{x:-4,y:130.3},{x:-3,y:130},{x:-2,y:129.7},{x:-1,y:129.5},{x:0,y:129.2},{x:1,y:128.9},{x:2,y:123.1},{x:3,y:117.3},{x:4,y:111.6},{x:5,y:105.8},{x:6,y:100.2},{x:7,y:97.5},{x:8,y:95},{x:9,y:92.5},{x:10,y:90},{x:11,y:87.5},{x:12,y:85},{x:13,y:82.5},{x:14,y:80},{x:15,y:77.1},{x:16,y:74.6}] },
+                { name: "暖房能力 EHP (Heating capacity EHP) [80%RH]", type:"EHP", mode:"CapHi", color: "#2980b9", data: [{x:-10,y:60},{x:-9,y:60},{x:-8,y:60},{x:-7,y:61.6},{x:-6,y:63.2},{x:-5,y:64.7},{x:-4,y:66.3},{x:-3,y:67.9},{x:-2,y:69.4},{x:-1,y:71.0},{x:0,y:72.6},{x:1,y:77.1},{x:2,y:81.5},{x:3,y:88},{x:4,y:96},{x:5,y:99.3},{x:6,y:99.8},{x:7,y:100},{x:8,y:100},{x:9,y:100},{x:10,y:100},{x:11,y:100},{x:12,y:100},{x:13,y:100},{x:14,y:100},{x:15,y:100},{x:16,y:100}] },
+                { name: "暖房能力 EHP (Heating capacity EHP) [50%RH]", type:"EHP", mode:"CapLo", color: "#1abc9c", dash:[2,2], data: [{x:-10,y:63.5},{x:-9,y:66},{x:-8,y:68.4},{x:-7,y:70.7},{x:-6,y:72.9},{x:-5,y:75.2},{x:-4,y:77.4},{x:-3,y:79.7},{x:-2,y:81.9},{x:-1,y:84.2},{x:0,y:86.5},{x:1,y:88.7},{x:2,y:91.0},{x:3,y:93.2},{x:4,y:95.5},{x:5,y:97.7},{x:6,y:100},{x:7,y:100.2},{x:8,y:100.3},{x:9,y:100.5},{x:10,y:100.7},{x:11,y:100.9},{x:12,y:101.0},{x:13,y:101.2},{x:14,y:101.4},{x:15,y:101.5},{x:16,y:101.7}] },
+                { name: "入力 EHP (Input EHP)",    type:"EHP", mode:"Input", color: "#3498db", dash:[5,5], data: [{x:-10,y:124.9},{x:-9,y:124.9},{x:-8,y:124.9},{x:-7,y:125.0},{x:-6,y:125.0},{x:-5,y:125.0},{x:-4,y:125},{x:-3,y:125.0},{x:-2,y:125.0},{x:-1,y:125.1},{x:0,y:125.1},{x:1,y:125.1},{x:2,y:125.1},{x:3,y:118},{x:4,y:111.5},{x:5,y:105.7},{x:6,y:100},{x:7,y:97.7},{x:8,y:95.3},{x:9,y:93.0},{x:10,y:90.6},{x:11,y:88.3},{x:12,y:86.0},{x:13,y:83.6},{x:14,y:81.3},{x:15,y:78.9},{x:16,y:76.6}] }
+            ]
+        },
+        {
+            id: "5-24",
+            header: "室内吸込空気温度による補正 (屋内機)<br>(Correction by indoor intake air temperature - Indoor unit)",
+            title: "図5-24 冷房 (Fig 5-24 Cooling)",
+            labelShort: "Cooling / Indoor<br>冷房 / 室内",
+            xLabel: "室内吸込空気温度 (WB) [°C]<br>(Indoor intake air temperature (WB) [°C])",
+            yLabel: "能力比及び入力比 [%]<br>(Capacity ratio and Input ratio [%])",
+            remarks: "Outdoor Condition: 外気温度 (Outdoor temperature): 35°C (DB)",
+            xRange: [12, 28],
+            lines: [
+                { name: "冷房能力 GHP (Cooling capacity GHP)", type:"GHP", mode:"Cap", color: "#e67e22", data: [{x:12,y:62.8},{x:13,y:67.4},{x:14,y:72.5},{x:15,y:78.1},{x:16,y:83.6},{x:17,y:89.2},{x:18,y:94.7},{x:19,y:100.1},{x:20,y:102.2},{x:21,y:104.3},{x:22,y:106.5},{x:23,y:108.6},{x:24,y:110.7},{x:25,y:112.8},{x:26,y:115.0},{x:27,y:117.1},{x:28,y:119.2}] },
+                { name: "燃料消費量 GHP (Fuel consumption GHP)",     type:"GHP", mode:"Fuel", color: "#f39c12", dash:[5,5], data: [{x:12,y:60},{x:13,y:64.8},{x:14,y:69.9},{x:15,y:75.9},{x:16,y:81.9},{x:17,y:87.9},{x:18,y:93.9},{x:19,y:99.9},{x:20,y:101.3},{x:21,y:102.7},{x:22,y:104.1},{x:23,y:105.5},{x:24,y:106.9},{x:25,y:108.3},{x:26,y:109.7},{x:27,y:111.1},{x:28,y:112.5}] },
+                { name: "冷房能力 EHP (Cooling capacity EHP)", type:"EHP", mode:"Cap", color: "#2980b9", data: [{x:12,y:60},{x:13,y:63.4},{x:14,y:69.6},{x:15,y:75.7},{x:16,y:81.9},{x:17,y:88},{x:18,y:94.2},{x:19,y:100.3},{x:20,y:104.4},{x:21,y:108.6},{x:22,y:112.7},{x:23,y:116.8},{x:24,y:121.0},{x:25,y:125.1},{x:26,y:129.2},{x:27,y:133.4},{x:28,y:137.5}] },
+                { name: "入力 EHP (Input EHP)",    type:"EHP", mode:"Input", color: "#3498db", dash:[5,5], data: [{x:12,y:90.6},{x:13,y:91.9},{x:14,y:93.3},{x:15,y:94.6},{x:16,y:95.9},{x:17,y:97.2},{x:18,y:98.6},{x:19,y:99.9},{x:20,y:106.2},{x:21,y:112.4},{x:22,y:118.7},{x:23,y:124.9},{x:24,y:131.2},{x:25,y:137.4},{x:26,y:140},{x:27,y:140},{x:28,y:140}] }
+            ]
+        },
+        {
+            id: "5-25",
+            header: "室内吸込空気温度による補正 (屋内機)<br>(Correction by indoor intake air temperature - Indoor unit)",
+            title: "図5-25 暖房 (Fig 5-25 Heating)",
+            labelShort: "Heating / Indoor<br>暖房 / 室内",
+            xLabel: "室内吸込空気温度 (DB) [°C]<br>(Indoor intake air temperature (DB) [°C])",
+            yLabel: "能力比及び入力比 [%]<br>(Capacity ratio and Input ratio [%])",
+            remarks: "Outdoor Condition: 外気吸込温度 (Outdoor intake temperature): 6°C (WB)",
+            xRange: [12, 28],
+            lines: [
+                { name: "暖房能力 GHP (Heating capacity GHP)", type:"GHP", mode:"Cap", color: "#e67e22", data: [{x:12,y:101.9},{x:13,y:101.7},{x:14,y:101.4},{x:15,y:101.2},{x:16,y:101.0},{x:17,y:100.7},{x:18,y:100.5},{x:19,y:100.2},{x:20,y:100},{x:21,y:96.5},{x:22,y:93.0},{x:23,y:89.5},{x:24,y:86.1},{x:25,y:82.6},{x:26,y:79.1},{x:27,y:75.6},{x:28,y:72.1}] },
+                { name: "燃料消費量 GHP (Fuel consumption GHP)",     type:"GHP", mode:"Fuel", color: "#f39c12", dash:[5,5], data: [{x:12,y:99.9},{x:13,y:99.9},{x:14,y:100},{x:15,y:100},{x:16,y:100},{x:17,y:100},{x:18,y:100.1},{x:19,y:100.1},{x:20,y:100.1},{x:21,y:96.8},{x:22,y:93.4},{x:23,y:90.1},{x:24,y:86.8},{x:25,y:83.5},{x:26,y:80.2},{x:27,y:76.8},{x:28,y:73.5}] },
+                { name: "暖房能力 EHP (Heating capacity EHP)", type:"EHP", mode:"Cap", color: "#2980b9", data: [{x:12,y:100.3},{x:13,y:100.3},{x:14,y:100.2},{x:15,y:100.2},{x:16,y:100.1},{x:17,y:100.1},{x:18,y:100},{x:19,y:100},{x:20,y:99.9},{x:21,y:95.9},{x:22,y:91.8},{x:23,y:87.8},{x:24,y:83.7},{x:25,y:79.7},{x:26,y:75.6},{x:27,y:71.6},{x:28,y:67.5}] },
+                { name: "入力 EHP (Input EHP)",    type:"EHP", mode:"Input", color: "#3498db", dash:[5,5], data: [{x:12,y:121},{x:13,y:121.1},{x:14,y:121.2},{x:15,y:121.3},{x:16,y:121.4},{x:17,y:116.1},{x:18,y:110.7},{x:19,y:105.4},{x:20,y:100},{x:21,y:95.9},{x:22,y:91.9},{x:23,y:87.8},{x:24,y:83.8},{x:25,y:79.7},{x:26,y:75.6},{x:27,y:71.6},{x:28,y:67.5}] }
+            ]
+        }
+    ];
+
+    // --- 3. STATE & INIT ---
+    let currentState = {
+        cityIndex: 0,
+        acType: 'GHP',
+        indoorCool: 19,
+        indoorHeat: 20,
+        calculatedValues: {}
+    };
+
+    let chartInstance = null;
+    let currentGraphId = 'main';
+
+    function init() {
+        const sel = document.getElementById('citySelect');
+        // rawCityData is already sorted above
+        rawCityData.forEach((c, i) => {
+            const opt = document.createElement('option');
+            opt.value = i;
+            opt.text = `${c[0]} / ${c[1]}`;
+            sel.appendChild(opt);
+        });
+        
+        // Find Sendai index in the sorted list
+        const sendaiIdx = rawCityData.findIndex(c => c[0] === 'Sendai');
+        sel.value = sendaiIdx >= 0 ? sendaiIdx : 0; 
+        
+        updateDashboard();
+    }
+
+    // --- 4. LOGIC ---
+    function setAcType(type) {
+        currentState.acType = type;
+        
+        const ghpBtn = document.getElementById('btnGHP');
+        const ehpBtn = document.getElementById('btnEHP');
+        
+        if (type === 'GHP') {
+            ghpBtn.classList.add('active');
+            ehpBtn.classList.remove('active');
+        } else {
+            ghpBtn.classList.remove('active');
+            ehpBtn.classList.add('active');
+        }
+        
+        updateDashboard();
+    }
+
+    function updateDashboard() {
+        const idx = document.getElementById('citySelect').value;
+        currentState.cityIndex = idx;
+        const city = rawCityData[idx]; // [En, Jp, CoolDB, HeatWB, HeatRH]
+        
+        currentState.indoorCool = parseFloat(document.getElementById('inCool').value) || 19;
+        currentState.indoorHeat = parseFloat(document.getElementById('inHeat').value) || 20;
+
+        // Display City Conditions
+        const infoDiv = document.getElementById('cityInfo');
+        infoDiv.innerHTML = `
+            <div><b>${city[0]} (${city[1]})</b></div>
+            <div style="margin-top:5px;">Cooling Outdoor: <b>${city[2]}°C</b> (DB)</div>
+            <div>Heating Outdoor: <b>${city[3]}°C</b> (WB) / RH: <b>${city[4]}%</b></div>
+        `;
+
+        const useHighHumid = city[4] >= 65;
+
+        // Calculate for all 4 graphs
+        const results = [];
+        
+        // Graph 5-22 (Cool/Out)
+        let g = graphs[0];
+        let xVal = city[2];
+        let lines = g.lines.filter(l => l.type === currentState.acType);
+        lines.forEach(l => {
+            let y = interp(l.data, xVal);
+            results.push({ id: g.id, label: l.name, x: xVal, y: y, graphName: g.labelShort });
+        });
+
+        // Graph 5-23 (Heat/Out)
+        g = graphs[1];
+        xVal = city[3];
+        lines = g.lines.filter(l => l.type === currentState.acType);
+        if(currentState.acType === 'EHP') {
+            lines = lines.filter(l => {
+                if(l.mode === 'Input') return true;
+                if(useHighHumid && l.mode === 'CapHi') return true;
+                if(!useHighHumid && l.mode === 'CapLo') return true;
+                return false;
+            });
+        }
+        lines.forEach(l => {
+            let y = interp(l.data, xVal);
+            results.push({ id: g.id, label: l.name, x: xVal, y: y, graphName: g.labelShort });
+        });
+
+        // Graph 5-24 (Cool/In)
+        g = graphs[2];
+        xVal = currentState.indoorCool;
+        lines = g.lines.filter(l => l.type === currentState.acType);
+        lines.forEach(l => {
+            let y = interp(l.data, xVal);
+            results.push({ id: g.id, label: l.name, x: xVal, y: y, graphName: g.labelShort });
+        });
+
+        // Graph 5-25 (Heat/In)
+        g = graphs[3];
+        xVal = currentState.indoorHeat;
+        lines = g.lines.filter(l => l.type === currentState.acType);
+        lines.forEach(l => {
+            let y = interp(l.data, xVal);
+            results.push({ id: g.id, label: l.name, x: xVal, y: y, graphName: g.labelShort });
+        });
+
+        currentState.calculatedValues = results;
+
+        // Render Summary Grid (New Design)
+        renderSummaryGrid(results, useHighHumid);
+        
+        if(currentGraphId !== 'main') {
+            renderGraphTab(currentGraphId);
+        }
+    }
+
+    function renderSummaryGrid(results, useHighHumid) {
+        const grid = document.getElementById('summaryGrid');
+        grid.innerHTML = '';
+
+        // Group results by graphName
+        const grouped = {};
+        results.forEach(r => {
+            if(!grouped[r.graphName]) grouped[r.graphName] = [];
+            grouped[r.graphName].push(r);
+        });
+
+        // We know the order: 5-22, 5-23, 5-24, 5-25
+        const orderIds = ["5-22", "5-23", "5-24", "5-25"];
+
+        orderIds.forEach(gid => {
+            const gDef = graphs.find(g => g.id === gid);
+            const items = grouped[gDef.labelShort];
+            if (!items) return;
+
+            // Prepare display values
+            // Graph Label (Dual Lang)
+            const title = gDef.labelShort;
+            
+            // Condition Value
+            let condVal = `${items[0].x.toFixed(1)}°C`;
+            if (gid === "5-23" && currentState.acType === 'EHP') {
+                condVal += ` <span style="font-size:0.8em; font-weight:normal">(RH${useHighHumid?'>65%':'<65%'})</span>`;
+            }
+
+            // Result Value (The Capacity Ratio)
+            // We usually want to show the "Capacity" line primarily, or map all.
+            // For the big box, let's show Capacity. 
+            const capItem = items.find(i => i.label.includes('Capacity') || i.label.includes('能力'));
+            const resultVal = capItem ? capItem.y.toFixed(1) + '%' : '--';
+
+            // Box Color
+            const boxColor = currentState.acType === 'GHP' ? 'var(--ghp)' : 'var(--ehp)';
+
+            const div = document.createElement('div');
+            div.className = 'summary-box';
+            div.innerHTML = `
+                <div class="sum-title">${title}</div>
+                <div class="sum-cond-label">Condition:</div>
+                <div class="sum-cond-val">${condVal}</div>
+                <div class="sum-result" style="background:${boxColor}">
+                    Efficiency: ${resultVal}
+                </div>
+            `;
+            grid.appendChild(div);
+        });
+    }
+
+    // --- 5. UI: Tab Switching & Graph Rendering ---
+    function switchTab(id) {
+        currentGraphId = id;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+        
+        if(id === 'main') {
+            document.getElementById('tab-main').classList.add('active');
+        } else {
+            document.getElementById('tab-graph').classList.add('active');
+            renderGraphTab(id);
+        }
+    }
+
+    function renderGraphTab(id) {
+        const gDef = graphs.find(g => g.id === id);
+        if(!gDef) return;
+
+        // UPDATE HEADERS & TEXT
+        document.getElementById('graphHeader').innerHTML = gDef.header;
+        document.getElementById('graphRemarks').innerText = gDef.remarks;
+
+        const city = rawCityData[currentState.cityIndex];
+        
+        let displayLines = [];
+        if(id === '5-23' && currentState.acType === 'EHP') {
+            displayLines = gDef.lines.filter(l => l.type === 'EHP');
+        } else {
+            displayLines = gDef.lines.filter(l => l.type === currentState.acType);
+        }
+
+        // Determine Current Point (X)
+        let currentX = 0;
+        if(id === '5-22') currentX = city[2];
+        else if(id === '5-23') currentX = city[3];
+        else if(id === '5-24') currentX = currentState.indoorCool;
+        else if(id === '5-25') currentX = currentState.indoorHeat;
+
+        // Setup Slider
+        const slider = document.getElementById('tempSlider');
+        slider.min = gDef.xRange[0];
+        slider.max = gDef.xRange[1];
+        slider.value = currentX;
+        
+        document.getElementById('axisLabel').innerHTML = gDef.xLabel.split('<br>')[0];
+        document.getElementById('tempDisplay').innerText = parseFloat(currentX).toFixed(1) + " °C";
+
+        // Generate Datasets
+        const datasets = displayLines.map(l => ({
+            label: l.name,
+            data: l.data,
+            borderColor: l.color,
+            borderDash: l.dash || [],
+            borderWidth: 2.5,
+            pointRadius: 0,
+            tension: 0.1,
+            order: 2
+        }));
+
+        // Red Dot Logic
+        const useHighHumid = city[4] >= 65;
+        const pointData = [];
+        displayLines.forEach(l => {
+            if(id === '5-23' && currentState.acType === 'EHP') {
+                if(l.mode === 'CapHi' && !useHighHumid) return;
+                if(l.mode === 'CapLo' && useHighHumid) return;
+            }
+            pointData.push({ x: currentX, y: interp(l.data, currentX) });
+        });
+
+        datasets.push({
+            label: 'Current Point / 現在点',
+            data: pointData,
+            backgroundColor: '#e74c3c',
+            borderColor: '#e74c3c',
+            pointRadius: 6,
+            pointHoverRadius: 8,
+            showLine: false,
+            order: 1
+        });
+
+        if(chartInstance) chartInstance.destroy();
+        const ctx = document.getElementById('chartCanvas').getContext('2d');
+        
+        const xTitle = gDef.xLabel.replace('<br>', ' ');
+        const yTitle = gDef.yLabel.replace('<br>', ' ');
+
+        chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: { datasets: datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { 
+                        type: 'linear', 
+                        min: gDef.xRange[0], 
+                        max: gDef.xRange[1], 
+                        title: {display:true, text: xTitle.split(' '), font:{size:11}}
+                    },
+                    y: { 
+                        title: { display: true, text: yTitle.split(' '), font:{size:11} } 
+                    }
+                },
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, font: {size: 10} } },
+                    title: { display: true, text: gDef.title, font: {size: 16} }
+                }
+            }
+        });
+
+        updateList(displayLines, currentX);
+    }
+
+    function manualSliderChange() {
+        const val = parseFloat(document.getElementById('tempSlider').value);
+        document.getElementById('tempDisplay').innerText = val.toFixed(1) + " °C";
+        
+        if(chartInstance) {
+            const datasets = chartInstance.data.datasets;
+            const dotSet = datasets[datasets.length-1];
+            const lines = datasets.slice(0, datasets.length-1);
+            
+            const city = rawCityData[currentState.cityIndex];
+            const useHighHumid = city[4] >= 65;
+            const currentId = currentGraphId;
+
+            const finalDots = [];
+            lines.forEach(l => {
+                let skip = false;
+                if(currentId === '5-23' && currentState.acType === 'EHP') {
+                    if(l.label.includes('80%') && !useHighHumid) skip = true;
+                    if(l.label.includes('50%') && useHighHumid) skip = true;
+                }
+                if(!skip) finalDots.push({ x: val, y: interp(l.data, val) });
+            });
+             
+            dotSet.data = finalDots;
+            chartInstance.update();
+        }
+        
+        const validSets = chartInstance.data.datasets.filter(d => d.label !== 'Current Point / 現在点');
+        updateListFromDatasets(validSets, val);
+    }
+
+    function updateList(lines, x) {
+        const list = document.getElementById('outputList');
+        list.innerHTML = "";
+        lines.forEach(l => {
+            const y = interp(l.data, x);
+            const row = document.createElement('div');
+            row.className = "data-row";
+            row.innerHTML = `
+                <div style="display:flex; align-items:center; max-width:80%;">
+                    <span class="dot" style="background:${l.color}"></span>
+                    <span>${l.name}</span>
+                </div>
+                <div class="val-cell">${y.toFixed(1)}%</div>
+            `;
+            list.appendChild(row);
+        });
+    }
+
+    function updateListFromDatasets(datasets, x) {
+         const list = document.getElementById('outputList');
+        list.innerHTML = "";
+        datasets.forEach(d => {
+            const y = interp(d.data, x);
+            const row = document.createElement('div');
+            row.className = "data-row";
+            row.innerHTML = `
+                <div style="display:flex; align-items:center; max-width:80%;">
+                    <span class="dot" style="background:${d.borderColor}"></span>
+                    <span>${d.label}</span>
+                </div>
+                <div class="val-cell">${y.toFixed(1)}%</div>
+            `;
+            list.appendChild(row);
+        });
+    }
+
+    function interp(data, x) {
+        if (x <= data[0].x) return data[0].y;
+        if (x >= data[data.length-1].x) return data[data.length-1].y;
+        for (let i = 0; i < data.length - 1; i++) {
+            if (x >= data[i].x && x <= data[i+1].x) {
+                const ratio = (x - data[i].x) / (data[i+1].x - data[i].x);
+                return data[i].y + ratio * (data[i+1].y - data[i].y);
+            }
+        }
+        return 0;
+    }
+
+    window.onload = init;
+
+</script>
+</body>
+</html>

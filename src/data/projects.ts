@@ -31,6 +31,11 @@ export const projects: Project[] = [
         description: 'Product & Innovation Consultant driving digital transformation. Creating automated workflows and bridging the gap between engineering teams and business goals.',
         orbitRadius: 15,
         orbitSpeed: 0.5,
+        secondaryLinks: [
+            { label: 'AC Pipe Length Calculator', url: '/apps/refil/AC_Pipe_length.html' },
+            { label: 'Outdoor Condition Optimizer', url: '/apps/refil/Outdoor_condition.html' },
+            { label: 'Ventilation Calculator', url: '/apps/refil/vent_calculator.html' },
+        ],
     },
     {
         id: 'phd-research',

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adamの冷媒配管長</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #e74c3c;
+            --dim-color: #0984e3;
+            --bg: #f4f7f6;
+            --panel: #ffffff;
+            --text: #333;
+        }
+        body {
+            font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+            user-select: none;
+        }
+
+        /* --- TABS --- */
+        .tabs { display: flex; gap: 15px; margin-bottom: 20px; }
+        .tab-btn {
+            padding: 12px 25px; border: none; background: #e0e0e0;
+            cursor: pointer; font-size: 1rem; border-radius: 30px;
+            font-weight: bold; transition: all 0.2s; color: #555;
+        }
+        .tab-btn.active {
+            background: var(--primary); color: white;
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
+        }
+
+        /* --- CARD --- */
+        .card {
+            background: var(--panel); padding: 30px; border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column; align-items: center;
+            width: fit-content;
+        }
+        .header-area { text-align: center; margin-bottom: 25px; }
+        h2 { margin: 0; color: var(--primary); font-size: 1.4rem; }
+        .sub-jp { font-size: 0.9rem; color: #7f8c8d; margin-top: 5px; }
+
+        /* --- GRAPH LAYOUT --- */
+        .graph-container {
+            display: flex; flex-direction: row; align-items: center; gap: 15px;
+        }
+        
+        /* Y Axis */
+        .y-axis-wrapper {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; height: 450px; width: 60px;
+        }
+        .y-label {
+            writing-mode: vertical-rl; 
+            text-orientation: mixed;
+            font-size: 0.9rem; color: #555; margin-bottom: 15px;
+            font-weight: bold; white-space: nowrap;
+            letter-spacing: 2px;
+        }
+        input[type=range][orient=vertical] {
+            writing-mode: bt-lr; -webkit-appearance: slider-vertical;
+            width: 8px; height: 100%;
+        }
+
+        /* Center Content */
+        .center-content { display: flex; flex-direction: column; gap: 10px; }
+        .canvas-box {
+            position: relative; width: 700px; height: 450px;
+            background: #fff; border: 1px solid #ddd; flex-shrink: 0; 
+            cursor: crosshair;
+        }
+        canvas { position: absolute; top: 0; left: 0; }
+        
+        /* X Axis */
+        .x-axis-wrapper { width: 700px; text-align: center; padding-top: 5px; }
+        input[type=range].h-slider { width: 100%; cursor: pointer; }
+        .x-label { font-size: 0.85rem; color: #555; margin-top: 5px; font-weight: bold; }
+
+        /* --- FOOTER --- */
+        .footer-panel {
+            margin-top: 25px; width: 100%; background: #f1f8ff;
+            border: 2px solid #dbeafe; border-radius: 12px;
+            padding: 20px; display: flex; justify-content: space-around;
+            align-items: center;
+        }
+        .result-item { text-align: center; }
+        .res-label { display: block; font-size: 0.8rem; color: #64748b; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .res-val { font-size: 1.3rem; font-weight: bold; color: var(--primary); }
+        .res-val.highlight { font-size: 2.2rem; color: var(--accent); }
+
+    </style>
+</head>
+<body>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="setMode('cooling', this)">❄️ Cooling (冷房)</button>
+        <button class="tab-btn" onclick="setMode('heating', this)">☀️ Heating (暖房)</button>
+    </div>
+
+    <div class="card">
+        <div class="header-area">
+            <h2 id="titleEn">Fig 5-26(a) Cooling Piping Correction</h2>
+            <div class="sub-jp" id="titleJp">冷媒配管の長さ及び高低差 (冷房)</div>
+        </div>
+
+        <div class="graph-container">
+            <div class="y-axis-wrapper">
+                <div class="y-label">Height Diff (m) 高低差</div>
+                <input type="range" orient="vertical" id="inputY" min="-40" max="50" value="0" step="1">
+            </div>
+
+            <div class="center-content">
+                <div class="canvas-box" id="canvasBox">
+                    <canvas id="bgLayer" width="700" height="450"></canvas>
+                    <canvas id="uiLayer" width="700" height="450"></canvas>
+                </div>
+                <div class="x-axis-wrapper">
+                    <input type="range" class="h-slider" id="inputX" min="0" max="130" value="40" step="1">
+                    <div class="x-label">Equivalent Pipe Length (m) 相当配管長 (片道)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-panel">
+            <div class="result-item">
+                <span class="res-label">Length (長さ)</span>
+                <span class="res-val" id="dispX">40 m</span>
+            </div>
+            <div class="result-item">
+                <span class="res-label">Height (高低差)</span>
+                <span class="res-val" id="dispY">0 m</span>
+            </div>
+            <div class="result-item">
+                <span class="res-label">Correction (補正率)</span>
+                <span class="res-val highlight" id="dispCap">--%</span>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // --- APP STATE ---
+    let mode = 'cooling';
+    let isDragging = false;
+
+    // --- DOM REFERENCES ---
+    const canvasBox = document.getElementById('canvasBox');
+    const ctxBG = document.getElementById('bgLayer').getContext('2d');
+    const ctxUI = document.getElementById('uiLayer').getContext('2d');
+    const sliderX = document.getElementById('inputX');
+    const sliderY = document.getElementById('inputY');
+    const dispX = document.getElementById('dispX');
+    const dispY = document.getElementById('dispY');
+    const dispCap = document.getElementById('dispCap');
+    const titleEn = document.getElementById('titleEn');
+    const titleJp = document.getElementById('titleJp');
+
+    // --- CANVAS CONFIG ---
+    const m = { t: 30, r: 30, b: 30, l: 40 };
+    const w = 700 - m.l - m.r;
+    const h = 450 - m.t - m.b;
+
+    // --- DATA ---
+    const coolData = {
+        limits: [
+            { p1: {x:0, y:0}, p2: {x:50.1, y:49.9} }, 
+            { p1: {x:0, y:0}, p2: {x:38.7, y:-40.1} } 
+        ],
+        lines: [
+            { val: 100, p1: {x:6.9, y:6.7},   p2: {x:7.3, y:-7.8} },
+            { val: 95,  p1: {x:18.5, y:18.3}, p2: {x:21.2, y:-22.6} },
+            { val: 90,  p1: {x:32.7, y:32.8}, p2: {x:41.4, y:-40.1} },
+            { val: 85,  p1: {x:50, y:50},     p2: {x:56.9, y:-39.9} },
+            { val: 80,  p1: {x:65.5, y:50.3}, p2: {x:73.8, y:-39.9} },
+            { val: 75,  p1: {x:82.5, y:49.9}, p2: {x:89.7, y:-39.7} },
+            { val: 70,  p1: {x:98.3, y:50.3}, p2: {x:106.6, y:-40.1} },
+            { val: 65,  p1: {x:116.7, y:50.1},p2: {x:123, y:-40} }
+        ]
+    };
+
+    const heatData = {
+        limits: [
+            { p1: {x:0, y:0}, p2: {x:50.1, y:50.3} },
+            { p1: {x:0, y:0}, p2: {x:38.3, y:-39.9} }
+        ],
+        lines: [
+            { val: 100, p1: {x:6.7, y:6.7},   p2: {x:6.9, y:-7.1} },
+            { val: 98,  p1: {x:32.5, y:32.8}, p2: {x:32.5, y:-33.7} },
+            { val: 96,  p1: {x:57.1, y:50.3}, p2: {x:57.3, y:-40.1} },
+            { val: 94,  p1: {x:82, y:50},     p2: {x:82, y:-40} },
+            { val: 92,  p1: {x:108, y:50},    p2: {x:108, y:-40} }
+        ]
+    };
+
+    // --- MATH ---
+    function toPx(x, y) {
+        const px = m.l + (x / 130) * w;
+        const normY = (y - (-40)) / 90;
+        const py = (m.t + h) - (normY * h);
+        return { x: px, y: py };
+    }
+
+    function fromPx(px, py) {
+        if(px < m.l) px = m.l;
+        if(px > m.l + w) px = m.l + w;
+        if(py < m.t) py = m.t;
+        if(py > m.t + h) py = m.t + h;
+
+        const x = ((px - m.l) / w) * 130;
+        const normY = (m.t + h - py) / h;
+        const y = (normY * 90) + (-40);
+        return { x: Math.round(x), y: Math.round(y) };
+    }
+
+    // --- CUSTOM ICONS ---
+    function drawIndoorUnit(ctx, p) {
+        ctx.save();
+        ctx.translate(p.x - 20, p.y - 10);
+        // Box
+        ctx.fillStyle = "#ecf0f1";
+        ctx.strokeStyle = "#2c3e50";
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.roundRect(0, 0, 30, 14, 2); ctx.fill(); ctx.stroke();
+        // Louver
+        ctx.beginPath(); ctx.moveTo(2, 10); ctx.lineTo(28, 10); ctx.stroke();
+        // Text
+        ctx.fillStyle = "#2c3e50"; ctx.font = "bold 9px Arial"; ctx.fillText("IN", 2, -3);
+        ctx.restore();
+    }
+
+    function drawOutdoorUnit(ctx, p) {
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        // Shadow
+        ctx.fillStyle = "rgba(0,0,0,0.2)";
+        ctx.beginPath(); ctx.ellipse(15, 20, 15, 4, 0, 0, Math.PI*2); ctx.fill();
+        // Body
+        ctx.fillStyle = "#e74c3c"; ctx.strokeStyle = "#c0392b"; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.rect(0, -15, 30, 30); ctx.fill(); ctx.stroke();
+        // Fan
+        ctx.strokeStyle = "white"; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(15, 0, 10, 0, Math.PI*2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(15, -10); ctx.lineTo(15, 10); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(5, 0); ctx.lineTo(25, 0); ctx.stroke();
+        ctx.restore();
+    }
+
+    // --- DRAWING ---
+    function drawGrid() {
+        ctxBG.clearRect(0,0,700,450);
+        ctxBG.beginPath();
+        ctxBG.strokeStyle = "#e0e0e0"; 
+        ctxBG.lineWidth = 1;
+        ctxBG.font = "10px Arial";
+        ctxBG.fillStyle = "#888";
+        ctxBG.textAlign = "center";
+
+        // X Grid
+        for(let x=0; x<=130; x+=10) {
+            let p = toPx(x, 0);
+            ctxBG.moveTo(p.x, m.t); ctxBG.lineTo(p.x, m.t+h);
+            if(x>0 && x%20===0) ctxBG.fillText(x, p.x, m.t+h+15);
+        }
+        // Y Grid
+        ctxBG.textAlign = "right";
+        for(let y=-40; y<=50; y+=10) {
+            let p = toPx(0, y);
+            ctxBG.moveTo(m.l, p.y); ctxBG.lineTo(m.l+w, p.y);
+            ctxBG.fillText(y, m.l-6, p.y+4);
+        }
+        ctxBG.stroke();
+        
+        // Zero Axis
+        ctxBG.strokeStyle = "#999"; ctxBG.lineWidth = 1.5;
+        let p0 = toPx(0,0);
+        ctxBG.beginPath(); ctxBG.moveTo(m.l, p0.y); ctxBG.lineTo(m.l+w, p0.y); ctxBG.stroke();
+    }
+
+    function drawGraph() {
+        drawGrid();
+        const cur = mode === 'cooling' ? coolData : heatData;
+
+        // 1. Draw LIMITS (Cone) - Slightly darker gray
+        ctxBG.beginPath(); 
+        ctxBG.strokeStyle = "#95a5a6"; ctxBG.lineWidth = 2;
+        let t1 = toPx(cur.limits[0].p1.x, cur.limits[0].p1.y);
+        let t2 = toPx(cur.limits[0].p2.x, cur.limits[0].p2.y);
+        ctxBG.moveTo(t1.x, t1.y); ctxBG.lineTo(t2.x, t2.y);
+        let b1 = toPx(cur.limits[1].p1.x, cur.limits[1].p1.y);
+        let b2 = toPx(cur.limits[1].p2.x, cur.limits[1].p2.y);
+        ctxBG.moveTo(b1.x, b1.y); ctxBG.lineTo(b2.x, b2.y);
+        ctxBG.stroke();
+
+        // 2. Draw EFFICIENCY Lines - LIGHTER GRAY
+        ctxBG.strokeStyle = "#bdc3c7"; // Light gray
+        ctxBG.fillStyle = "#7f8c8d";   // Slate gray text
+        
+        cur.lines.forEach(l => {
+            let s = toPx(l.p1.x, l.p1.y);
+            let e = toPx(l.p2.x, l.p2.y);
+            
+            ctxBG.beginPath();
+            ctxBG.moveTo(s.x, s.y); ctxBG.lineTo(e.x, e.y);
+            ctxBG.stroke();
+            
+            // Label
+            ctxBG.fillText(l.val, s.x, s.y - 5);
+        });
+    }
+
+    // --- REFACTORED DIMENSIONS ---
+    function drawDimensions(ctx, origin, target, xVal, yVal) {
+        // STYLE CONFIG
+        const dimColor = "#0984e3"; // Technical Blue
+        const offset = 20; 
+
+        ctx.font = "bold 14px Segoe UI";
+        ctx.strokeStyle = dimColor;
+        ctx.fillStyle = dimColor;
+        ctx.lineWidth = 2;
+
+        let zeroY = toPx(0,0).y;
+        
+        // 1. HORIZONTAL MEASUREMENT
+        let dimY = zeroY + offset; 
+        
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(origin.x, zeroY); ctx.lineTo(origin.x, dimY + 5);
+        ctx.moveTo(target.x, zeroY); ctx.lineTo(target.x, dimY + 5);
+        ctx.stroke();
+
+        ctx.lineWidth = 2;
+        ctx.beginPath(); 
+        ctx.moveTo(origin.x, dimY); 
+        ctx.lineTo(target.x, dimY); 
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(target.x, dimY);
+        ctx.lineTo(target.x - 8, dimY - 4);
+        ctx.lineTo(target.x - 8, dimY + 4);
+        ctx.fill();
+
+        ctx.textAlign = "center"; 
+        let txt = xVal + "m";
+        let tw = ctx.measureText(txt).width;
+        ctx.save();
+        ctx.fillStyle = "rgba(255,255,255,0.8)";
+        ctx.fillRect(((origin.x+target.x)/2) - tw/2 - 4, dimY - 14, tw+8, 18);
+        ctx.restore();
+        ctx.fillText(txt, (origin.x + target.x)/2, dimY);
+
+
+        // 2. VERTICAL HEIGHT MEASUREMENT
+        // Draw the vertical line
+        ctx.beginPath(); 
+        ctx.setLineDash([4, 4]); 
+        ctx.moveTo(target.x, zeroY); 
+        ctx.lineTo(target.x, target.y); 
+        ctx.stroke(); 
+        ctx.setLineDash([]);
+        
+        // Height Label - CHANGED TO LEFT SIDE (左側)
+        ctx.textAlign = "right"; // Anchor text from the right side
+        ctx.save();
+        let midY = (zeroY + target.y) / 2;
+        let hText = Math.abs(yVal) + "m";
+        let textWidth = ctx.measureText(hText).width;
+        
+        // Background box for label (Shifted Left)
+        // x = target.x - padding - textWidth - padding
+        ctx.fillStyle = "rgba(255,255,255,0.8)";
+        ctx.fillRect(target.x - 15 - textWidth, midY - 10, textWidth + 10, 20);
+        
+        // Text (Shifted Left)
+        ctx.fillStyle = dimColor; 
+        ctx.fillText(hText, target.x - 10, midY + 5); // 10px to the left of the line
+        ctx.restore();
+    }
+
+    // --- LOGIC ---
+    function calculate(x, y) {
+        const cur = mode === 'cooling' ? coolData : heatData;
+        
+        // Limits
+        let topLim = cur.limits[0];
+        let topM = (topLim.p2.y - topLim.p1.y) / (topLim.p2.x - topLim.p1.x);
+        if(y > 0 && x < y / topM) return "Limit Area";
+
+        let botLim = cur.limits[1];
+        let botM = (botLim.p2.y - botLim.p1.y) / (botLim.p2.x - botLim.p1.x);
+        if(y < 0 && x < y / botM) return "Limit Area";
+
+        // Interpolation
+        let xTargets = [];
+        cur.lines.forEach(l => {
+            let dy = l.p2.y - l.p1.y;
+            let dx = l.p2.x - l.p1.x;
+            if(Math.abs(dy) < 0.001) return;
+            let m_slope = dy / dx;
+            let xAtY = l.p1.x + (y - l.p1.y) / m_slope;
+            xTargets.push({ val: l.val, x: xAtY });
+        });
+        xTargets.sort((a,b) => a.x - b.x);
+
+        if(x <= xTargets[0].x) return 100;
+        let last = xTargets[xTargets.length-1];
+        if(x >= last.x) return "< " + last.val;
+
+        for(let i=0; i<xTargets.length-1; i++) {
+            let t1 = xTargets[i];
+            let t2 = xTargets[i+1];
+            if(x >= t1.x && x <= t2.x) {
+                let ratio = (x - t1.x) / (t2.x - t1.x);
+                return t1.val - ratio * (t1.val - t2.val);
+            }
+        }
+        return "--";
+    }
+
+    function update() {
+        const x = parseInt(sliderX.value);
+        const y = parseInt(sliderY.value);
+
+        dispX.innerText = x + " m";
+        dispY.innerText = y + " m";
+
+        const val = calculate(x, y);
+        
+        if(typeof val === 'string') {
+             dispCap.innerText = val;
+             dispCap.style.color = "#ccc";
+        } else {
+             dispCap.innerText = val.toFixed(1) + "%";
+             dispCap.style.color = "#e74c3c";
+        }
+
+        ctxUI.clearRect(0,0,700,450);
+        let p = toPx(x, y);
+        let origin = toPx(0,0);
+
+        drawIndoorUnit(ctxUI, origin);
+        drawDimensions(ctxUI, origin, p, x, y);
+        drawOutdoorUnit(ctxUI, p);
+    }
+
+    function setMode(m, btn) {
+        mode = m;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if(mode === 'cooling') {
+            titleEn.innerText = "Fig 5-26(a) Cooling Piping Correction";
+            titleJp.innerText = "冷媒配管の長さ及び高低差 (冷房)";
+        } else {
+            titleEn.innerText = "Fig 5-26(b) Heating Piping Correction";
+            titleJp.innerText = "冷媒配管の長さ及び高低差 (暖房)";
+        }
+        drawGraph();
+        update();
+    }
+
+    // --- MOUSE HANDLERS ---
+    canvasBox.addEventListener('mousedown', (e) => {
+        const rect = canvasBox.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        let p = toPx(parseInt(sliderX.value), parseInt(sliderY.value));
+        if(Math.sqrt(Math.pow(mouseX - p.x, 2) + Math.pow(mouseY - p.y, 2)) < 40) {
+            isDragging = true;
+            canvasBox.style.cursor = "grabbing";
+        }
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+        canvasBox.style.cursor = "crosshair";
+    });
+
+    canvasBox.addEventListener('mousemove', (e) => {
+        if(!isDragging) return;
+        const rect = canvasBox.getBoundingClientRect();
+        const units = fromPx(e.clientX - rect.left, e.clientY - rect.top);
+        sliderX.value = units.x;
+        sliderY.value = units.y;
+        update();
+    });
+
+    drawGraph();
+    update();
+    sliderX.addEventListener('input', update);
+    sliderY.addEventListener('input', update);
+
+</script>
+</body>
+</html>
