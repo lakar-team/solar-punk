@@ -1,7 +1,7 @@
 'use client';
 
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Sphere, useTexture } from '@react-three/drei';
+import { Sphere } from '@react-three/drei';
 import { useRef, Suspense } from 'react';
 import * as THREE from 'three';
 import { Project } from '@/data/projects';
@@ -13,11 +13,6 @@ interface PlanetMeshProps {
 function PlanetMesh({ project }: PlanetMeshProps) {
     const meshRef = useRef<THREE.Mesh>(null);
 
-    // Load textures
-    const mainTexture = project.texturePath ? useTexture(project.texturePath) : null;
-    const projectImage = project.image ? useTexture(project.image) : null;
-    const activeTexture = projectImage || mainTexture;
-
     useFrame(() => {
         if (meshRef.current) {
             meshRef.current.rotation.y += 0.005;
@@ -25,6 +20,7 @@ function PlanetMesh({ project }: PlanetMeshProps) {
     });
 
     const getColor = (textureType: string) => {
+        if (!textureType) return '#cbd5e1';
         if (textureType.includes('tech')) return '#3b82f6';
         if (textureType.includes('scaffold')) return '#64748b';
         if (textureType.includes('ice')) return '#a5f3fc';
@@ -36,6 +32,7 @@ function PlanetMesh({ project }: PlanetMeshProps) {
     };
 
     const baseEmissive = project.emissiveColor || '#22d3ee';
+    const baseColor = getColor(project.texture || '');
 
     return (
         <>
@@ -45,8 +42,7 @@ function PlanetMesh({ project }: PlanetMeshProps) {
 
             <Sphere args={[1.8, 32, 32]} ref={meshRef}>
                 <meshStandardMaterial
-                    map={activeTexture}
-                    color={activeTexture ? '#ffffff' : getColor(project.texture)}
+                    color={baseColor}
                     roughness={0.4}
                     metalness={0.6}
                     emissive={baseEmissive}
@@ -62,8 +58,10 @@ interface PlanetPreviewProps {
 }
 
 export default function PlanetPreview({ project }: PlanetPreviewProps) {
+    if (!project) return null;
+
     return (
-        <div className="w-full h-48 md:h-56 rounded-xl overflow-hidden bg-gradient-to-b from-black/50 to-transparent border border-white/10 mb-6">
+        <div className="w-full h-40 md:h-48 rounded-xl overflow-hidden bg-gradient-to-b from-black/50 to-transparent border border-white/10 mb-4">
             <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
                 <Suspense fallback={null}>
                     <PlanetMesh project={project} />

@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Sphere, Html, useTexture } from '@react-three/drei';
+import { Sphere, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { Project } from '@/data/projects';
 import { useStore } from '@/store/useStore';
@@ -50,6 +50,7 @@ export default function Planet({ project }: PlanetProps) {
 
     const getColor = (textureType: string) => {
         // Temp placeholder colors until textures are loaded
+        if (!textureType) return '#cbd5e1';
         if (textureType.includes('tech')) return '#3b82f6'; // Blue
         if (textureType.includes('scaffold')) return '#64748b'; // Grey
         if (textureType.includes('ice')) return '#a5f3fc'; // Cyan
@@ -62,12 +63,8 @@ export default function Planet({ project }: PlanetProps) {
 
     const isWIP = project.status === 'in-progress';
     const isFocused = focusedPlanetId === project.id;
-    const mainTexture = project.texturePath ? useTexture(project.texturePath) : null;
-    const projectImage = project.image ? useTexture(project.image) : null;
-
-    // Use projectImage if available, else abstract texture, else fallback color
-    const activeTexture = projectImage || mainTexture;
     const baseEmissive = project.emissiveColor || '#22d3ee';
+    const baseColor = getColor(project.texture || '');
 
     return (
         <group ref={groupRef}>
@@ -80,12 +77,11 @@ export default function Planet({ project }: PlanetProps) {
                 onClick={handleClick}
             >
                 <meshStandardMaterial
-                    map={activeTexture}
-                    color={activeTexture ? '#ffffff' : getColor(project.texture)}
+                    color={baseColor}
                     roughness={0.4}
                     metalness={0.6}
                     emissive={baseEmissive}
-                    emissiveIntensity={isFocused ? 3.5 : hovered ? 2.5 : 1.5} // Extra glow when focused
+                    emissiveIntensity={isFocused ? 3.5 : hovered ? 2.5 : 1.5}
                 />
             </Sphere>
 
@@ -96,9 +92,6 @@ export default function Planet({ project }: PlanetProps) {
                 distance={project.size * 3}
                 decay={1.2}
             />
-
-            {/* Orbit Ring (Visual aid) */}
-            {/* Note: This would be better as a shared geometry in the parent system to save draw calls, but putting here for simplicity first */}
 
             {/* Label */}
             <Html distanceFactor={15}>
