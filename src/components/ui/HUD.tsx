@@ -298,7 +298,7 @@ export default function HUD() {
                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="w-[350px] h-[500px] bg-black/80 backdrop-blur-xl border border-amber-500/30 rounded-lg overflow-hidden shadow-2xl flex flex-col"
+                            className="w-[400px] h-[650px] bg-black/80 backdrop-blur-xl border border-amber-500/30 rounded-lg overflow-hidden shadow-2xl flex flex-col"
                         >
                             <div className="flex items-center justify-between p-3 border-b border-amber-500/20 bg-amber-500/5">
                                 <span className="text-xs font-bold text-amber-400 uppercase tracking-widest flex items-center gap-2">
