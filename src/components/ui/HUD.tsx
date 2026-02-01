@@ -13,6 +13,7 @@ const PlanetPreview = dynamic(() => import('./PlanetPreview'), { ssr: false });
 export default function HUD() {
     const { activePlanetId, setActivePlanet, setFocusedPlanet, focusedPlanetId } = useStore();
     const [showNav, setShowNav] = useState(false);
+    const [showGuide, setShowGuide] = useState(false);
 
     const activeProject = projects.find(p => p.id === activePlanetId);
     const isCVView = activePlanetId === 'cv-core';
@@ -288,6 +289,56 @@ export default function HUD() {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* AI Guide Toggle & Overlay */}
+            <div className="pointer-events-auto absolute bottom-8 right-8 z-40 flex flex-col items-end gap-4">
+                <AnimatePresence>
+                    {showGuide && (
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="w-[350px] h-[500px] bg-black/80 backdrop-blur-xl border border-amber-500/30 rounded-lg overflow-hidden shadow-2xl flex flex-col"
+                        >
+                            <div className="flex items-center justify-between p-3 border-b border-amber-500/20 bg-amber-500/5">
+                                <span className="text-xs font-bold text-amber-400 uppercase tracking-widest flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                                    Aibo Guide Interface
+                                </span>
+                                <a
+                                    href="https://project-aibo.vercel.app/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[10px] text-white/50 hover:text-white hover:underline mr-4"
+                                >
+                                    Open Externally
+                                </a>
+                            </div>
+                            <div className="flex-1 relative bg-black/50">
+                                <iframe
+                                    src="https://project-aibo.vercel.app/"
+                                    className="absolute inset-0 w-full h-full border-0"
+                                    title="Project Aibo Avatar"
+                                    allow="microphone; camera"
+                                />
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                <button
+                    onClick={() => setShowGuide(!showGuide)}
+                    className={`group flex items-center gap-3 px-5 py-3 rounded-full border backdrop-blur-md transition-all shadow-lg ${showGuide
+                        ? 'bg-amber-500/20 border-amber-500 text-amber-400'
+                        : 'bg-black/60 border-white/20 text-white hover:border-amber-500/50 hover:text-amber-400'
+                        }`}
+                >
+                    <span className="text-xs font-bold uppercase tracking-widest">
+                        {showGuide ? 'Close Guide' : 'Ask Aibo'}
+                    </span>
+                    <div className={`w-3 h-3 rounded-full border ${showGuide ? 'bg-amber-500 border-amber-500' : 'bg-transparent border-current group-hover:bg-amber-400 group-hover:border-amber-400'}`} />
+                </button>
+            </div>
         </div>
     );
 }
