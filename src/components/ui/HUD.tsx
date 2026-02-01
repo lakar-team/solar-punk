@@ -291,7 +291,7 @@ export default function HUD() {
             </AnimatePresence>
 
             {/* AI Guide Toggle & Overlay */}
-            <div className="pointer-events-auto absolute bottom-8 right-8 z-40 flex flex-col items-end gap-4">
+            <div className="pointer-events-auto absolute bottom-8 left-8 z-40 flex flex-col items-start gap-4">
                 <AnimatePresence>
                     {showGuide && (
                         <motion.div
