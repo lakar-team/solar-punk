@@ -40,7 +40,7 @@ export default function HUD() {
                         className="pointer-events-auto absolute right-0 top-0 bottom-0 w-full md:w-[600px] bg-black/80 backdrop-blur-md border-l border-amber-500/20 p-8 shadow-2xl flex flex-col overflow-y-auto"
                     >
                         <button
-                            onClick={() => setActivePlanet(null)}
+                            onClick={() => { setActivePlanet(null); setFocusedPlanet(null); }}
                             className="mb-6 self-start rounded-full border border-amber-500/30 px-4 py-1.5 text-xs uppercase tracking-widest hover:bg-amber-500/10 transition-colors text-amber-400"
                         >
                             ← Return to Orbit
@@ -123,7 +123,7 @@ export default function HUD() {
                         className="pointer-events-auto absolute right-0 top-0 bottom-0 w-full md:w-[480px] bg-black/60 backdrop-blur-md border-l border-white/10 p-8 shadow-2xl flex flex-col overflow-y-auto"
                     >
                         <button
-                            onClick={() => setActivePlanet(null)}
+                            onClick={() => { setActivePlanet(null); setFocusedPlanet(null); }}
                             className="mb-8 self-start rounded-full border border-white/20 px-4 py-1.5 text-xs uppercase tracking-widest hover:bg-white/10 transition-colors"
                         >
                             ← Return to Orbit
