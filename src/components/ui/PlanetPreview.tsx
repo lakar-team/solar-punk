@@ -27,8 +27,8 @@ function TexturedMaterial({
         <meshStandardMaterial
             map={texture}
             color={color}
-            roughness={0.4}
-            metalness={0.6}
+            roughness={0.7}
+            metalness={0.2}
             emissive={emissive}
             emissiveIntensity={emissiveIntensity}
         />
@@ -72,10 +72,10 @@ function PlanetMesh({ project }: PlanetMeshProps) {
                 <Suspense fallback={
                     <meshStandardMaterial
                         color={fallbackColor}
-                        roughness={0.4}
-                        metalness={0.6}
+                        roughness={0.7}
+                        metalness={0.2}
                         emissive={baseEmissive}
-                        emissiveIntensity={0.8}
+                        emissiveIntensity={0.2}
                     />
                 }>
                     {textureToLoad ? (
@@ -83,15 +83,15 @@ function PlanetMesh({ project }: PlanetMeshProps) {
                             texturePath={textureToLoad}
                             color="#ffffff"
                             emissive={baseEmissive}
-                            emissiveIntensity={0.8}
+                            emissiveIntensity={0.2}
                         />
                     ) : (
                         <meshStandardMaterial
                             color={fallbackColor}
-                            roughness={0.4}
-                            metalness={0.6}
+                            roughness={0.7}
+                            metalness={0.2}
                             emissive={baseEmissive}
-                            emissiveIntensity={0.8}
+                            emissiveIntensity={0.2}
                         />
                     )}
                 </Suspense>

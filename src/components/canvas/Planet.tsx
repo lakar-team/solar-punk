@@ -29,8 +29,8 @@ function TexturedMaterial({
         <meshStandardMaterial
             map={texture}
             color={color}
-            roughness={0.4}
-            metalness={0.6}
+            roughness={0.7}
+            metalness={0.2}
             emissive={emissive}
             emissiveIntensity={emissiveIntensity}
         />
@@ -108,10 +108,10 @@ export default function Planet({ project }: PlanetProps) {
                 <Suspense fallback={
                     <meshStandardMaterial
                         color={fallbackColor}
-                        roughness={0.4}
-                        metalness={0.6}
+                        roughness={0.7}
+                        metalness={0.2}
                         emissive={baseEmissive}
-                        emissiveIntensity={isFocused ? 3.5 : hovered ? 2.5 : 1.5}
+                        emissiveIntensity={isFocused ? 0.6 : hovered ? 0.4 : 0.2}
                     />
                 }>
                     {textureToLoad ? (
@@ -119,15 +119,15 @@ export default function Planet({ project }: PlanetProps) {
                             texturePath={textureToLoad}
                             color="#ffffff"
                             emissive={baseEmissive}
-                            emissiveIntensity={isFocused ? 3.5 : hovered ? 2.5 : 1.5}
+                            emissiveIntensity={isFocused ? 0.6 : hovered ? 0.4 : 0.2}
                         />
                     ) : (
                         <meshStandardMaterial
                             color={fallbackColor}
-                            roughness={0.4}
-                            metalness={0.6}
+                            roughness={0.7}
+                            metalness={0.2}
                             emissive={baseEmissive}
-                            emissiveIntensity={isFocused ? 3.5 : hovered ? 2.5 : 1.5}
+                            emissiveIntensity={isFocused ? 0.6 : hovered ? 0.4 : 0.2}
                         />
                     )}
                 </Suspense>
