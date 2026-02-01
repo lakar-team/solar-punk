@@ -316,7 +316,7 @@ export default function HUD() {
                             </div>
                             <div className="flex-1 relative bg-black/50">
                                 <iframe
-                                    src="https://project-aibo.vercel.app/"
+                                    src="https://project-aibo.vercel.app/?embed=true"
                                     className="absolute inset-0 w-full h-full border-0"
                                     title="Project Aibo Avatar"
                                     allow="microphone; camera"
