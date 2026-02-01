@@ -5,6 +5,10 @@ import { projects } from '@/data/projects';
 import { profile } from '@/data/profile';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
+
+// Dynamic import to avoid SSR issues with Three.js
+const PlanetPreview = dynamic(() => import('./PlanetPreview'), { ssr: false });
 
 export default function HUD() {
     const { activePlanetId, setActivePlanet, setFocusedPlanet, focusedPlanetId } = useStore();
@@ -17,13 +21,22 @@ export default function HUD() {
         <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-6 md:p-12">
             {/* Header / Logo Area */}
             <header className="flex justify-between items-start pointer-events-auto">
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tighter text-white/90 uppercase">ADAM M. RAMAN</h1>
-                    <p className="text-xs tracking-widest text-amber-500 uppercase">System Status: Nominal</p>
+                <div className="flex items-start gap-4">
+                    <div>
+                        <h1 className="text-xl md:text-2xl font-bold tracking-tighter text-white/90 uppercase">ADAM M. RAMAN</h1>
+                        <p className="text-xs tracking-widest text-amber-500 uppercase">System Status: Nominal</p>
+                    </div>
+                    {/* Navigate Button - in header to avoid collision */}
+                    <button
+                        onClick={() => setShowNav(!showNav)}
+                        className="px-3 py-1.5 md:px-4 md:py-2 bg-black/80 backdrop-blur-md border border-white/30 rounded-full text-xs uppercase tracking-widest text-white hover:text-amber-400 hover:border-amber-500/30 transition-all shadow-lg"
+                    >
+                        {showNav ? '✕ Close' : '☰ Navigate'}
+                    </button>
                 </div>
                 {/* Helper Hint */}
                 {!activePlanetId && (
-                    <div className="text-sm text-white/50 animate-pulse">
+                    <div className="text-sm text-white/50 animate-pulse hidden md:block">
                         Click the sun or a planet to explore
                     </div>
                 )}
@@ -124,17 +137,20 @@ export default function HUD() {
                     >
                         <button
                             onClick={() => { setActivePlanet(null); setFocusedPlanet(null); }}
-                            className="mb-8 self-start rounded-full border border-white/20 px-4 py-1.5 text-xs uppercase tracking-widest hover:bg-white/10 transition-colors"
+                            className="mb-4 self-start rounded-full border border-white/20 px-4 py-1.5 text-xs uppercase tracking-widest hover:bg-white/10 transition-colors"
                         >
                             ← Return to Orbit
                         </button>
+
+                        {/* 3D Planet Preview */}
+                        <PlanetPreview project={activeProject} />
 
                         <div className="flex-1 space-y-6">
                             <div>
                                 <span className={`inline-block px-2 py-1 bg-white/10 rounded text-[10px] uppercase tracking-wider mb-2 ${activeProject.status === 'in-progress' ? 'text-amber-400 border border-amber-500/30' : 'text-blue-300'}`}>
                                     {activeProject.type}{activeProject.status === 'in-progress' ? ' • WIP' : ''}
                                 </span>
-                                <h2 className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50 mb-2">
+                                <h2 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50 mb-2">
                                     {activeProject.name}
                                 </h2>
                             </div>
@@ -187,17 +203,7 @@ export default function HUD() {
                 )}
             </AnimatePresence>
 
-            {/* Navigation Panel Toggle - At top for easy access */}
-            <div className="pointer-events-auto fixed top-4 md:top-20 left-4 md:left-6 z-30">
-                <button
-                    onClick={() => setShowNav(!showNav)}
-                    className="px-4 py-2 bg-black/80 backdrop-blur-md border border-white/30 rounded-full text-xs uppercase tracking-widest text-white hover:text-amber-400 hover:border-amber-500/30 transition-all shadow-lg"
-                >
-                    {showNav ? '✕ Close' : '☰ Navigate'}
-                </button>
-            </div>
-
-            {/* Navigation Panel - Opens from top */}
+            {/* Navigation Panel - Opens below header */}
             <AnimatePresence>
                 {showNav && (
                     <motion.div
@@ -205,7 +211,7 @@ export default function HUD() {
                         animate={{ y: 0, opacity: 1 }}
                         exit={{ y: '-20px', opacity: 0 }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="pointer-events-auto fixed top-16 md:top-32 left-4 md:left-6 z-30 w-[calc(100vw-2rem)] md:w-72 max-h-[60vh] overflow-y-auto bg-black/90 backdrop-blur-md border border-white/20 rounded-lg p-4 shadow-2xl"
+                        className="pointer-events-auto fixed top-20 md:top-24 left-4 md:left-12 z-30 w-[calc(100vw-2rem)] md:w-72 max-h-[60vh] overflow-y-auto bg-black/90 backdrop-blur-md border border-white/20 rounded-lg p-4 shadow-2xl"
                     >
                         <div className="mb-3 text-xs uppercase tracking-widest text-white/50">Quick Navigation</div>
 
