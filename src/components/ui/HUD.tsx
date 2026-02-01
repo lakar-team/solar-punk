@@ -17,6 +17,31 @@ export default function HUD() {
     const activeProject = projects.find(p => p.id === activePlanetId);
     const isCVView = activePlanetId === 'cv-core';
 
+    // Navigation handlers
+    const handleNext = () => {
+        if (!activePlanetId) return;
+        const currentIndex = projects.findIndex(p => p.id === activePlanetId);
+        if (currentIndex === -1) return;
+
+        const nextIndex = (currentIndex + 1) % projects.length;
+        const nextProject = projects[nextIndex];
+
+        setActivePlanet(nextProject.id);
+        setFocusedPlanet(nextProject.id);
+    };
+
+    const handlePrev = () => {
+        if (!activePlanetId) return;
+        const currentIndex = projects.findIndex(p => p.id === activePlanetId);
+        if (currentIndex === -1) return;
+
+        const prevIndex = (currentIndex - 1 + projects.length) % projects.length;
+        const prevProject = projects[prevIndex];
+
+        setActivePlanet(prevProject.id);
+        setFocusedPlanet(prevProject.id);
+    };
+
     return (
         <div className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-between p-6 md:p-12">
             {/* Header / Logo Area */}
@@ -135,12 +160,32 @@ export default function HUD() {
                         transition={{ type: 'spring', damping: 20, stiffness: 100 }}
                         className="pointer-events-auto absolute right-0 top-0 bottom-0 w-full md:w-[480px] bg-black/60 backdrop-blur-md border-l border-white/10 p-8 shadow-2xl flex flex-col overflow-y-auto"
                     >
-                        <button
-                            onClick={() => { setActivePlanet(null); setFocusedPlanet(null); }}
-                            className="mb-4 self-start rounded-full border border-white/20 px-4 py-1.5 text-xs uppercase tracking-widest hover:bg-white/10 transition-colors"
-                        >
-                            ← Return to Orbit
-                        </button>
+                        <div className="flex justify-between items-center mb-4">
+                            <button
+                                onClick={() => { setActivePlanet(null); setFocusedPlanet(null); }}
+                                className="rounded-full border border-white/20 px-4 py-1.5 text-xs uppercase tracking-widest hover:bg-white/10 transition-colors"
+                            >
+                                ← Return to Orbit
+                            </button>
+
+                            {/* Panel Navigation */}
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handlePrev}
+                                    className="w-8 h-8 flex items-center justify-center rounded-full border border-white/20 hover:bg-white/10 text-white/80 hover:text-white transition-colors"
+                                    aria-label="Previous Planet"
+                                >
+                                    ‹
+                                </button>
+                                <button
+                                    onClick={handleNext}
+                                    className="w-8 h-8 flex items-center justify-center rounded-full border border-white/20 hover:bg-white/10 text-white/80 hover:text-white transition-colors"
+                                    aria-label="Next Planet"
+                                >
+                                    ›
+                                </button>
+                            </div>
+                        </div>
 
                         {/* 3D Planet Preview */}
                         <PlanetPreview project={activeProject} />

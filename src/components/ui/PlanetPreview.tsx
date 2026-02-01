@@ -1,13 +1,38 @@
 'use client';
 
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Sphere } from '@react-three/drei';
+import { Sphere, useTexture } from '@react-three/drei';
 import { useRef, Suspense } from 'react';
 import * as THREE from 'three';
 import { Project } from '@/data/projects';
 
 interface PlanetMeshProps {
     project: Project;
+}
+
+function TexturedMaterial({
+    texturePath,
+    color,
+    emissive,
+    emissiveIntensity
+}: {
+    texturePath: string;
+    color: string;
+    emissive: string;
+    emissiveIntensity: number;
+}) {
+    const texture = useTexture(texturePath);
+
+    return (
+        <meshStandardMaterial
+            map={texture}
+            color={color}
+            roughness={0.4}
+            metalness={0.6}
+            emissive={emissive}
+            emissiveIntensity={emissiveIntensity}
+        />
+    );
 }
 
 function PlanetMesh({ project }: PlanetMeshProps) {
@@ -32,7 +57,10 @@ function PlanetMesh({ project }: PlanetMeshProps) {
     };
 
     const baseEmissive = project.emissiveColor || '#22d3ee';
-    const baseColor = getColor(project.texture || '');
+    const fallbackColor = getColor(project.texture || '');
+
+    // Determine which texture to use (if any)
+    const textureToLoad = project.image || project.texturePath;
 
     return (
         <>
@@ -41,13 +69,32 @@ function PlanetMesh({ project }: PlanetMeshProps) {
             <pointLight position={[-10, -10, -10]} intensity={0.5} color={baseEmissive} />
 
             <Sphere args={[1.8, 32, 32]} ref={meshRef}>
-                <meshStandardMaterial
-                    color={baseColor}
-                    roughness={0.4}
-                    metalness={0.6}
-                    emissive={baseEmissive}
-                    emissiveIntensity={0.8}
-                />
+                <Suspense fallback={
+                    <meshStandardMaterial
+                        color={fallbackColor}
+                        roughness={0.4}
+                        metalness={0.6}
+                        emissive={baseEmissive}
+                        emissiveIntensity={0.8}
+                    />
+                }>
+                    {textureToLoad ? (
+                        <TexturedMaterial
+                            texturePath={textureToLoad}
+                            color="#ffffff"
+                            emissive={baseEmissive}
+                            emissiveIntensity={0.8}
+                        />
+                    ) : (
+                        <meshStandardMaterial
+                            color={fallbackColor}
+                            roughness={0.4}
+                            metalness={0.6}
+                            emissive={baseEmissive}
+                            emissiveIntensity={0.8}
+                        />
+                    )}
+                </Suspense>
             </Sphere>
         </>
     );

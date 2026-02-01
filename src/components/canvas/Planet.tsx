@@ -1,14 +1,40 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, Suspense } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Sphere, Html } from '@react-three/drei';
+import { Sphere, Html, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { Project } from '@/data/projects';
 import { useStore } from '@/store/useStore';
 
 interface PlanetProps {
     project: Project;
+}
+
+// Separate component for textured material to safely use useTexture hook
+function TexturedMaterial({
+    texturePath,
+    color,
+    emissive,
+    emissiveIntensity
+}: {
+    texturePath: string;
+    color: string;
+    emissive: string;
+    emissiveIntensity: number;
+}) {
+    const texture = useTexture(texturePath);
+
+    return (
+        <meshStandardMaterial
+            map={texture}
+            color={color}
+            roughness={0.4}
+            metalness={0.6}
+            emissive={emissive}
+            emissiveIntensity={emissiveIntensity}
+        />
+    );
 }
 
 export default function Planet({ project }: PlanetProps) {
@@ -64,7 +90,10 @@ export default function Planet({ project }: PlanetProps) {
     const isWIP = project.status === 'in-progress';
     const isFocused = focusedPlanetId === project.id;
     const baseEmissive = project.emissiveColor || '#22d3ee';
-    const baseColor = getColor(project.texture || '');
+    const fallbackColor = getColor(project.texture || '');
+
+    // Determine which texture to use (if any)
+    const textureToLoad = project.image || project.texturePath;
 
     return (
         <group ref={groupRef}>
@@ -76,13 +105,32 @@ export default function Planet({ project }: PlanetProps) {
                 onPointerOut={() => setHover(false)}
                 onClick={handleClick}
             >
-                <meshStandardMaterial
-                    color={baseColor}
-                    roughness={0.4}
-                    metalness={0.6}
-                    emissive={baseEmissive}
-                    emissiveIntensity={isFocused ? 3.5 : hovered ? 2.5 : 1.5}
-                />
+                <Suspense fallback={
+                    <meshStandardMaterial
+                        color={fallbackColor}
+                        roughness={0.4}
+                        metalness={0.6}
+                        emissive={baseEmissive}
+                        emissiveIntensity={isFocused ? 3.5 : hovered ? 2.5 : 1.5}
+                    />
+                }>
+                    {textureToLoad ? (
+                        <TexturedMaterial
+                            texturePath={textureToLoad}
+                            color="#ffffff"
+                            emissive={baseEmissive}
+                            emissiveIntensity={isFocused ? 3.5 : hovered ? 2.5 : 1.5}
+                        />
+                    ) : (
+                        <meshStandardMaterial
+                            color={fallbackColor}
+                            roughness={0.4}
+                            metalness={0.6}
+                            emissive={baseEmissive}
+                            emissiveIntensity={isFocused ? 3.5 : hovered ? 2.5 : 1.5}
+                        />
+                    )}
+                </Suspense>
             </Sphere>
 
             {/* Subtle light to make the planet pop */}
