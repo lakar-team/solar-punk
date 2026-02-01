@@ -43,13 +43,9 @@ export default function Planet({ project }: PlanetProps) {
 
     const handleClick = (e: any) => {
         e.stopPropagation();
-        if (focusedPlanetId === project.id) {
-            // Already focused, open HUD
-            setActivePlanet(project.id);
-        } else {
-            // Focus on this planet first
-            setFocusedPlanet(project.id);
-        }
+        // Set both focus (for camera) and active (for HUD) on click
+        setFocusedPlanet(project.id);
+        setActivePlanet(project.id);
     };
 
     const getColor = (textureType: string) => {
@@ -109,7 +105,6 @@ export default function Planet({ project }: PlanetProps) {
                 <div className={`pointer-events-none select-none text-xs font-bold text-white transition-opacity duration-300 ${isFocused ? 'opacity-100 text-amber-400' : hovered ? 'opacity-100' : 'opacity-60'}`}>
                     {project.name}
                     {isWIP && <span className="block text-[10px] text-yellow-400">(WIP)</span>}
-                    {isFocused && <span className="block text-[10px] text-amber-300">Click to open</span>}
                 </div>
             </Html>
         </group>

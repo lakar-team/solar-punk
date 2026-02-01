@@ -188,10 +188,10 @@ export default function HUD() {
             </AnimatePresence>
 
             {/* Navigation Panel Toggle - At top for easy access */}
-            <div className="pointer-events-auto fixed top-20 left-6 z-20">
+            <div className="pointer-events-auto fixed top-4 md:top-20 left-4 md:left-6 z-30">
                 <button
                     onClick={() => setShowNav(!showNav)}
-                    className="px-4 py-2 bg-black/60 backdrop-blur-md border border-white/20 rounded-full text-xs uppercase tracking-widest text-white/80 hover:text-amber-400 hover:border-amber-500/30 transition-all"
+                    className="px-4 py-2 bg-black/80 backdrop-blur-md border border-white/30 rounded-full text-xs uppercase tracking-widest text-white hover:text-amber-400 hover:border-amber-500/30 transition-all shadow-lg"
                 >
                     {showNav ? '✕ Close' : '☰ Navigate'}
                 </button>
@@ -201,41 +201,36 @@ export default function HUD() {
             <AnimatePresence>
                 {showNav && (
                     <motion.div
-                        initial={{ y: '-100%', opacity: 0 }}
+                        initial={{ y: '-20px', opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: '-100%', opacity: 0 }}
+                        exit={{ y: '-20px', opacity: 0 }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="pointer-events-auto fixed top-32 left-6 z-20 w-72 max-h-[60vh] overflow-y-auto bg-black/80 backdrop-blur-md border border-white/10 rounded-lg p-4 shadow-2xl"
+                        className="pointer-events-auto fixed top-16 md:top-32 left-4 md:left-6 z-30 w-[calc(100vw-2rem)] md:w-72 max-h-[60vh] overflow-y-auto bg-black/90 backdrop-blur-md border border-white/20 rounded-lg p-4 shadow-2xl"
                     >
                         <div className="mb-3 text-xs uppercase tracking-widest text-white/50">Quick Navigation</div>
 
                         {/* Sun/CV */}
                         <button
-                            onClick={() => { setActivePlanet('cv-core'); setShowNav(false); }}
-                            className="w-full text-left px-3 py-2 rounded hover:bg-amber-500/20 text-amber-400 text-sm mb-2 border border-amber-500/20"
+                            onClick={() => { setActivePlanet('cv-core'); setFocusedPlanet(null); setShowNav(false); }}
+                            className="w-full text-left px-3 py-3 rounded hover:bg-amber-500/20 active:bg-amber-500/30 text-amber-400 text-sm mb-2 border border-amber-500/20"
                         >
                             ☀️ Core Profile (CV)
                         </button>
 
-                        {/* Planets - Focus first, then click again to open */}
+                        {/* Planets - Direct open for mobile friendliness */}
                         <div className="space-y-1">
                             {projects.map((project) => (
                                 <button
                                     key={project.id}
                                     onClick={() => {
-                                        if (focusedPlanetId === project.id) {
-                                            setActivePlanet(project.id);
-                                        } else {
-                                            setFocusedPlanet(project.id);
-                                        }
+                                        setFocusedPlanet(project.id);
+                                        setActivePlanet(project.id);
                                         setShowNav(false);
                                     }}
-                                    className={`w-full text-left px-3 py-2 rounded hover:bg-white/10 text-sm transition-colors ${focusedPlanetId === project.id ? 'text-amber-400 bg-amber-500/10' : project.status === 'in-progress' ? 'text-amber-300' : 'text-white/80'
-                                        }`}
+                                    className={`w-full text-left px-3 py-3 rounded hover:bg-white/10 active:bg-white/20 text-sm transition-colors ${project.status === 'in-progress' ? 'text-amber-300' : 'text-white/80'}`}
                                 >
                                     {project.name}
                                     {project.status === 'in-progress' && <span className="ml-2 text-[10px] text-amber-400">(WIP)</span>}
-                                    {focusedPlanetId === project.id && <span className="ml-2 text-[10px] text-amber-300">● focused</span>}
                                 </button>
                             ))}
                         </div>
