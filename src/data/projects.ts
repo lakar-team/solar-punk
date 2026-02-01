@@ -125,6 +125,7 @@ export const projects: Project[] = [
         description: 'An AI-driven robotic companion project. Focusing on hardware-software integration and interactive persona design.',
         orbitRadius: 45,
         orbitSpeed: 0.14,
+        link: 'https://project-aibo.vercel.app/',
     },
     {
         id: 'kanji-sniper',
