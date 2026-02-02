@@ -28,7 +28,7 @@ export const projects: Project[] = [
         texturePath: '/textures/planet-tech.png',
         emissiveColor: '#3b82f6',
         status: 'in-progress',
-        description: 'Product & Innovation Consultant driving digital transformation. Creating automated workflows and bridging the gap between engineering teams and business goals.',
+        description: 'Building Energy Consultant. Leveraging automation to streamline JIS data integration, complex calculations, and architectural planning processes.',
         orbitRadius: 15,
         orbitSpeed: 0.5,
         secondaryLinks: [
