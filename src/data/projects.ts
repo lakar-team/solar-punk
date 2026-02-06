@@ -66,7 +66,7 @@ export const projects: Project[] = [
         description: 'Secured major redevelopment contracts and won the PAM Award 2017 for Denai Alam Phase J15. Led architectural design and project delivery in Shah Alam.',
         orbitRadius: 30,
         orbitSpeed: 0.3,
-        link: 'https://www.pam.org.my/images/awards/pam-awards-2017/PAM2017_Star_article.pdf',
+        link: '/docs/sa-architects-award.pdf',
     },
     {
         id: 'lakar-design',

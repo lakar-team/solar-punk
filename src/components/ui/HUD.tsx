@@ -234,7 +234,7 @@ export default function HUD() {
                                 </div>
                             )}
 
-                            {/* Project Link - Auto-embed PDF if applicable */}
+                            {/* Project Link - Auto-embed PDF or Site Preview */}
                             {activeProject.link && (
                                 <div className="space-y-4">
                                     {activeProject.link.toLowerCase().endsWith('.pdf') ? (
@@ -249,16 +249,42 @@ export default function HUD() {
                                                 title={activeProject.name}
                                             />
                                         </div>
-                                    ) : (
-                                        <a
-                                            href={activeProject.link}
-                                            target={activeProject.link.startsWith('http') ? '_blank' : '_self'}
-                                            rel={activeProject.link.startsWith('http') ? 'noopener noreferrer' : ''}
-                                            className="mt-8 block w-full py-4 bg-amber-600 hover:bg-amber-500 text-black text-center font-bold uppercase tracking-wider transition-colors rounded"
-                                        >
-                                            {activeProject.type === 'merch' ? 'Visit Store' : activeProject.id.includes('book') ? 'View on Amazon' : 'Launch Experience'}
-                                        </a>
-                                    )}
+                                    ) : (() => {
+                                        const isUnembeddable =
+                                            activeProject.link.includes('amazon.com') ||
+                                            activeProject.link.includes('redbubble.com') ||
+                                            activeProject.link.includes('youtube.com') ||
+                                            activeProject.link.includes('drive.google.com');
+
+                                        if (isUnembeddable) {
+                                            return (
+                                                <a
+                                                    href={activeProject.link}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="mt-8 block w-full py-4 bg-amber-600 hover:bg-amber-500 text-black text-center font-bold uppercase tracking-wider transition-colors rounded"
+                                                >
+                                                    {activeProject.id.includes('book') ? 'View on Amazon' :
+                                                        activeProject.type === 'merch' ? 'Visit Store' :
+                                                            activeProject.link.includes('youtube') ? 'Watch on YouTube' : 'Launch Experience'}
+                                                </a>
+                                            );
+                                        }
+
+                                        return (
+                                            <div className="mt-4 rounded-lg overflow-hidden border border-white/10 bg-black/50">
+                                                <div className="p-2 border-b border-white/10 flex justify-between items-center bg-white/5">
+                                                    <span className="text-[10px] text-white/50 uppercase tracking-widest">Live Preview</span>
+                                                    <a href={activeProject.link} target="_blank" rel="noopener noreferrer" className="text-[10px] text-amber-500 hover:text-amber-400 underline uppercase tracking-widest">Open Site</a>
+                                                </div>
+                                                <iframe
+                                                    src={activeProject.link}
+                                                    className="w-full h-[500px] border-0 bg-white shadow-inner"
+                                                    title={activeProject.name}
+                                                />
+                                            </div>
+                                        );
+                                    })()}
                                 </div>
                             )}
                         </div>
