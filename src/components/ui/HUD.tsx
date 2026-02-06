@@ -18,29 +18,32 @@ export default function HUD() {
     const activeProject = projects.find(p => p.id === activePlanetId);
     const isCVView = activePlanetId === 'cv-core';
 
+    // Unified Navigation List (Sun + Projects)
+    const navItems = [{ id: 'cv-core', type: 'core' }, ...projects];
+
     // Navigation handlers
     const handleNext = () => {
         if (!activePlanetId) return;
-        const currentIndex = projects.findIndex(p => p.id === activePlanetId);
+        const currentIndex = navItems.findIndex(item => item.id === activePlanetId);
         if (currentIndex === -1) return;
 
-        const nextIndex = (currentIndex + 1) % projects.length;
-        const nextProject = projects[nextIndex];
+        const nextIndex = (currentIndex + 1) % navItems.length;
+        const nextItem = navItems[nextIndex];
 
-        setActivePlanet(nextProject.id);
-        setFocusedPlanet(nextProject.id);
+        setActivePlanet(nextItem.id);
+        setFocusedPlanet(nextItem.id === 'cv-core' ? null : nextItem.id);
     };
 
     const handlePrev = () => {
         if (!activePlanetId) return;
-        const currentIndex = projects.findIndex(p => p.id === activePlanetId);
+        const currentIndex = navItems.findIndex(item => item.id === activePlanetId);
         if (currentIndex === -1) return;
 
-        const prevIndex = (currentIndex - 1 + projects.length) % projects.length;
-        const prevProject = projects[prevIndex];
+        const prevIndex = (currentIndex - 1 + navItems.length) % navItems.length;
+        const prevItem = navItems[prevIndex];
 
-        setActivePlanet(prevProject.id);
-        setFocusedPlanet(prevProject.id);
+        setActivePlanet(prevItem.id);
+        setFocusedPlanet(prevItem.id === 'cv-core' ? null : prevItem.id);
     };
 
     return (
@@ -78,12 +81,32 @@ export default function HUD() {
                         transition={{ type: 'spring', damping: 20, stiffness: 100 }}
                         className="pointer-events-auto absolute right-0 top-0 bottom-0 w-full md:w-[600px] bg-black/80 backdrop-blur-md border-l border-amber-500/20 p-8 shadow-2xl flex flex-col overflow-y-auto"
                     >
-                        <button
-                            onClick={() => { setActivePlanet(null); setFocusedPlanet(null); }}
-                            className="mb-6 self-start rounded-full border border-amber-500/30 px-4 py-1.5 text-xs uppercase tracking-widest hover:bg-amber-500/10 transition-colors text-amber-400"
-                        >
-                            ← Return to Orbit
-                        </button>
+                        <div className="flex justify-between items-center mb-6">
+                            <button
+                                onClick={() => { setActivePlanet(null); setFocusedPlanet(null); }}
+                                className="rounded-full border border-amber-500/30 px-4 py-1.5 text-xs uppercase tracking-widest hover:bg-amber-500/10 transition-colors text-amber-400"
+                            >
+                                ← Return to Orbit
+                            </button>
+
+                            {/* Panel Navigation for Sun View */}
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handlePrev}
+                                    className="w-8 h-8 flex items-center justify-center rounded-full border border-amber-500/20 hover:bg-amber-500/10 text-amber-500/80 hover:text-amber-400 transition-colors"
+                                    aria-label="Previous Planet"
+                                >
+                                    ‹
+                                </button>
+                                <button
+                                    onClick={handleNext}
+                                    className="w-8 h-8 flex items-center justify-center rounded-full border border-amber-500/20 hover:bg-amber-500/10 text-amber-500/80 hover:text-amber-400 transition-colors"
+                                    aria-label="Next Planet"
+                                >
+                                    ›
+                                </button>
+                            </div>
+                        </div>
 
                         <div className="flex-1 space-y-6">
                             <div>
