@@ -31,6 +31,7 @@ export const projects: Project[] = [
         description: 'Building Energy Consultant. Leveraging automation to streamline JIS data integration, complex calculations, and architectural planning processes.',
         orbitRadius: 15,
         orbitSpeed: 0.5,
+        link: 'https://solar-punk-git-feature-improve-pdf-viewer-lakar-teams-projects.vercel.app/apps/refil/AC_Pipe_length.html',
         secondaryLinks: [
             { label: 'AC Pipe Length Calculator', url: '/apps/refil/AC_Pipe_length.html' },
             { label: 'Outdoor Condition Optimizer', url: '/apps/refil/Outdoor_condition.html' },
@@ -168,6 +169,7 @@ export const projects: Project[] = [
         description: 'Bilingual Japanese-English children\'s book retelling the classic tale of Momotaro.',
         orbitRadius: 55,
         orbitSpeed: 0.08,
+        image: '/textures/momotaro.jpg',
         link: 'https://www.amazon.com/dp/B0GCV34Z4S',
     },
     {
@@ -182,6 +184,7 @@ export const projects: Project[] = [
         description: 'Custom apparel and merch from Stellar to Climate Tech collections.',
         orbitRadius: 58,
         orbitSpeed: 0.06,
+        image: '/textures/merch-stellar.png',
         link: 'https://www.redbubble.com/people/lakardesign/shop',
     },
     {
@@ -196,6 +199,7 @@ export const projects: Project[] = [
         description: 'A YouTube channel dedicated to serene nature vibes and ambiance.',
         orbitRadius: 60,
         orbitSpeed: 0.05,
+        image: '/textures/nature-vibe.jpg',
         link: 'https://www.youtube.com/@naturevibechannel',
     },
     {
