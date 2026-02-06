@@ -124,8 +124,8 @@ export default function HUD() {
                                     </a>
                                 </div>
                                 <iframe
-                                    src="/Adam_Tech_CV.pdf"
-                                    className="w-full h-[400px]"
+                                    src="/Adam_Tech_CV.pdf#navpanes=0&toolbar=0&view=FitH"
+                                    className="w-full h-[600px]"
                                     title="Adam M. Raman Tech CV"
                                 />
                             </div>
@@ -143,7 +143,7 @@ export default function HUD() {
                                     target="_blank"
                                     className="flex-1 py-4 bg-white/10 hover:bg-white/20 text-white text-center font-bold uppercase tracking-wider transition-colors rounded border border-white/10"
                                 >
-                                    View Background
+                                    CV Detail & Background
                                 </a>
                             </div>
                         </div>
@@ -234,15 +234,32 @@ export default function HUD() {
                                 </div>
                             )}
 
+                            {/* Project Link - Auto-embed PDF if applicable */}
                             {activeProject.link && (
-                                <a
-                                    href={activeProject.link}
-                                    target={activeProject.link.startsWith('http') ? '_blank' : '_self'}
-                                    rel={activeProject.link.startsWith('http') ? 'noopener noreferrer' : ''}
-                                    className="mt-8 block w-full py-4 bg-amber-600 hover:bg-amber-500 text-black text-center font-bold uppercase tracking-wider transition-colors rounded"
-                                >
-                                    {activeProject.type === 'merch' ? 'Visit Store' : activeProject.id.includes('book') ? 'View on Amazon' : 'Launch Experience'}
-                                </a>
+                                <div className="space-y-4">
+                                    {activeProject.link.toLowerCase().endsWith('.pdf') ? (
+                                        <div className="mt-4 rounded-lg overflow-hidden border border-white/10 bg-black/50">
+                                            <div className="p-2 border-b border-white/10 flex justify-between items-center bg-white/5">
+                                                <span className="text-[10px] text-white/50 uppercase tracking-widest">Document Preview</span>
+                                                <a href={activeProject.link} target="_blank" className="text-[10px] text-amber-500 hover:text-amber-400 underline uppercase tracking-widest">Full Screen</a>
+                                            </div>
+                                            <iframe
+                                                src={`${activeProject.link}#navpanes=0&toolbar=0&view=FitH`}
+                                                className="w-full h-[500px]"
+                                                title={activeProject.name}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <a
+                                            href={activeProject.link}
+                                            target={activeProject.link.startsWith('http') ? '_blank' : '_self'}
+                                            rel={activeProject.link.startsWith('http') ? 'noopener noreferrer' : ''}
+                                            className="mt-8 block w-full py-4 bg-amber-600 hover:bg-amber-500 text-black text-center font-bold uppercase tracking-wider transition-colors rounded"
+                                        >
+                                            {activeProject.type === 'merch' ? 'Visit Store' : activeProject.id.includes('book') ? 'View on Amazon' : 'Launch Experience'}
+                                        </a>
+                                    )}
+                                </div>
                             )}
                         </div>
                     </motion.div>
