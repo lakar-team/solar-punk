@@ -64,18 +64,18 @@ function PlanetMesh({ project }: PlanetMeshProps) {
 
     return (
         <>
-            <ambientLight intensity={0.3} />
-            <pointLight position={[10, 10, 10]} intensity={1} />
-            <pointLight position={[-10, -10, -10]} intensity={0.5} color={baseEmissive} />
+            <ambientLight intensity={1.0} />
+            <pointLight position={[10, 10, 10]} intensity={3} />
+            <pointLight position={[-10, -10, 10]} intensity={2} color={baseEmissive} />
 
-            <Sphere args={[1.8, 32, 32]} ref={meshRef}>
+            <Sphere args={[2.2, 64, 64]} ref={meshRef}>
                 <Suspense fallback={
                     <meshStandardMaterial
                         color={fallbackColor}
-                        roughness={0.7}
-                        metalness={0.2}
+                        roughness={0.5}
+                        metalness={0.5}
                         emissive={baseEmissive}
-                        emissiveIntensity={0.2}
+                        emissiveIntensity={0.5}
                     />
                 }>
                     {textureToLoad ? (
@@ -83,15 +83,15 @@ function PlanetMesh({ project }: PlanetMeshProps) {
                             texturePath={textureToLoad}
                             color="#ffffff"
                             emissive={baseEmissive}
-                            emissiveIntensity={0.2}
+                            emissiveIntensity={0.5}
                         />
                     ) : (
                         <meshStandardMaterial
                             color={fallbackColor}
-                            roughness={0.7}
-                            metalness={0.2}
+                            roughness={0.5}
+                            metalness={0.5}
                             emissive={baseEmissive}
-                            emissiveIntensity={0.2}
+                            emissiveIntensity={0.5}
                         />
                     )}
                 </Suspense>
@@ -109,7 +109,7 @@ export default function PlanetPreview({ project }: PlanetPreviewProps) {
 
     return (
         <div className="w-full h-40 md:h-48 rounded-xl overflow-hidden bg-gradient-to-b from-black/50 to-transparent border border-white/10 mb-4 group/preview">
-            <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+            <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
                 <Suspense fallback={null}>
                     <PlanetMesh project={project} />
                 </Suspense>
