@@ -76,48 +76,8 @@ const MobileLiteView = () => {
                             >
                                 Full 3D
                             </Link>
-
-                            <button
-                                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                className={`p-2 rounded-lg border transition-all ${isMenuOpen ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'bg-white/5 border-white/10 text-white'}`}
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
-                                </svg>
-                            </button>
                         </div>
                     </div>
-
-                    {/* Dropdown Menu */}
-                    <AnimatePresence>
-                        {isMenuOpen && (
-                            <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                className="absolute left-6 right-6 top-20 z-50 p-2 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-white/10 shadow-2xl overflow-hidden"
-                            >
-                                <div className="max-h-[60vh] overflow-y-auto scrollbar-hide py-2">
-                                    {navItems.map((item, index) => (
-                                        <button
-                                            key={item.id}
-                                            onClick={() => {
-                                                setActiveIndex(index);
-                                                setIsMenuOpen(false);
-                                            }}
-                                            className={`w-full text-left px-4 py-3 rounded-xl transition-all flex items-center justify-between group ${activeIndex === index ? 'bg-amber-500/10 text-amber-400' : 'text-slate-400 hover:bg-white/5'}`}
-                                        >
-                                            <div className="flex items-center gap-3">
-                                                <span className="text-[10px] font-mono opacity-50">{index.toString().padStart(2, '0')}</span>
-                                                <span className="text-sm font-bold tracking-tight">{item.name}</span>
-                                            </div>
-                                            {activeIndex === index && <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />}
-                                        </button>
-                                    ))}
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
                 </motion.header>
 
                 {/* Planet Navigator Showcase */}
@@ -165,6 +125,15 @@ const MobileLiteView = () => {
                                             </p>
 
                                             <div className="mt-6 flex gap-3">
+                                                <button
+                                                    onClick={prevPlanet}
+                                                    className="p-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-colors"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                                    </svg>
+                                                </button>
+
                                                 {activeItem.link && (
                                                     <a
                                                         href={activeItem.link}
@@ -174,6 +143,7 @@ const MobileLiteView = () => {
                                                         {activeItem.id === 'cv-core' ? 'View Profile' : 'View Project'}
                                                     </a>
                                                 )}
+
                                                 <button
                                                     onClick={nextPlanet}
                                                     className="p-3 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-colors"
@@ -199,16 +169,6 @@ const MobileLiteView = () => {
                                 />
                             ))}
                         </div>
-
-                        {/* Prev Button Floating */}
-                        <button
-                            onClick={prevPlanet}
-                            className="absolute -left-4 top-1/2 -translate-y-1/2 p-3 bg-black/60 backdrop-blur-md border border-white/10 rounded-full text-white shadow-xl md:hidden z-20"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </button>
                     </div>
                 </section>
 
@@ -222,66 +182,152 @@ const MobileLiteView = () => {
                     <Link
                         href="/Adam_Tech_CV.pdf"
                         target="_blank"
-                        className="inline-block py-2 px-4 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-widest text-white hover:bg-white/10 transition-colors"
+                        className="inline-block py-2 px-4 bg-white/5 border border-white/10 rounded-lg text-xs font-bold uppercase tracking-widest text-white hover:bg-white/10 transition-colors"
                     >
                         View Full CV
                     </Link>
                 </section>
 
+                {/* Dropdown / System Index Section */}
+                <section className="mt-12">
+                    <button
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        className={`w-full p-5 rounded-2xl border transition-all flex items-center justify-between shadow-xl ${isMenuOpen ? 'bg-amber-500/20 border-amber-500/50 text-amber-400' : 'bg-white/5 border-white/10 text-white'}`}
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
+                            <span className="text-xs font-bold uppercase tracking-widest">System Index</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-mono opacity-50">{navItems.length} Nodes</span>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className={`h-4 w-4 transition-transform duration-300 ${isMenuOpen ? 'rotate-180' : ''}`}
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </div>
+                    </button>
+
+                    <AnimatePresence>
+                        {isMenuOpen && (
+                            <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                className="overflow-hidden mt-4 space-y-3"
+                            >
+                                {navItems.map((item, index) => (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => {
+                                            setActiveIndex(index);
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        }}
+                                        className={`w-full text-left p-5 rounded-2xl border transition-all group ${activeIndex === index ? 'bg-amber-500/10 border-amber-500/30 shadow-[inset_0_0_20px_rgba(245,158,11,0.05)]' : 'bg-white/[0.02] border-white/[0.05] hover:bg-white/[0.05]'}`}
+                                    >
+                                        <div className="flex justify-between items-start mb-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold border transition-colors ${activeIndex === index ? 'border-amber-500/50 bg-amber-500/10 text-amber-400' : 'border-white/10 bg-white/5 text-slate-500'}`}>
+                                                    {item.id === 'cv-core' ? '☀️' : (index).toString().padStart(2, '0')}
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <h4 className={`text-sm font-bold transition-colors ${activeIndex === index ? 'text-amber-400' : 'text-slate-300'}`}>
+                                                        {item.name}
+                                                    </h4>
+                                                    <span className="text-[9px] uppercase tracking-wider opacity-50">{item.type}</span>
+                                                </div>
+                                            </div>
+                                            {activeIndex === index && (
+                                                <div className="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_12px_#f59e0b]" />
+                                            )}
+                                        </div>
+                                        <p className="text-[11px] text-slate-400 leading-relaxed pl-11">
+                                            {item.description}
+                                        </p>
+                                    </button>
+                                ))}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </section>
+
                 <footer className="mt-16 text-center">
-                    <p className="text-[10px] text-slate-600 font-medium">
+                    <p className="text-[10px] text-slate-600 font-medium tracking-widest uppercase">
                         &copy; {new Date().getFullYear()} ADAM M. RAMAN &bull; SOLAR PUNK INFRASTRUCTURE
                     </p>
                 </footer>
             </main>
 
             {/* Aibo Guide Integration */}
-            <div className={`fixed bottom-0 left-0 right-0 z-[60] transition-transform duration-500 ease-in-out ${showAibo ? 'translate-y-0' : 'translate-y-[calc(100%-80px)]'}`}>
-                <div className="max-w-lg mx-auto px-6">
-                    <div className="bg-black/90 backdrop-blur-2xl border-t border-x border-amber-500/30 rounded-t-[32px] shadow-2xl overflow-hidden flex flex-col h-[70vh]">
-                        {/* Toggle Bar */}
-                        <button
-                            onClick={() => setShowAibo(!showAibo)}
-                            className="w-full py-6 flex flex-col items-center justify-center gap-2 border-b border-white/5 active:bg-white/5 transition-colors group"
-                        >
-                            <div className="w-12 h-1 bg-white/10 rounded-full mb-1 group-hover:bg-amber-500/30 transition-colors" />
-                            <div className="flex items-center gap-3">
-                                <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                                <span className="text-xs font-bold uppercase tracking-widest text-amber-500">
-                                    {showAibo ? 'Collapse Guide' : 'Ask Aibo Assistant'}
-                                </span>
+            <AnimatePresence>
+                {showAibo && (
+                    <motion.div
+                        initial={{ y: '100%' }}
+                        animate={{ y: 0 }}
+                        exit={{ y: '100%' }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                        className="fixed bottom-0 left-0 right-0 z-[60]"
+                    >
+                        <div className="max-w-lg mx-auto px-6">
+                            <div className="bg-[#020617]/95 backdrop-blur-2xl border-t border-x border-amber-500/30 rounded-t-[32px] shadow-2xl overflow-hidden flex flex-col h-[75vh]">
+                                {/* Toggle Bar */}
+                                <button
+                                    onClick={() => setShowAibo(false)}
+                                    className="w-full py-6 flex flex-col items-center justify-center gap-2 border-b border-white/5 active:bg-white/5 transition-colors group"
+                                >
+                                    <div className="w-12 h-1 bg-white/10 rounded-full mb-1 group-hover:bg-amber-500/30 transition-colors" />
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                                        <span className="text-xs font-bold uppercase tracking-widest text-amber-500">
+                                            Assistant Active - Collapse
+                                        </span>
+                                    </div>
+                                </button>
+
+                                {/* Chat Container */}
+                                <div className="flex-1 relative bg-black/50">
+                                    <iframe
+                                        src="https://project-aibo.vercel.app/?embed=true&mobile=true&chatOnly=true"
+                                        className="absolute inset-0 w-full h-full border-0"
+                                        title="Aibo Assistant"
+                                        allow="camera"
+                                    />
+                                </div>
                             </div>
-                        </button>
-
-                        {/* Chat Container */}
-                        <div className="flex-1 relative bg-black/50">
-                            {/* Always loaded in background */}
-                            <iframe
-                                src="https://project-aibo.vercel.app/?embed=true&mobile=true&chatOnly=true"
-                                className="absolute inset-0 w-full h-full border-0"
-                                title="Aibo Assistant"
-                                allow="camera" // No audio needed per user request
-                            />
                         </div>
-                    </div>
-                </div>
-            </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-            {/* Initial Ask Aibo Floating Button (Only visible when collapsed and not shown initially) */}
+            {/* Aibo Invisible Iframe for background loading */}
+            {!showAibo && (
+                <div className="hidden">
+                    <iframe
+                        src="https://project-aibo.vercel.app/?embed=true&mobile=true&chatOnly=true"
+                        title="Aibo Preloader"
+                    />
+                </div>
+            )}
+
+            {/* Floating Ask Aibo Button */}
             <AnimatePresence>
                 {!showAibo && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        className="fixed bottom-8 right-6 z-[70] md:hidden"
+                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                        className="fixed bottom-8 right-6 z-[70]"
                     >
                         <button
                             onClick={() => setShowAibo(true)}
-                            className="flex items-center gap-3 px-5 py-3 rounded-full bg-amber-500 border border-amber-400 text-black shadow-[0_0_20px_rgba(245,158,11,0.4)] active:scale-95 transition-all"
+                            className="flex items-center gap-3 px-6 py-4 rounded-full bg-amber-500 border border-amber-400 text-black shadow-[0_10px_30px_rgba(245,158,11,0.4)] active:scale-95 transition-all"
                         >
                             <span className="text-xs font-bold uppercase tracking-widest">Ask Aibo</span>
-                            <div className="w-2 h-2 rounded-full bg-black animate-pulse" />
+                            <div className="w-2.5 h-2.5 rounded-full bg-black animate-pulse shadow-[0_0_8px_rgba(0,0,0,0.5)]" />
                         </button>
                     </motion.div>
                 )}
