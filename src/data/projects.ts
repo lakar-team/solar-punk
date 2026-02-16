@@ -31,7 +31,7 @@ export const projects: Project[] = [
         description: 'Building Energy Consultant. Leveraging automation to streamline JIS data integration, complex calculations, and architectural planning processes.',
         orbitRadius: 15,
         orbitSpeed: 0.5,
-        link: 'https://solar-punk-git-feature-improve-pdf-viewer-lakar-teams-projects.vercel.app/apps/refil/AC_Pipe_length.html',
+        link: '/apps/refil/AC_Pipe_length.html',
         secondaryLinks: [
             { label: 'AC Pipe Length Calculator', url: '/apps/refil/AC_Pipe_length.html' },
             { label: 'Outdoor Condition Optimizer', url: '/apps/refil/Outdoor_condition.html' },
