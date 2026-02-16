@@ -291,7 +291,7 @@ const MobileLiteView = () => {
                                 {/* Chat Container */}
                                 <div className="flex-1 relative bg-black/50">
                                     <iframe
-                                        src="https://project-aibo.vercel.app/?embed=true&mobile=true&chatOnly=true"
+                                        src="https://project-aibo.vercel.app/?embed=true&mobile=true&chatOnly=true&noAudio=true&voice=false"
                                         className="absolute inset-0 w-full h-full border-0"
                                         title="Aibo Assistant"
                                         allow="camera"
@@ -307,7 +307,7 @@ const MobileLiteView = () => {
             {!showAibo && (
                 <div className="hidden">
                     <iframe
-                        src="https://project-aibo.vercel.app/?embed=true&mobile=true&chatOnly=true"
+                        src="https://project-aibo.vercel.app/?embed=true&mobile=true&chatOnly=true&noAudio=true&voice=false"
                         title="Aibo Preloader"
                     />
                 </div>
