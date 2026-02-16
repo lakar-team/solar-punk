@@ -95,11 +95,7 @@ const MobileLiteView = () => {
                                     <div className="overflow-hidden rounded-[22px] bg-black/40 backdrop-blur-xl">
                                         <div className="h-48 md:h-56 w-full py-2">
                                             {activeItem.id === 'cv-core' ? (
-                                                <div className="w-full h-full">
-                                                    <Canvas camera={{ position: [0, 0, 15], fov: 45 }}>
-                                                        <SunPreview />
-                                                    </Canvas>
-                                                </div>
+                                                <SunPreview />
                                             ) : (
                                                 <PlanetPreview project={activeItem as any} />
                                             )}

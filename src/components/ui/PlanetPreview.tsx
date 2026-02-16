@@ -108,7 +108,7 @@ export default function PlanetPreview({ project }: PlanetPreviewProps) {
     if (!project) return null;
 
     return (
-        <div className="w-full h-40 md:h-48 rounded-xl overflow-hidden bg-gradient-to-b from-black/50 to-transparent border border-white/10 mb-4">
+        <div className="w-full h-40 md:h-48 rounded-xl overflow-hidden bg-gradient-to-b from-black/50 to-transparent border border-white/10 mb-4 group/preview">
             <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
                 <Suspense fallback={null}>
                     <PlanetMesh project={project} />

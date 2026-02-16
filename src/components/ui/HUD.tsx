@@ -9,6 +9,7 @@ import dynamic from 'next/dynamic';
 
 // Dynamic import to avoid SSR issues with Three.js
 const PlanetPreview = dynamic(() => import('./PlanetPreview'), { ssr: false });
+const SunPreview = dynamic(() => import('./SunPreview'), { ssr: false });
 
 export default function HUD() {
     const { activePlanetId, setActivePlanet, setFocusedPlanet, focusedPlanetId } = useStore();
@@ -109,6 +110,7 @@ export default function HUD() {
                         </div>
 
                         <div className="flex-1 space-y-6">
+                            <SunPreview />
                             <div>
                                 <span className="inline-block px-2 py-1 bg-amber-500/20 rounded text-[10px] uppercase tracking-wider mb-2 text-amber-400 border border-amber-500/30">
                                     Core Profile
@@ -330,14 +332,17 @@ export default function HUD() {
                         {/* Sun/CV */}
                         <button
                             onClick={() => { setActivePlanet('cv-core'); setFocusedPlanet(null); setShowNav(false); }}
-                            className="w-full text-left px-3 py-3 rounded hover:bg-amber-500/20 active:bg-amber-500/30 text-amber-400 text-sm mb-2 border border-amber-500/20"
+                            className={`w-full text-left px-3 py-3 rounded transition-all flex items-center justify-between group ${activePlanetId === 'cv-core' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/50' : 'text-amber-500/80 hover:bg-amber-500/10 border border-amber-500/10'}`}
                         >
-                            ☀️ Core Profile (CV)
+                            <div className="flex items-center gap-3">
+                                <span className="text-lg">☀️</span>
+                                <span className="text-sm font-bold tracking-tight">Core Profile (CV)</span>
+                            </div>
                         </button>
 
                         {/* Planets - Direct open for mobile friendliness */}
-                        <div className="space-y-1">
-                            {projects.map((project) => (
+                        <div className="space-y-1 mt-3">
+                            {projects.map((project, index) => (
                                 <button
                                     key={project.id}
                                     onClick={() => {
@@ -345,10 +350,21 @@ export default function HUD() {
                                         setActivePlanet(project.id);
                                         setShowNav(false);
                                     }}
-                                    className={`w-full text-left px-3 py-3 rounded hover:bg-white/10 active:bg-white/20 text-sm transition-colors ${project.status === 'in-progress' ? 'text-amber-300' : 'text-white/80'}`}
+                                    className={`w-full text-left px-3 py-3 rounded transition-all flex items-center justify-between group ${activePlanetId === project.id ? 'bg-white/10 text-white' : 'text-white/60 hover:bg-white/5 hover:text-white'}`}
                                 >
-                                    {project.name}
-                                    {project.status === 'in-progress' && <span className="ml-2 text-[10px] text-amber-400">(WIP)</span>}
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-[10px] font-mono opacity-50 group-hover:opacity-100 transition-opacity">{(index + 1).toString().padStart(2, '0')}</span>
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-bold tracking-tight">
+                                                {project.name}
+                                                {project.status === 'in-progress' && <span className="ml-2 text-[10px] text-amber-500 font-normal">(WIP)</span>}
+                                            </span>
+                                            <span className="text-[9px] uppercase tracking-widest opacity-40 group-hover:opacity-60 transition-opacity">{project.type}</span>
+                                        </div>
+                                    </div>
+                                    {activePlanetId === project.id && (
+                                        <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_#f59e0b]" />
+                                    )}
                                 </button>
                             ))}
                         </div>

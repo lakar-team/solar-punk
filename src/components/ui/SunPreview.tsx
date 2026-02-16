@@ -1,11 +1,9 @@
-'use client';
-
+import { Canvas, useFrame } from '@react-three/fiber';
 import { Sphere, useTexture } from '@react-three/drei';
-import { useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useRef, Suspense } from 'react';
 import * as THREE from 'three';
 
-export default function SunPreview() {
+function SunMesh() {
     const meshRef = useRef<THREE.Mesh>(null);
     const sunTexture = useTexture('/textures/sun-face.jpg');
 
@@ -29,5 +27,17 @@ export default function SunPreview() {
                 />
             </Sphere>
         </group>
+    );
+}
+
+export default function SunPreview() {
+    return (
+        <div className="w-full h-40 md:h-48 rounded-xl overflow-hidden bg-gradient-to-b from-black/50 to-transparent border border-amber-500/20 mb-6">
+            <Canvas camera={{ position: [0, 0, 15], fov: 45 }}>
+                <Suspense fallback={null}>
+                    <SunMesh />
+                </Suspense>
+            </Canvas>
+        </div>
     );
 }
