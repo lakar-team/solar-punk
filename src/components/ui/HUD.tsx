@@ -279,7 +279,7 @@ export default function HUD() {
                                             activeProject.link.includes('amazon.com') ||
                                             activeProject.link.includes('redbubble.com') ||
                                             activeProject.link.includes('youtube.com') ||
-                                            activeProject.link.includes('pages.dev') ||
+                                            activeProject.link.includes('power-lunch.pages.dev') ||
                                             activeProject.link.includes('drive.google.com');
 
                                         if (isUnembeddable) {
