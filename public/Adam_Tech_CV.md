@@ -61,3 +61,19 @@ Ex-Founder and PhD Researcher with 10+ years of project leadership at the inters
 - **Automated Workflows**: Standardizing complex compliance and reporting using low-code/no-code and custom script solutions.
 - **Technical Domain**: HVAC Thermal Dynamics, Smart Factory integration, LEED/Sustainability standards.
 - **Communication**: Bilingual English/Japanese (Professional proficiency), Strategic Negotiation.
+
+---
+
+## 🌐 Projects & Products
+
+### Online Sheikh AI | [islamic-advisor.pages.dev](https://islamic-advisor.pages.dev)
+An AI-powered Islamic advisor rooted in the Quran and authentic Sunnah. Provides intelligent, tradition-rooted spiritual guidance to users worldwide. Built as a full-stack web application with a modern UI and AI integration.
+
+### Project Aibo | [project-aibo.vercel.app](https://project-aibo.vercel.app)
+Interactive AI receptionist for the Solar Punk portfolio. Persona-driven assistant that guides visitors through Adam's work and experience.
+
+### Kanji Sniper
+An interactive Japanese language learning game testing kanji speed and accuracy.
+
+### Solar Punk Portfolio | [solar-punk-portfolio.vercel.app](https://vercel.com)
+A 3D interactive portfolio built with Three.js, Next.js, and React Three Fiber. Features an explorable solar system where each planet represents a project or life chapter.
