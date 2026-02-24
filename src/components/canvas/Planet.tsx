@@ -16,12 +16,14 @@ function TexturedMaterial({
     texturePath,
     color,
     emissive,
-    emissiveIntensity
+    emissiveIntensity,
+    isWIP
 }: {
     texturePath: string;
     color: string;
     emissive: string;
     emissiveIntensity: number;
+    isWIP: boolean;
 }) {
     const texture = useTexture(texturePath);
 
@@ -29,8 +31,10 @@ function TexturedMaterial({
         <meshStandardMaterial
             map={texture}
             color={color}
-            roughness={0.7}
-            metalness={0.2}
+            roughness={0.8}
+            metalness={isWIP ? 0.8 : 0.1}
+            bumpMap={texture} // Use color map as a cheap bump map for terrain depth
+            bumpScale={0.015}
             emissive={emissive}
             emissiveIntensity={emissiveIntensity}
         />
@@ -108,10 +112,10 @@ export default function Planet({ project }: PlanetProps) {
                 <Suspense fallback={
                     <meshStandardMaterial
                         color={fallbackColor}
-                        roughness={0.7}
-                        metalness={0.2}
+                        roughness={0.8}
+                        metalness={isWIP ? 0.8 : 0.1}
                         emissive={baseEmissive}
-                        emissiveIntensity={isFocused ? 0.6 : hovered ? 0.4 : 0.2}
+                        emissiveIntensity={isFocused ? 0.8 : hovered ? 0.5 : 0.1}
                     />
                 }>
                     {textureToLoad ? (
@@ -119,18 +123,31 @@ export default function Planet({ project }: PlanetProps) {
                             texturePath={textureToLoad}
                             color="#ffffff"
                             emissive={baseEmissive}
-                            emissiveIntensity={isFocused ? 0.6 : hovered ? 0.4 : 0.2}
+                            emissiveIntensity={isFocused ? 0.8 : hovered ? 0.5 : 0.1}
+                            isWIP={isWIP}
                         />
                     ) : (
                         <meshStandardMaterial
                             color={fallbackColor}
-                            roughness={0.7}
-                            metalness={0.2}
+                            roughness={0.8}
+                            metalness={isWIP ? 0.8 : 0.1}
                             emissive={baseEmissive}
-                            emissiveIntensity={isFocused ? 0.6 : hovered ? 0.4 : 0.2}
+                            emissiveIntensity={isFocused ? 0.8 : hovered ? 0.5 : 0.1}
                         />
                     )}
                 </Suspense>
+            </Sphere>
+
+            {/* Atmospheric / Rim Glow Layer */}
+            <Sphere args={[project.size * 0.42, 32, 32]}>
+                <meshBasicMaterial
+                    color={baseEmissive}
+                    transparent
+                    opacity={isFocused ? 0.15 : 0.05}
+                    blending={THREE.AdditiveBlending}
+                    side={THREE.BackSide}
+                    depthWrite={false}
+                />
             </Sphere>
 
             {/* Subtle light to make the planet pop */}

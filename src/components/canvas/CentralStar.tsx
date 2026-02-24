@@ -35,17 +35,37 @@ export default function CentralStar() {
                     map={sunTexture}
                     emissive={hovered ? "#fbbf24" : "#ffffff"} // White emissive makes the texture show better
                     emissiveMap={sunTexture} // Use texture as emissive map too
-                    emissiveIntensity={hovered ? 1.5 : 0.8}
+                    emissiveIntensity={hovered ? 2.5 : 1.8} // Increased for Bloom post-processing
                     roughness={0.5}
                 />
             </Sphere>
 
-            {/* Glow Halo */}
-            <pointLight distance={80} intensity={5} color="#f59e0b" />
+            {/* Glowing Corona (Atmosphere/Flare) */}
+            <Sphere args={[5.3, 32, 32]}>
+                <meshBasicMaterial
+                    color="#f59e0b"
+                    transparent
+                    opacity={0.3}
+                    blending={THREE.AdditiveBlending}
+                    side={THREE.BackSide}
+                />
+            </Sphere>
+            <Sphere args={[6.0, 32, 32]}>
+                <meshBasicMaterial
+                    color="#fbbf24"
+                    transparent
+                    opacity={0.15}
+                    blending={THREE.AdditiveBlending}
+                    side={THREE.BackSide}
+                />
+            </Sphere>
+
+            {/* Glow Halo Light */}
+            <pointLight distance={120} intensity={8} color="#f59e0b" decay={2} />
 
             {/* Label above Star */}
-            <Html position={[0, 7, 0]} center>
-                <div className={`pointer-events-none whitespace-nowrap text-sm font-bold transition-all duration-300 ${hovered ? 'text-amber-400 scale-110' : 'text-white/90'}`}>
+            <Html position={[0, 8, 0]} center>
+                <div className={`pointer-events-none whitespace-nowrap text-sm font-bold transition-all duration-300 ${hovered ? 'text-amber-400 scale-110 drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]' : 'text-white/90 drop-shadow-md'}`}>
                     {profile.name}
                     <div className="text-[10px] text-amber-500/70 text-center">Click to view CV</div>
                 </div>
