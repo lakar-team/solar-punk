@@ -31,7 +31,7 @@ export default function Scene() {
                     <CentralStar />
                     <PlanetSystem />
 
-                    <EffectComposer disableNormalPass>
+                    <EffectComposer>
                         <Bloom
                             luminanceThreshold={1.0}
                             mipmapBlur
