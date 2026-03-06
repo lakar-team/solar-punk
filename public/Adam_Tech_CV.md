@@ -73,7 +73,7 @@ An AI-powered Islamic advisor rooted in the Quran and authentic Sunnah. Provides
 Interactive AI receptionist for the Solar Punk portfolio. Persona-driven assistant that guides visitors through Adam's work and experience.
 
 ### Kanji Sniper
-An interactive Japanese language learning game testing kanji speed and accuracy.
+A screen overlay that enables OCR scanning of kanji text to provide word-for-word translation for Japanese language learners.
 
 ### Solar Punk Portfolio | [solar-punk-portfolio.vercel.app](https://vercel.com)
 A 3D interactive portfolio built with Three.js, Next.js, and React Three Fiber. Features an explorable solar system where each planet represents a project or life chapter.

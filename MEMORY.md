@@ -46,7 +46,7 @@
 - [x] Implemented 3D Scene with planet-based navigation.
 - [x] Integrated Tech CV content and created a markdown version in `public/`.
 - [x] Added "Download Tech CV" link to the HUD component.
-- [x] Integrated playable HTML games (Kanji Sniper, Demon Hunter).
+- [x] Integrated Kanji Sniper (OCR scanning & translation tool) and Demon Hunter (HTML game).
 - [x] Linked external professional and creative assets (Shop, YouTube, Amazon).
 - [x] Added orbit rings to visually connect planets.
 - [x] Interactive sun with smiling face texture and CV viewer.
@@ -66,5 +66,5 @@
 ## 📝 SESSION LOGS
 *Short notes on what changed in recent sessions*
 - **2026-01-22 (Early)**: Pushed Tech CV updates. Created `MEMORY.md`.
-- **2026-01-22 (Mid)**: Integrated Kanji Sniper and Demon Hunter HTML apps. Linked Redbubble, YouTube, and Momotaro book. Updated HUD with action buttons.
+- **2026-01-22 (Mid)**: Integrated Kanji Sniper OCR tool and Demon Hunter HTML app. Linked Redbubble, YouTube, and Momotaro book. Updated HUD with action buttons.
 - **2026-01-22 (Late)**: Added orbit rings, interactive sun with face texture and CV viewer, Lakar project photos, and Linktree presentation PDFs.

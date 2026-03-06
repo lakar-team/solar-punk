@@ -137,7 +137,7 @@ export const projects: Project[] = [
         texturePath: '/textures/planet-desert.png',
         emissiveColor: '#ef4444',
         status: 'complete',
-        description: 'An interactive Japanese learning game. Test your kanji speed and accuracy!',
+        description: 'A screen overlay that enables OCR scanning of kanji text to provide word-for-word translation for Japanese language learners.',
         orbitRadius: 48,
         orbitSpeed: 0.12,
         link: '/games/kanji-sniper.html',
