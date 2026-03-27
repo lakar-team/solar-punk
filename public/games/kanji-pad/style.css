@@ -1,0 +1,439 @@
+:root {
+    --bg-color: #f4f1ea; /* Paper-like warm gray */
+    --card-bg: #fdfcf7; /* Near-white paper */
+    --text-color: #2c3e50;
+    --text-muted: #7f8c8d;
+    --accent-color: #34495e;
+    --accent-highlight: #d35400; /* Warm orange highlight */
+    --border-color: #e0dcd0;
+    --canvas-bg: #ffffff;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Noto Sans JP', sans-serif;
+    background-color: var(--bg-color);
+    background-image: radial-gradient(#d1cfc7 0.5px, transparent 0.5px);
+    background-size: 20px 20px;
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-x: hidden;
+    padding: 0;
+}
+
+.app-container {
+    width: 100vw;
+    min-height: 100vh;
+    background: var(--paper-color);
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+    position: relative;
+}
+
+/* Paper Texture Overlay */
+.app-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url('https://www.transparenttextures.com/patterns/felt.png'); 
+    opacity: 0.03;
+    pointer-events: none;
+    border-radius: 12px;
+}
+
+header {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    white-space: nowrap;
+}
+
+.icon {
+    font-size: 1.8rem;
+}
+
+.header-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.result-container {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    width: 100%;
+}
+
+#result-bar {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    font-size: 2.2rem;
+    padding: 5px 0;
+    outline: none;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 300;
+}
+
+.result-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.action-btn {
+    background: transparent;
+    border: none;
+    padding: 10px;
+    font-size: 1.4rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.action-btn:hover {
+    color: var(--accent-highlight);
+    background: rgba(0,0,0,0.05);
+}
+
+.definition-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 10px;
+    background: rgba(211, 84, 0, 0.05);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-highlight);
+}
+
+.def-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent-highlight);
+    text-transform: uppercase;
+}
+
+.def-text {
+    font-size: 0.95rem;
+    color: var(--text-color);
+    font-style: italic;
+}
+
+.controls {
+    display: flex;
+    gap: 8px;
+}
+
+button {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+button:hover {
+    border-color: var(--accent-highlight);
+    background: #fafafa;
+}
+
+#clear-result-btn {
+    padding: 4px 8px;
+    color: var(--text-muted);
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    min-height: 0;
+    align-items: stretch;
+}
+
+.canvas-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 400px;
+}
+
+.canvas-wrapper {
+    flex: 1;
+    background: var(--canvas-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    position: relative;
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' style='fill:black'><text y='24' font-size='24'>🖌️</text></svg>") 0 24, crosshair;
+    aspect-ratio: 1 / 1; 
+    min-width: 300px;
+    min-height: 300px;
+}
+
+.canvas-hint {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 1.1rem;
+    color: #ccc;
+    font-family: 'Inter', sans-serif;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 5;
+}
+
+.canvas-controls {
+    display: flex;
+    justify-content: flex-start;
+    padding-top: 15px;
+}
+
+.secondary-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.secondary-btn:hover {
+    border-color: var(--accent-highlight);
+    color: var(--accent-highlight);
+    background: rgba(0,0,0,0.02);
+}
+
+/* Canvas Dividers */
+.canvas-dividers {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+}
+
+.divider-v, .divider-h {
+    position: absolute;
+    background-image: linear-gradient(to bottom, #ccc 50%, transparent 50%);
+    background-size: 1px 10px;
+}
+
+.divider-v {
+    left: 50%; top: 0; bottom: 0;
+    width: 1px;
+}
+
+.divider-h {
+    top: 50%; left: 0; right: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, #ccc 50%, transparent 50%);
+    background-size: 10px 1px;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+.candidates-section {
+    flex: 0 0 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    overflow-y: auto;
+}
+
+.candidates-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* 5x5 by default */
+    gap: 1px;
+    border: 1px solid var(--border-color);
+    background: var(--border-color); /* Lines between cells */
+}
+
+.candidate-card {
+    aspect-ratio: 1;
+    background: #fff; 
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.4rem; 
+    cursor: pointer;
+    transition: background 0.1s;
+    color: #111;
+}
+
+.candidate-card:hover {
+    background: var(--accent-highlight);
+    color: #fff;
+}
+
+/* Tooltip High Contrast */
+.tooltip {
+    position: fixed;
+    background: #111; /* Dark background for high contrast */
+    color: #fff;
+    border: 1px solid var(--accent-highlight);
+    padding: 14px;
+    border-radius: 6px;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.4);
+    max-width: 250px;
+}
+
+.tooltip-kanji { 
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--accent-highlight);
+    margin-bottom: 4px;
+}
+
+.detail-panel {
+    margin-top: 20px;
+    padding: 16px;
+    background: rgba(56, 189, 248, 0.1);
+    border: 1px solid var(--accent-color);
+    border-radius: 16px;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Tooltip Styles */
+.tooltip {
+    position: fixed;
+    background: #1e293b;
+    border: 1px solid var(--accent-color);
+    padding: 12px;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    max-width: 200px;
+}
+
+.tooltip-kanji {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+.tooltip-meaning {
+    font-size: 0.9rem;
+    margin-top: 4px;
+}
+
+.tooltip-reading {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* Compact Mode / Responsive */
+@media (max-width: 800px) {
+    main {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .app-container {
+        padding: 15px;
+        width: 100vw;
+        height: auto; /* Let it grow */
+        max-height: none;
+        margin: 0;
+        border-radius: 0;
+    }
+
+    .canvas-wrapper {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        min-width: 0; 
+    }
+
+    .candidates-panel {
+        height: auto;
+        max-height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo h1 {
+        font-size: 1.1rem;
+    }
+    
+    .result-container {
+        padding: 4px;
+    }
+    
+    #result-bar {
+        font-size: 1.1rem;
+    }
+}
+
+.romaji-text {
+    font-size: 0.9rem;
+    color: var(--accent-highlight);
+    font-style: italic;
+    margin-top: 2px;
+    height: 1.2rem;
+    font-family: 'Inter', sans-serif;
+}

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanji Pad Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Noto+Sans+JP:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body class="light-theme">
+    <div class="app-container">
+        <header>
+            <div class="header-top">
+                <div class="logo">
+                    <span class="icon">🖌️</span>
+                    <h1>Kanji Pad Pro</h1>
+                </div>
+            </div>
+            <div class="result-container">
+                <input type="text" id="result-bar" placeholder="Type or click to build..." spellcheck="false">
+                <div class="result-actions">
+                    <button id="backspace-btn" class="action-btn" title="Delete Last Character">⌫</button>
+                    <button id="clear-result-btn" class="action-btn" title="Clear All">✕</button>
+                    <button id="copy-bar-btn" class="action-btn" title="Copy">📋 Copy</button>
+                </div>
+            </div>
+            <div id="compound-definition" class="def-text">...</div>
+            <div id="romaji-pronunciation" class="romaji-text"></div>
+        </header>
+
+        <main>
+            <div class="canvas-section">
+                <div class="canvas-wrapper">
+                    <div id="canvas-hint" class="canvas-hint">Draw here</div>
+                    <div class="canvas-dividers">
+                        <div class="divider-v"></div>
+                        <div class="divider-h"></div>
+                    </div>
+                    <canvas id="drawing-canvas"></canvas>
+                </div>
+                <div class="canvas-controls">
+                    <button id="clear-btn" class="secondary-btn" title="Clear Canvas">🗑️ Clear</button>
+                </div>
+            </div>
+
+            <div class="candidates-section">
+                <div class="section-header">
+                    <h2>Candidates</h2>
+                    <span class="subtitle">Hover for English meaning</span>
+                </div>
+                <div id="candidates-list" class="candidates-grid">
+                    <div class="empty-state">Start drawing...</div>
+                </div>
+            </div>
+        </main>
+
+        <section id="detail-panel" class="detail-panel hidden">
+            <div class="kanji-header">
+                <div class="large-kanji" id="selected-kanji"></div>
+                <div class="readings">
+                    <div class="onyomi"><strong>On:</strong> <span id="on-reading">-</span></div>
+                    <div class="kunyomi"><strong>Kun:</strong> <span id="kun-reading">-</span></div>
+                </div>
+            </div>
+            <div class="meanings-list" id="meanings-list">
+                <!-- Meanings injected here -->
+            </div>
+        </section>
+
+        </main>
+    </div>
+
+    <!-- Tooltip for hover -->
+    <div id="tooltip" class="tooltip hidden">
+        <div class="tooltip-kanji"></div>
+        <div class="tooltip-meaning"></div>
+        <div class="tooltip-reading"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

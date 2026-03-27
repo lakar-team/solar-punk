@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HydroCalc v2 — JIS Pipe Sizing</title>
+
+  <!-- Styles — edit css/ files to change appearance without touching app logic -->
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/canvas.css">
+
+  <!-- SheetJS for xlsx loading -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<div id="app">
+<!-- TOPBAR -->
+<div id="topbar">
+  <div class="logo">HYDRO<span>CALC</span> <span style="font-size:11px;color:var(--text-dim);font-weight:400;letter-spacing:0">v2</span></div>
+  
+  <div class="menu-group">
+    <div class="dropdown">
+      <button class="menu-btn">Project ▾</button>
+      <div class="dropdown-content">
+        <a href="#" onclick="saveProject()">⬇ Save JSON</a>
+        <a href="#" onclick="exportCSV()">⬆ Export CSV</a>
+        <a href="#" onclick="loadFile()">📂 Load Project</a>
+      </div>
+    </div>
+    <div class="dropdown">
+      <button class="menu-btn">Library ▾</button>
+      <div class="dropdown-content">
+        <a href="#" onclick="switchView('library')">⊞ Fixture Library</a>
+        <a href="#" onclick="switchView('materials')">◈ Pipe Materials</a>
+        <a href="#" onclick="switchView('reference')">⊟ Reference Sheets</a>
+      </div>
+    </div>
+    <button class="menu-btn active" onclick="switchView('network')">⬡ Network</button>
+  </div>
+
+  <div class="topbar-right">
+    <button class="btn accent" onclick="addNodePrompt()">＋ Add Node</button>
+    <div id="pump-ind"></div>
+    <input type="file" id="file-input" accept=".json" style="display:none" onchange="loadProject(event)">
+  </div>
+</div>
+
+<div id="main">
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="ph"><span class="pt">System Tree</span><button class="btn" style="font-size:9px;padding:2px 7px" onclick="addNodePrompt()">＋</button></div>
+  <div class="sc" id="tree-cont"></div>
+</div>
+<!-- CENTER -->
+<div id="center">
+  <div id="canvas-area">
+    <div class="ctb">
+      <div class="cb active" title="Select" onclick="setTool('select')">↖</div>
+      <div class="cb" title="Connect" onclick="setTool('connect')">⌁</div>
+      <div class="cb" title="Zoom In" onclick="zoom(1.2)">＋</div>
+      <div class="cb" title="Zoom Out" onclick="zoom(0.8)">－</div>
+      <div class="cb" title="Fit" onclick="fitView()">⊡</div>
+      <div style="width:1px;height:20px;background:var(--border);margin:0 2px"></div>
+      <div class="cb" title="Quick-add Junction node at canvas centre" onclick="quickAddBranch()" style="font-size:12px;font-weight:700;letter-spacing:-1px">◆＋</div>
+    </div>
+    <div id="canvas"><svg id="svgc" xmlns="http://www.w3.org/2000/svg" ondragover="canvasDragOver(event)" ondrop="canvasDrop(event)">
+      <defs><marker id="arr" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#f0a500" opacity="0.5"/></marker></defs>
+      <g id="world"><g id="edges"></g><g id="nodes"></g></g>
+    </svg></div>
+    <div class="chint">Select: Click · Move: Drag · Connect ⌁: Drag node→node or node→pipe (splits pipe) · Double-click canvas: Quick-add Junction</div>
+    <div class="tip" id="tip"></div>
+  </div>
+  <div id="calc-panel">
+    <div class="ph">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="pt">Calculation Ledger</span>
+        <div style="display:flex;align-items:center;gap:0;background:var(--bg3);border:1px solid var(--border);border-radius:3px;overflow:hidden" title="Project mode — determines FU column from 表2-2">
+          <button id="mode-pub" class="mode-btn active" onclick="setProjectMode('public')">Public</button>
+          <button id="mode-prv" class="mode-btn" onclick="setProjectMode('private')">Private</button>
+        </div>
+        <button class="btn primary px-3" style="font-size:10px;padding:3px 10px;height:24px" onclick="autoSizeAllEdges(true);render()">⚡ Auto-Size All</button>
+        <label class="tog-label" style="font-size:10px;color:var(--text-dim);display:flex;align-items:center;gap:6px;cursor:pointer">
+          <input type="checkbox" id="auto-size-tog" checked onchange="toggleAutoSize(this.checked)"> Auto-Sizing
+        </label>
+      </div>
+      <span style="font-family:var(--mono);font-size:9px;color:var(--text-dim)">JIS Pipe Sizing Engine · Equiv. Length 7-4~7-9</span>
+    </div>
+    <div id="cs"><table class="ct" id="ct">
+      <thead>      <tr>
+        <th style="text-align:right" title="Segment Index">#</th>
+        <th title="Upstream node to Downstream node">From → To</th>
+        <th title="Pipe Material lookup chart index">Mat.</th>
+        <th style="text-align:right" title="Geometric length of the pipe segment (meters)">L(m)</th>
+        <th style="text-align:right" title="Combined equivalent length of elbows, tees, and valves in this segment (meters)">Fittings(m)</th>
+        <th style="text-align:right" title="Total effective length for friction loss calculation (L + Fittings)">L tot</th>
+        <th style="text-align:right" title="Elevation change (m). Positive = Rising, Negative = Falling">ΔZ(m)</th>
+        <th style="text-align:right" title="Accumulated Fixture Units (FU) from all downstream endpoints">Units</th>
+        <th style="text-align:right" title="Simultaneous flow rate (Liters per minute) derived from JIS FU charts">Q(L/m)</th>
+        <th style="text-align:right" title="Maximum allowable friction loss (kPa/meter) to maintain minimum pressure requirement">R_allow</th>
+        <th style="text-align:right" title="Actual friction loss (kPa/meter) based on Hazen-Williams formula">R_chart</th>
+        <th style="text-align:right" title="Water velocity (meters per second). Target < 2.0m/s">v(m/s)</th>
+        <th style="text-align:right" title="Recommended diameter based on pressure budget">Rec Ø</th>
+        <th style="text-align:right" title="Nominal pipe diameter (mm)">Ø</th>
+        <th style="text-align:center" title="Segment compliance: ✓ OK, ⚠ Warning (Low pressure/high velocity), ✗ Error (Negative pressure)">Status</th>
+      </tr>
+</thead>
+      <tbody id="cb2"></tbody>
+    </table></div>
+  </div>
+</div>
+<!-- RIGHT PANEL -->
+<div id="rp">
+  <div class="ph"><span class="pt">Properties</span><span id="sel-lbl" style="font-family:var(--mono);font-size:9px;color:var(--text-dim)">Nothing selected</span></div>
+  <div id="rs"><div id="props-content"><div style="color:var(--text-dim);font-size:11px;padding:16px;text-align:center">Click a node or segment to edit properties</div></div></div>
+</div>
+</div>
+
+<!-- STATUSBAR -->
+<div id="sb"><div class="sdot" id="sdot"></div><span id="st">0/0 segments OK</span><span>|</span><span id="st2">0 nodes</span><span>|</span><span id="mode-badge" style="color:var(--amber);font-weight:700">公共 Public</span><span style="margin-left:auto;font-size:8px">Graph lookup: HW Q=4.87·C·d²·⁶³·i⁰·⁵⁴×10³ | Equiv. lengths: JIS 表7-4~7-9 | <span id="ref-loaded-badge" style="color:var(--red)">⚠ No pipe ref loaded</span></span></div>
+</div>
+
+<!-- FULL SCREEN VIEWS -->
+<!-- REFERENCE MATERIALS -->
+<div class="fsv" id="view-reference">
+<div class="fsvinner">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div style="font-family:var(--head);font-size:22px;font-weight:700;color:var(--amber);letter-spacing:1px">Reference Materials</div>
+    <span style="font-family:var(--mono);font-size:10px;color:var(--text-dim)">JIS 給排水衛生設備 — pipe data loaded from external reference file</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+    <div class="notice" style="flex:1;margin-bottom:0">Pipe reference data is loaded from an external pipe chart reference file. This keeps the calculator app light and the reference data independently editable. Load the file once per session — all sizing calculations will use it automatically.</div>
+    <label id="ref-load-btn" style="cursor:pointer;flex-shrink:0">
+      <span class="btn primary" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:7px 14px">
+        📂 Load Pipe Reference
+      </span>
+      <input type="file" accept=".xlsx" style="display:none" onchange="loadPipeRefXlsx(event)">
+    </label>
+  </div>
+  <div id="ref-status-bar" style="margin-bottom:10px"></div>
+  <div id="ref-content"></div>
+</div>
+</div>
+<!-- LIBRARY -->
+<div class="fsv" id="view-library">
+<div class="fsvinner">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div style="font-family:var(--head);font-size:20px;font-weight:700;color:var(--amber)">Fixture Library</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <label id="lib-import-btn" style="cursor:pointer">
+        <span class="btn primary" style="display:inline-block">📂 Import Fixture Reference</span>
+        <input type="file" accept=".xlsx" style="display:none" onchange="loadFixtureXlsx(event)">
+      </label>
+      <button class="btn" onclick="addFixturePrompt()">＋ Add Custom</button>
+    </div>
+  </div>
+  <div id="lib-status-bar" style="margin-bottom:8px"></div>
+  <div class="notice">Import your <b>Fixture Reference</b> file to populate this library. Both Public (公共) and Private (私室) FU values are shown; the active column is set by the <b>Public/Private</b> toggle in the topbar. Toggle <b>給湯栓併用</b> per fixture node in Properties to apply the ×¾ hot-water rule.</div>
+  <div id="lib-grid"></div>
+</div>
+</div>
+<!-- MATERIALS -->
+<div class="fsv" id="view-materials">
+<div class="fsvinner">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <div style="font-family:var(--head);font-size:20px;font-weight:700;color:var(--amber)">Pipe Material Library</div>
+    <button class="btn primary" onclick="addMatPrompt()">＋ Add Material</button>
+  </div>
+  <div class="notice">Materials map to JIS flow charts (図7-2~7-8). The chart key determines which digitized pipe-line dataset and equivalent length table are used for sizing.</div>
+  <div id="mat-grid"></div>
+</div>
+</div>
+
+<!-- CONTEXT MENU -->
+<div id="ctx-menu" style="display:none;position:fixed;z-index:500;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:4px 0;min-width:160px;box-shadow:0 6px 20px rgba(0,0,0,0.5)">
+  <div id="ctx-lbl" style="padding:5px 12px;font-family:var(--mono);font-size:9px;color:var(--text-dim);border-bottom:1px solid var(--border);margin-bottom:3px"></div>
+  <div class="ctx-item" onclick="ctxSelect()">Select</div>
+  <div class="ctx-item" id="ctx-flip" onclick="ctxFlip()">Flip Direction</div>
+  <div class="ctx-item" id="ctx-merge" onclick="ctxMerge()">Merge (Junctions only)</div>
+  <div class="ctx-item ctx-del" onclick="ctxDelete()">Delete</div>
+</div>
+
+<!-- ADD NODE MODAL -->
+<div class="mo" id="m-add">
+<div class="md">
+  <div class="mt">Add System Node</div>
+  <div class="mg">
+    <div><div class="ml">Node Type</div><select class="pi" id="mn-type" onchange="onMTChange()">
+      <option value="source">Water Source (main / tank)</option>
+      <option value="branch">Branch / Junction</option>
+      <option value="fixture">Fixture Endpoint</option>
+    </select></div>
+    <div><div class="ml">Label</div><input class="pi" id="mn-lbl" placeholder="e.g. WC-01, Branch A"></div>
+    <div><div class="ml">Elevation Z (m, rel. to source=0)</div><input class="pi" type="number" id="mn-z" value="0" step="0.1"></div>
+    <div id="mn-pres-w"><div class="ml">Supply Pressure (kPa)</div><input class="pi" type="number" id="mn-pres" value="300" step="10"></div>
+    <div id="mn-pump-w" class="mf"><div class="ml">Pump</div>
+      <label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:11px"><input type="checkbox" id="mn-pump"> Pump present — specify added head (kPa)</label>
+      <input class="pi" type="number" id="mn-phead" value="0" step="10" style="margin-top:5px">
+    </div>
+    <div id="mn-fix-w" class="mf" style="display:none"><div class="ml">Fixture Type</div><select class="pi" id="mn-ftype"></select>
+      <div class="ml" style="margin-top:7px">Quantity</div><input class="pi" type="number" id="mn-fqty" value="1" min="1">
+    </div>
+  </div>
+  <div class="ma"><button class="btn" onclick="closeModal('m-add')">Cancel</button><button class="btn primary" onclick="confirmAddNode()">Add Node</button></div>
+</div></div>
+
+<!-- FIXTURE MODAL -->
+<div class="mo" id="m-fix">
+<div class="md">
+  <div class="mt" id="mfix-title">Add Fixture Type</div>
+  <div class="mg">
+    <div class="mf"><div class="ml">Name</div><input class="pi" id="mf-name"></div>
+    <div><div class="ml">FU Public 公共 (器具給水負荷単位)</div><input class="pi" type="number" id="mf-units" value="2" step="0.5" min="0.5"></div>
+    <div><div class="ml">FU Private 私室 (leave blank = same as public)</div><input class="pi" type="number" id="mf-units-prv" placeholder="same as public" step="0.5" min="0.5"></div>
+    <div><div class="ml">Min. Pressure (kPa)</div><input class="pi" type="number" id="mf-pres" value="30" step="5"></div>
+    <div><div class="ml">Conn. Dia (mm)</div><input class="pi" type="number" id="mf-conn" value="13"></div>
+    <div><div class="ml">Flow Rate (L/min)</div><input class="pi" type="number" id="mf-flow" value="10" step="1"></div>
+    <div class="mf"><div class="ml">Notes</div><input class="pi" id="mf-notes" placeholder="Optional"></div>
+  </div>
+  <div class="ma"><button class="btn" onclick="closeModal('m-fix')">Cancel</button><button class="btn primary" onclick="confirmFixture()">Save</button></div>
+</div></div>
+
+<!-- MATERIAL MODAL -->
+<div class="mo" id="m-mat">
+<div class="md">
+  <div class="mt" id="mmat-title">Add Pipe Material</div>
+  <div class="mg">
+    <div class="mf"><div class="ml">Name</div><input class="pi" id="mm-name"></div>
+    <div><div class="ml">JIS Chart Key</div><select class="pi" id="mm-chart">
+      <option value="sgpw">sgpw — SGP VL-lined C=130 (図7-2)</option>
+      <option value="vpvc">vpvc — Hard PVC C=130 (図7-3)</option>
+      <option value="copper">copper — Copper C=130 (図7-4)</option>
+      <option value="sgp">sgp — Steel SGP C=100 (図7-5)</option>
+      <option value="sus">sus — Stainless C=140 (図7-6)</option>
+      <option value="hsgpw">hsgpw — Heat-resist VL C=130 (図7-7)</option>
+      <option value="poly">poly — Polyethylene C=215 (図7-8)</option>
+      <option value="custom">custom — Manual C value</option>
+    </select></div>
+    <div><div class="ml">Color (hex)</div><input class="pi" id="mm-color" value="#4d9de0"></div>
+    <div><div class="ml">Custom C (if custom chart)</div><input class="pi" type="number" id="mm-cval" value="130"></div>
+    <div class="mf"><div class="ml">Available Diameters mm (comma-sep, for custom)</div><input class="pi" id="mm-sizes" value="15,20,25,32,40,50,65,80,100"></div>
+  </div>
+  <div class="ma"><button class="btn" onclick="closeModal('m-mat')">Cancel</button><button class="btn primary" onclick="confirmMat()">Save</button></div>
+</div></div>
+
+<!-- ─────────────────────────────────────────────────────────────────────────
+     JavaScript — load order matters:
+       data       → static constants (no dependencies)
+       state      → app state S, addNode/addEdge (depends on: nothing)
+       hydraulics → pure math (depends on: state for PIPES/S.materials lookup)
+       engine     → graph traversal + auto-sizer (depends on: state, hydraulics)
+       render     → all DOM updates (depends on: state, engine)
+       ui         → interactions, drag, zoom (depends on: state, engine, render)
+       modals     → dialog logic (depends on: state, render, ui)
+       fileio     → save/load/export (depends on: state, render)
+       init       → wires it all together and starts the app
+     ───────────────────────────────────────────────────────────────────────── -->
+<script src="js/data.js"></script>
+<script src="js/state.js"></script>
+<script src="js/hydraulics.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/render.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/modals.js"></script>
+<script src="js/fileio.js"></script>
+<script src="js/loader.js"></script>
+<script src="js/init.js"></script>
+
+</body>
+</html>

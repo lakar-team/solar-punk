@@ -1,0 +1,217 @@
+/* =============================================================================
+   canvas.css
+   Network canvas area, system tree, calculation ledger, and reference/library
+   table styles. Edit here to change the network diagram presentation.
+   ============================================================================= */
+
+/* ── Canvas area ─────────────────────────────────────────────────────────────── */
+#canvas-area {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* Dot-grid background */
+#canvas-area::before {
+  content: '';
+  position: absolute;
+  inset: -100%;
+  background-image:
+    repeating-linear-gradient(30deg, var(--border) 0, var(--border) 1px, transparent 1px, transparent 40px),
+    repeating-linear-gradient(150deg, var(--border) 0, var(--border) 1px, transparent 1px, transparent 40px);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+#canvas {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+}
+#canvas svg { width: 100%; height: 100%; }
+
+/* ── Canvas toolbar (zoom / tool buttons) ───────────────────────────────────── */
+.ctb {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  gap: 5px;
+  z-index: 10;
+}
+
+.cb {
+  width: 30px;
+  height: 30px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-dim);
+  font-size: 14px;
+  transition: all 0.15s;
+}
+.cb:hover,
+.cb.active {
+  border-color: var(--amber);
+  color: var(--amber);
+  background: var(--amber-dim);
+}
+
+/* ── Canvas hint text (bottom-left) ─────────────────────────────────────────── */
+.chint {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-dim);
+  background: rgba(13, 17, 23, 0.85);
+  padding: 3px 9px;
+  border-radius: 3px;
+}
+
+/* ── System tree (left sidebar) ─────────────────────────────────────────────── */
+.tn {
+  padding: 5px 9px;
+  border-radius: 3px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+  margin: 1px 0;
+}
+.tn:hover             { background: var(--bg3); }
+.tn.sel               { background: var(--amber-dim); border-color: var(--amber); color: var(--amber); }
+.tn.src               { color: var(--green); }
+.tn.br                { padding-left: 20px; }
+.tn.ft                { padding-left: 34px; font-size: 11px; color: var(--text-dim); }
+
+/* Pipe rows inside tree */
+.pipe-row             { font-size: 10px; padding: 3px 8px 3px 16px; border-left: 2px solid transparent; }
+.pipe-row:hover       { background: rgba(77, 157, 224, 0.1); }
+.pipe-row.sel         { background: rgba(255, 255, 255, 0.08); border-left-color: var(--amber); }
+
+/* ── Calculation ledger (bottom panel) ──────────────────────────────────────── */
+#calc-panel {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#cs {
+  flex: 1;
+  overflow: auto;
+  padding: 0 10px 10px 10px;
+}
+
+.ct {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 10px;
+}
+
+.ct th {
+  text-align: left;
+  padding: 6px 6px;
+  color: var(--amber);
+  font-size: 9px;
+  letter-spacing: 1px;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  background: var(--bg2);
+  z-index: 2;
+}
+
+.ct td {
+  padding: 3px 6px;
+  border-bottom: 1px solid rgba(42, 51, 71, 0.4);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ct tr:hover td { background: var(--bg3); }
+.ct .sid        { color: var(--amber); }
+.ct .val        { color: var(--text-bright); text-align: right; }
+.ct .ok         { color: inherit; font-weight: 400; }
+.ct .warn       { color: var(--amber); font-weight: 700; }
+.ct .err        { color: var(--red); font-weight: 700; }
+
+/* ── Reference material tables ──────────────────────────────────────────────── */
+.ref-table {
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 10px;
+  margin-bottom: 8px;
+  white-space: nowrap;
+}
+
+.ref-table th {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 4px 8px;
+  text-align: center;
+  color: var(--amber);
+  font-size: 9px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.ref-table td {
+  border: 1px solid var(--border);
+  padding: 3px 8px;
+  text-align: right;
+  color: var(--text);
+}
+
+.ref-table td:first-child {
+  text-align: center;
+  font-weight: 700;
+  color: var(--amber);
+  background: var(--bg3);
+  min-width: 48px;
+}
+
+.ref-table tr:hover td     { background: var(--bg4); }
+.ref-table td.null-val     { color: var(--text-dim); text-align: center; }
+
+/* ── Reference section accordion ────────────────────────────────────────────── */
+.ref-section {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.ref-sec-hdr {
+  padding: 9px 14px;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+.ref-sec-hdr:hover        { background: var(--bg4); }
+.ref-sec-title            { font-family: var(--head); font-size: 13px; font-weight: 700; color: var(--text-bright); letter-spacing: 0.5px; }
+.ref-sec-sub              { font-family: var(--mono); font-size: 10px; color: var(--text-dim); }
+
+.ref-sec-body             { padding: 12px 14px; display: none; }
+.ref-sec-body.open        { display: block; }
+
+.ref-inner-grid           { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start; }
+.ref-scroll               { overflow-x: auto; }
+.ref-label                { font-size: 10px; font-weight: 700; color: var(--amber); font-family: var(--mono); letter-spacing: 0.5px; margin: 0 0 5px; }

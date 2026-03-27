@@ -1,0 +1,56 @@
+/* =============================================================================
+   base.css
+   CSS custom properties, reset, typography, and global scrollbar styling.
+   Edit this file to change the colour scheme or fonts for the entire app.
+   ============================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400;500&display=swap');
+
+/* ── Colour & font tokens ───────────────────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --bg:           #f8fafc; /* slate-50 */
+  --bg2:          #f1f5f9; /* slate-100 */
+  --bg3:          #e2e8f0; /* slate-200 */
+  --bg4:          #cbd5e1; /* slate-300 */
+
+  /* Borders & accents */
+  --border:       #cbd5e1; /* slate-300 */
+  --amber:        #d97706; /* amber-600 */
+  --amber2:       #b45309; /* amber-700 */
+  --amber-dim:    rgba(217, 119, 6, 0.1);
+  --red:          #e11d48; /* rose-600 */
+  --green:        #16a34a; /* green-600 */
+  --blue:         #2563eb; /* blue-600 */
+
+  /* Text */
+  --text:         #334155; /* slate-700 */
+  --text-dim:     #64748b; /* slate-500 */
+  --text-bright:  #0f172a; /* slate-900 */
+
+  /* Font stacks */
+  --mono:         'Space Mono', monospace;
+  --head:         'Barlow Condensed', sans-serif;
+  --body:         'Barlow', sans-serif;
+}
+
+/* ── Reset ──────────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 4px; height: 4px; }
+::-webkit-scrollbar-track  { background: var(--bg); }
+::-webkit-scrollbar-thumb  { background: var(--border); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }

@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>配管流量線図</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #e8e8e8;
+  font-family: 'MS Gothic','ＭＳ ゴシック','Hiragino Kaku Gothic Pro','Meiryo',monospace;
+  display: flex; flex-direction: column; min-height: 100vh;
+}
+.header {
+  background: #3a5a8a; color: white;
+  padding: 6px 14px; font-size: 13px; font-weight: bold;
+  display: flex; align-items: center; gap: 20px;
+}
+.tabs {
+  display: flex; background: #ddd; border-bottom: 2px solid #999;
+  padding: 4px 8px 0; gap: 3px; flex-wrap: wrap;
+}
+.tab {
+  padding: 5px 12px; font-size: 11px; cursor: pointer;
+  border: 1px solid #aaa; border-bottom: none;
+  background: #ccc; border-radius: 3px 3px 0 0;
+  font-family: 'MS Gothic',monospace; white-space: nowrap;
+}
+.tab.active { background: white; font-weight: bold; border-bottom: 2px solid white; margin-bottom: -2px; }
+.main { display: flex; flex: 1; padding: 8px; gap: 8px; min-height: 0; height: calc(100vh - 76px); }
+.chart-wrap { flex: 1; background: white; border: 1px solid #999; position: relative; display: flex; flex-direction: column; }
+.chart-title { font-size: 11px; font-family: 'MS Gothic',monospace; font-weight: bold; padding: 5px 8px; border-bottom: 1px solid #ddd; color: #000; text-align: center; }
+canvas { display: block; flex: 1; cursor: crosshair; }
+.tooltip { position: absolute; background: rgba(255,255,220,0.97); border: 1px solid #666; padding: 5px 8px; font-size: 10px; font-family: 'MS Gothic',monospace; pointer-events: none; display: none; z-index: 10; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.25); }
+.sidebar { width: 280px; flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; }
+.panel { background: white; border: 1px solid #999; padding: 7px; }
+.panel h3 { font-size: 10px; font-family: 'MS Gothic',monospace; font-weight: bold; border-bottom: 1px solid #ddd; padding-bottom: 3px; margin-bottom: 5px; }
+.row { display: flex; align-items: center; gap: 3px; margin-bottom: 4px; }
+.row label { font-size: 10px; width: 55px; flex-shrink: 0; font-family: 'MS Gothic',monospace; }
+.row select, .row input { flex: 1; font-size: 10px; font-family: 'MS Gothic',monospace; padding: 2px 3px; border: 1px solid #888; }
+.row .unit { font-size: 9px; width: 42px; flex-shrink: 0; color: #555; font-family: 'MS Gothic',monospace; }
+.resbox { background: #f8f8ec; border: 1px solid #bbb; padding: 5px 7px; margin-top: 3px; }
+.rl { font-size: 11px; font-family: 'MS Gothic',monospace; margin-bottom: 2px; }
+.rl .v { font-weight: bold; color: #002299; }
+.rl .w { font-weight: bold; color: #cc0000; }
+table.vt { width: 100%; border-collapse: collapse; font-size: 9px; font-family: 'MS Gothic',monospace; }
+table.vt th { background: #ddeeff; border: 1px solid #aaa; padding: 2px 3px; text-align: center; }
+table.vt td { border: 1px solid #ccc; padding: 1px 3px; text-align: right; }
+table.vt tr:nth-child(even) td { background: #f5f8ff; }
+.fml { background: #fffef0; border: 1px solid #ccc; padding: 6px; font-size: 9px; font-family: 'MS Gothic',monospace; line-height: 1.7; }
+table.eqt { width: 100%; border-collapse: collapse; font-size: 8px; font-family: 'MS Gothic',monospace; }
+table.eqt th { background: #e8f0e8; border: 1px solid #aaa; padding: 2px 2px; text-align: center; white-space: pre-line; line-height: 1.2; }
+table.eqt td { border: 1px solid #ccc; padding: 1px 2px; text-align: right; }
+table.eqt td:first-child { text-align: center; font-weight: bold; background: #f0f4f0; }
+table.eqt tr:nth-child(even) td { background: #f5f8f5; }
+table.eqt tr:nth-child(even) td:first-child { background: #e8eee8; }
+.eqnote { font-size: 8px; font-family: 'MS Gothic',monospace; color: #444; margin-top: 3px; white-space: pre-wrap; line-height: 1.4; }
+</style>
+</head>
+<body>
+<div class="header">
+  ■ 配管流量線図　ヘーゼン・ウィリアムスの式による
+  <span style="font-weight:normal;font-size:11px;opacity:0.85">Q ＝ 4.87 C d²·⁶³ i⁰·⁵⁴ × 10³</span>
+</div>
+<div class="tabs">
+  <div class="tab active" onclick="switchPipe('sgpw',this)">図7-2　硬質塩化ビニルライニング鋼管　C＝130</div>
+  <div class="tab" onclick="switchPipe('vpvc',this)">図7-3　硬質ポリ塩化ビニル管　C＝130</div>
+  <div class="tab" onclick="switchPipe('copper',this)">図7-4　銅管　C＝130</div>
+  <div class="tab" onclick="switchPipe('sgp',this)">図7-5　鋼管　C＝100</div>
+  <div class="tab" onclick="switchPipe('sus',this)">図7-6　ステンレス鋼管　C＝140</div>
+  <div class="tab" onclick="switchPipe('hsgpw',this)">図7-7　耐熱性硬質塩化ビニルライニング鋼管　C＝130</div>
+  <div class="tab" onclick="switchPipe('poly',this)">図7-8　ポリエチレン管　C＝215（TW式）</div>
+</div>
+<div class="main">
+  <div class="chart-wrap">
+    <div class="chart-title" id="chartTitle"><span id="chartFigNo" style="display:inline-block;background:#3a5a8a;color:white;font-size:10px;padding:1px 6px;border-radius:2px;margin-right:7px;letter-spacing:0.5px;">図7-2</span>硬質塩化ビニルライニング鋼管流量線図　C＝130　ヘーゼン・ウィリアムスの式による.</div>
+    <canvas id="mainCanvas"></canvas>
+    <div class="tooltip" id="tip"></div>
+  </div>
+  <div class="sidebar">
+    <div class="panel">
+      <h3>▼ 流量計算</h3>
+      <div class="row"><label>口径 DN</label><select id="dnSel" onchange="calcFwd()"></select><span class="unit"></span></div>
+      <div class="row"><label>圧損 i</label><input id="iIn" type="number" value="0.3" step="0.05" min="0.01" max="10" oninput="calcFwd()"><span class="unit">kPa/m</span></div>
+      <div class="resbox">
+        <div class="rl">流量 Q ＝ <span class="v" id="rQ">—</span> L/min</div>
+        <div class="rl">流速 v ＝ <span id="rV">—</span> m/s</div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>▼ 口径選定</h3>
+      <div class="row"><label>流量 Q</label><input id="qIn" type="number" value="100" step="1" min="1" oninput="calcRev()"><span class="unit">L/min</span></div>
+      <div class="row"><label>許容流速</label><input id="vmIn" type="number" value="1.5" step="0.1" min="0.3" max="5" oninput="calcRev()"><span class="unit">m/s</span></div>
+      <div class="resbox">
+        <div class="rl">推奨口径: <span class="v" id="rDN">—</span></div>
+        <div class="rl" id="rDet" style="font-size:9px;color:#555">—</div>
+      </div>
+    </div>
+    <div class="panel" style="flex:1;overflow:auto;">
+      <h3>▼ 標準流量（i ＝ 0.3 kPa/m）</h3>
+      <table class="vt"><thead><tr><th>口径</th><th>内径mm</th><th>Q L/min</th><th>v m/s</th></tr></thead>
+      <tbody id="vtb"></tbody></table>
+    </div>
+    <div class="panel">
+      <h3>▼ 計算式</h3>
+      <div class="fml">
+        Q＝4.87C・d²·⁶³・i⁰·⁵⁴×10³<br>
+        Q：流量 (L/min)　C：流量係数<br>
+        d：管内径 (m)　i：圧力損失 (kPa/m)<br>
+        v＝Q÷60÷(π/4・d²)　(m/s)
+      </div>
+    </div>
+    <div class="panel" style="flex:2;overflow:auto;">
+      <h3 id="eqLenTitle">▼ 局部抵抗の相当長</h3>
+      <div id="eqLenWrap"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PIPES = {
+  // 表7-4: 硬質塩化ビニルライニング鋼管 (JIS G 3442 SGPW + vinyl lining) C=130
+  sgpw: {
+    title:'硬質塩化ビニルライニング鋼管流量線図　C＝130　ヘーゼン・ウィリアムスの式による.',
+    figNo:'図7-2', C:130, label:'呼び径', suffix:'A',
+    Xmin:0.01, Xmax:10, Ymin:1, Ymax:10000,
+    sizes:[
+      {A:15, id:13.263,x1:0.023429,y1:1,       x2:10,     y2:24.4057},
+      {A:20, id:18.911,x1:0.01,    y1:1.5994,  x2:10,     y2:62.2709},
+      {A:25, id:25.128,x1:0.01,    y1:3.2787,  x2:10,     y2:135.5285},
+      {A:32, id:33.310,x1:0.01,    y1:7.0128,  x2:10,     y2:279.0647},
+      {A:40, id:39.026,x1:0.01,    y1:10.5690, x2:10,     y2:425.9633},
+      {A:50, id:50.644,x1:0.01,    y1:20.5322, x2:10,     y2:863.6182},
+      {A:65, id:65.843,x1:0.01,    y1:40.8699, x2:10,     y2:1725.4212},
+      {A:80, id:77.834,x1:0.01,    y1:64.9727, x2:10,     y2:2616.5304},
+      {A:100,id:102.428,x1:0.01,   y1:131.0725,x2:10,     y2:5498.3146},
+      {A:125,id:127.267,x1:0.01,   y1:232.0000,x2:10,     y2:9733.2501},
+      {A:150,id:151.920,x1:0.01,   y1:364.7822,x2:4.3325, y2:10000},
+      {A:200,id:201.539,x1:0.01,   y1:765.5682,x2:1.0898, y2:10000},
+      {A:250,id:250.625,x1:0.01,   y1:1404.7116,x2:0.4012,y2:10000},
+      {A:300,id:299.714,x1:0.01,   y1:2180.4540,x2:0.1586,y2:10000},
+      {A:350,id:335.318,x1:0.01,   y1:2934.3961,x2:0.0921,y2:10000},
+    ],
+    velLines:[
+      {v:0.2,x1:0.01,      y1:39.5044,  x2:0.086747,y2:1},
+      {v:0.3,x1:0.01,      y1:218.5244, x2:0.231318,y2:1},
+      {v:0.4,x1:0.01,      y1:760.6724, x2:0.459812,y2:1},
+      {v:0.6,x1:0.01,      y1:4055.063, x2:1.227685,y2:1},
+      {v:0.8,x1:0.011917,  y1:10000,    x2:2.366904,y2:1},
+      {v:1.0,x1:0.020604,  y1:10000,    x2:4.092374,y2:1},
+      {v:1.5,x1:0.052234,  y1:10000,    x2:10,      y2:1.285139},
+      {v:2.0,x1:0.107033,  y1:10000,    x2:10,      y2:4.114542},
+      {v:3.0,x1:0.291219,  y1:10000,    x2:10,      y2:21.971581},
+      {v:5.0,x1:1.009213,  y1:10000,    x2:10,      y2:188.095530},
+    ],
+    // 表7-4 局部抵抗の相当長 [単位：m]
+    eqLenTable: {
+      title:'表7-4　局部抵抗の相当長〔単位：m〕',
+      note:'備考 (1) フート弁は、アングル弁と同じとする。\n(2) ストレーナーは、スクリーン7メッシュ程度とする。\n注 * 管端防食機構付きの値を示す。',
+      cols:['呼び径\n[mm]','90°\nエルボ','45°\nエルボ','90°T\n(分流)','90°T\n(直流)','仕切弁','玉形弁','アング\nル弁','逆止弁\nスイング型','逆止弁\n衝撃吸収式','Y形スト\nレーナー','ソケット'],
+      rows:[
+        [15,'*3.0','*2.3','*3.8','*1.2','*3.50','4.5','2.4','*5.5',  '','*3.34','*1.0'],
+        [20,'*3.1','*2.2','*3.8','*1.6','*2.30','6.0','3.6','*2.7',  '','*4.37','*0.7'],
+        [25,'*3.2','*1.8','*3.3','*1.2','*1.70','7.5','4.5','*2.9',  '','*5.85','*0.5'],
+        [32,'*3.6','*2.3','*4.0','*1.4','*1.30','10.5','5.4','*3.2', '','*8.51','*0.7'],
+        [40,'*3.3','*1.9','*3.6','*0.9','*1.70','13.5','6.6','*2.6', '','*8.25','*0.6'],
+        [50,'*3.3','*1.9','*3.5','*0.9','*1.90','16.5','8.4','*3.7','9.3','*9.79','*0.4'],
+        [65,'*4.4','*2.4','*4.4','*1.1','0.48','19.5','10.2','4.6','9.8','11.45','*0.4'],
+        [80,'*4.6','*2.4','*4.9','*1.3','0.63','24.0','12.0','5.7','9.0','14.11','*0.4'],
+        [100,'4.2','2.4','6.3','1.2','0.81','37.5','16.5','7.6','10.6','21.62',''],
+        [125,'5.1','3.0','7.5','1.5','0.99','42.0','21.0','10.0','11.9','31.57',''],
+        [150,'6.0','3.6','9.0','1.8','1.20','49.5','24.0','12.0','9.7','41.17',''],
+        [200,'6.5','3.7','14.0','4.0','1.40','70.0','33.0','15.0','13.3','54.83',''],
+        [250,'8.0','4.2','20.0','5.0','1.70','90.0','43.0','19.0','13.2','70.37',''],
+      ]
+    }
+  },
+  // 表7-5: 硬質ポリ塩化ビニル管 (JIS K 6741 VP/HIVP) C=130
+  vpvc: {
+    title:'硬質ポリ塩化ビニル管流量線図　C＝130　ヘーゼン・ウィリアムスの式による.',
+    figNo:'図7-3', C:130, label:'呼び径', suffix:'',
+    Xmin:0.01, Xmax:10, Ymin:1, Ymax:10000,
+    sizes:[
+      {A:13, id:13.785,x1:0.021813,y1:1,       x2:10,     y2:28.7766},
+      {A:16, id:16.745,x1:0.01,    y1:1.1242,  x2:10,     y2:46.7425},
+      {A:20, id:20.948,x1:0.01,    y1:2.0167,  x2:10,     y2:84.6348},
+      {A:25, id:25.855,x1:0.01,    y1:3.5508,  x2:10,     y2:145.4083},
+      {A:30, id:31.935,x1:0.01,    y1:6.1639,  x2:10,     y2:254.4254},
+      {A:40, id:40.941,x1:0.01,    y1:11.8681, x2:10,     y2:488.1309},
+      {A:50, id:52.106,x1:0.01,    y1:22.3254, x2:10,     y2:922.5302},
+      {A:65, id:68.523,x1:0.01,    y1:44.0101, x2:10,     y2:1975.4219},
+      {A:75, id:78.339,x1:0.01,    y1:63.9425, x2:10,     y2:2750.7281},
+      {A:100,id:101.074,x1:0.01,   y1:126.6856,x2:10,     y2:5304.1643},
+      {A:125,id:125.776,x1:0.01,   y1:221.7195,x2:10,     y2:9571.2948},
+      {A:150,id:148.228,x1:0.01,   y1:340.8615,x2:4.8562, y2:10000},
+    ],
+    velLines:[
+      {v:0.2,x1:0.01,     y1:39.1558,  x2:0.088642,y2:1},
+      {v:0.3,x1:0.01,     y1:209.8414, x2:0.236039,y2:1},
+      {v:0.4,x1:0.01,     y1:686.0807, x2:0.482251,y2:1},
+      {v:0.5,x1:0.01,     y1:1665.387, x2:0.811568,y2:1},
+      {v:0.6,x1:0.01,     y1:3421.851, x2:1.300716,y2:1},
+      {v:0.8,x1:0.011206, y1:10000,    x2:2.599362,y2:1},
+      {v:1.0,x1:0.019441, y1:10000,    x2:4.575835,y2:1},
+      {v:1.5,x1:0.051531, y1:10000,    x2:10,      y2:1.420860},
+      {v:2.0,x1:0.112337, y1:10000,    x2:10,      y2:4.359238},
+      {v:3.0,x1:0.291141, y1:10000,    x2:10,      y2:24.968009},
+      {v:5.0,x1:1.036486, y1:10000,    x2:10,      y2:202.873818},
+    ],
+    // 表7-5 局部抵抗の相当長 [単位：m]
+    eqLenTable: {
+      title:'表7-5　局部抵抗の相当長〔単位：m〕',
+      note:'備考 (1) チー及び径違いソケットは、設置された側の呼び径とする。\n(2) チー分流は、90°エルボにチー（直流）を加えたものとする。',
+      cols:['呼び径\n[mm]','90°\nエルボ','90°\nベンド','45°\nエルボ','チー及び\n径違いソケット'],
+      rows:[
+        [13,'0.5','','',''],
+        [16,'0.5','','',''],
+        [20,'0.5','','',''],
+        [25,'0.5','','',''],
+        [30,'0.8','','','1.0'],
+        [40,'0.8','','','1.0'],
+        [50,'1.2','','','1.5'],
+        [75,'','1.5','0.8','2.0'],
+        [100,'','2.0','1.0','3.0'],
+        [125,'','3.0','1.5','5.0'],
+      ]
+    }
+  },
+  // 表7-6: 銅管 (JIS H 3300 type L/M) C=130
+  copper: {
+    title:'銅管流量線図　C＝130　ヘーゼン・ウィリアムスの式による.',
+    figNo:'図7-4', C:130, label:'呼び径', suffix:'',
+    Xmin:0.01, Xmax:10, Ymin:1, Ymax:10000,
+    sizes:[
+      {A:'10L', id:11.049,x1:0.061965,y1:1,       x2:10,     y2:15.7956},
+      {A:'10M', id:11.590,x1:0.049107,y1:1,       x2:10,     y2:17.9145},
+      {A:'15L', id:14.046,x1:0.019420,y1:1,       x2:10,     y2:29.8363},
+      {A:'15M', id:14.664,x1:0.014999,y1:1,       x2:10,     y2:32.5447},
+      {A:'20L', id:19.989,x1:0.01,    y1:1.7595,  x2:10,     y2:75.8020},
+      {A:'20M', id:20.759,x1:0.01,    y1:1.9742,  x2:10,     y2:82.4236},
+      {A:'25L', id:26.037,x1:0.01,    y1:3.6244,  x2:10,     y2:147.8219},
+      {A:'25M', id:27.268,x1:0.01,    y1:4.0815,  x2:10,     y2:167.3703},
+      {A:'32M', id:32.893,x1:0.01,    y1:6.6290,  x2:10,     y2:276.3314},
+      {A:'40M', id:39.116,x1:0.01,    y1:10.5715, x2:10,     y2:431.0667},
+      {A:'50M', id:51.382,x1:0.01,    y1:21.5040, x2:10,     y2:889.7842},
+      {A:'65M', id:63.611,x1:0.01,    y1:36.8398, x2:10,     y2:1596.3719},
+      {A:'80M', id:76.079,x1:0.01,    y1:59.7493, x2:10,     y2:2523.8251},
+      {A:'100M',id:100.803,x1:0.01,   y1:126.2924,x2:10,     y2:5246.1226},
+      {A:'125M',id:125.807,x1:0.01,   y1:229.4388,x2:10,     y2:9261.3777},
+      {A:'150M',id:149.562,x1:0.01,   y1:362.8774,x2:4.9972, y2:10000},
+    ],
+    velLines:[
+      {v:0.2,x1:0.01,     y1:39.3748,  x2:0.085481,y2:1},
+      {v:0.3,x1:0.01,     y1:207.3928, x2:0.227400,y2:1},
+      {v:0.4,x1:0.01,     y1:670.0150, x2:0.459474,y2:1},
+      {v:0.5,x1:0.01,     y1:1748.294, x2:0.762769,y2:1},
+      {v:0.6,x1:0.01,     y1:3823.996, x2:1.165171,y2:1},
+      {v:0.8,x1:0.010850, y1:10000,    x2:2.417684,y2:1},
+      {v:1.0,x1:0.019617, y1:10000,    x2:4.141502,y2:1},
+      {v:1.5,x1:0.051835, y1:10000,    x2:10,      y2:1.235730},
+      {v:2.0,x1:0.108038, y1:10000,    x2:10,      y2:3.962172},
+      {v:3.0,x1:0.273790, y1:10000,    x2:10,      y2:22.750542},
+      {v:5.0,x1:0.925808, y1:10000,    x2:10,      y2:189.846506},
+    ],
+    // 表7-6 局部抵抗の相当長 [単位：m]
+    eqLenTable: {
+      title:'表7-6　局部抵抗の相当長〔単位：m〕',
+      note:'備考 この表は、消火設備の配管には適用しない。',
+      cols:['呼び径\n[mm]','90°\nエルボ','45°\nエルボ','90°T\n(直流)'],
+      rows:[
+        [10,'0.20','0.20','0.20'],
+        [15,'0.30','0.18','0.09'],
+        [20,'0.38','0.23','0.12'],
+        [25,'0.45','0.30','0.14'],
+        [32,'0.61','0.36','0.18'],
+        [40,'0.76','0.45','0.24'],
+        [50,'1.06','0.61','0.30'],
+        [65,'1.21','0.76','0.39'],
+        [80,'1.52','0.91','0.45'],
+      ]
+    }
+  },
+  // 表7-7: 鋼管 (JIS G 3452 SGP 配管用炭素鋼鋼管) C=100 per 図7-5
+  sgp: {
+    title:'鋼管（配管用炭素鋼鋼管）流量線図　C＝100　ヘーゼン・ウィリアムスの式による.',
+    figNo:'図7-5', C:100, label:'呼び径', suffix:'A',
+    Xmin:0.01, Xmax:10, Ymin:1, Ymax:10000,
+    sizes:[
+      {A:15, id:16.175, x1:0.014781,y1:1,        x2:10,     y2:31.9987},
+      {A:20, id:21.787, x1:0.01,    y1:1.7114,   x2:10,     y2:72.5487},
+      {A:25, id:27.772, x1:0.01,    y1:3.3468,   x2:10,     y2:132.9534},
+      {A:32, id:36.160, x1:0.01,    y1:6.6691,   x2:10,     y2:267.4128},
+      {A:40, id:41.974, x1:0.01,    y1:9.5587,   x2:10,     y2:408.8127},
+      {A:50, id:53.223, x1:0.01,    y1:18.1144,  x2:10,     y2:752.1436},
+      {A:65, id:67.953, x1:0.01,    y1:34.6472,  x2:10,     y2:1421.6385},
+      {A:80, id:81.098, x1:0.01,    y1:52.4890,  x2:10,     y2:2377.4050},
+      {A:90, id:93.921, x1:0.01,    y1:78.7877,  x2:10,     y2:3429.5962},
+      {A:100,id:105.815,x1:0.01,    y1:111.6074, x2:10,     y2:4533.8050},
+      {A:125,id:133.072,x1:0.01,    y1:195.1623, x2:10,     y2:8653.6723},
+      {A:150,id:158.550,x1:0.01,    y1:308.8682, x2:5.5524, y2:10000},
+      {A:175,id:181.620,x1:0.01,    y1:439.2831, x2:2.8391, y2:10000},
+      {A:200,id:206.664,x1:0.01,    y1:653.1270, x2:1.6803, y2:10000},
+      {A:225,id:231.604,x1:0.01,    y1:865.3403, x2:0.9323, y2:10000},
+      {A:250,id:255.993,x1:0.01,    y1:1096.2851,x2:0.5451, y2:10000},
+      {A:300,id:307.768,x1:0.01,    y1:1818.2914,x2:0.2312, y2:10000},
+      {A:350,id:342.838,x1:0.01,    y1:2382.2229,x2:0.1333, y2:10000},
+    ],
+    velLines:[
+      {v:0.2,x1:0.01,     y1:95.5934,  x2:0.137854,y2:1},
+      {v:0.3,x1:0.01,     y1:518.4469, x2:0.378514,y2:1},
+      {v:0.4,x1:0.01,     y1:1637.838, x2:0.748959,y2:1},
+      {v:0.5,x1:0.01,     y1:4143.554, x2:1.338312,y2:1},
+      {v:0.6,x1:0.01,     y1:8677.138, x2:2.148948,y2:1},
+      {v:0.8,x1:0.019328, y1:10000,    x2:4.186021,y2:1},
+      {v:1.0,x1:0.032216, y1:10000,    x2:7.273231,y2:1},
+      {v:1.5,x1:0.089070, y1:10000,    x2:10,      y2:3.393430},
+      {v:2.0,x1:0.171762, y1:10000,    x2:10,      y2:10.593366},
+      {v:3.0,x1:0.489768, y1:10000,    x2:10,      y2:58.866267},
+      {v:5.0,x1:1.677748, y1:10000,    x2:10,      y2:487.579118},
+    ],
+    // 表7-7 局部抵抗の相当長 [単位：m]
+    eqLenTable: {
+      title:'表7-7　局部抵抗の相当長〔単位：m〕',
+      note:'備考 (1) この表は、消火設備の配管には適用しない。\n(2) フート弁は、アングル弁と同じとする。\n(3) ストレーナーは、スクリーン7メッシュ程度とする。',
+      cols:['呼び径\n[mm]','90°\nエルボ','45°\nエルボ','90°T\n(分流)','90°T\n(直流)','仕切弁','玉形弁','アング\nル弁','逆止弁\nスイング型','逆止弁\n衝撃吸収式','Y形スト\nレーナー'],
+      rows:[
+        [15,'0.6','0.36','0.9','0.18','0.12','4.5','2.4','1.2','','1.38'],
+        [20,'0.75','0.45','1.2','0.24','0.15','6.0','3.6','1.6','','2.18'],
+        [25,'0.9','0.54','1.5','0.27','0.18','7.5','4.5','2.0','','3.0'],
+        [32,'1.2','0.72','1.8','0.36','0.24','10.5','5.4','2.5','','4.62'],
+        [40,'1.5','0.9','2.1','0.45','0.3','13.5','6.6','3.1','','5.47'],
+        [50,'2.1','1.2','3.0','0.6','0.39','16.5','8.4','4.0','9.3','8.0'],
+        [65,'2.4','1.5','3.6','0.75','0.48','19.5','10.2','4.6','9.8','11.45'],
+        [80,'3.0','1.8','4.5','0.90','0.63','24.0','12.0','5.7','9.0','14.11'],
+        [100,'4.2','2.4','6.3','1.20','0.81','37.5','16.5','7.6','10.6','21.62'],
+        [125,'5.1','3.0','7.5','1.50','0.99','42.0','21.0','10.0','11.9','31.57'],
+        [150,'6.0','3.6','9.0','1.80','1.20','49.5','24.0','12.0','9.7','41.17'],
+        [200,'6.5','3.7','14.0','4.0','1.40','70.0','33.0','15.0','13.3','54.83'],
+        [250,'8.0','4.2','20.0','5.0','1.70','90.0','43.0','19.0','13.2','70.37'],
+      ]
+    }
+  },
+  // 表7-9: 耐熱性硬質塩化ビニルライニング鋼管 C=130
+  // Same base pipe as SGPW (JIS G 3442), heat-resistant lining for hot water
+  hsgpw: {
+    title:'耐熱性硬質塩化ビニルライニング鋼管流量線図　C＝130　ヘーゼン・ウィリアムスの式による.',
+    figNo:'図7-7', C:130, label:'呼び径', suffix:'A',
+    Xmin:0.01, Xmax:10,
+    Ymin:1, Ymax:10000,
+    sizes:[
+      {A:15, id:11.282,x1:0.056906,y1:1,       x2:10,     y2:16.8372},
+      {A:20, id:16.860,x1:0.01,    y1:1.1287,  x2:10,     y2:48.2607},
+      {A:25, id:22.889,x1:0.01,    y1:2.5529,  x2:10,     y2:106.5511},
+      {A:32, id:30.228,x1:0.01,    y1:5.3199,  x2:10,     y2:220.7964},
+      {A:40, id:36.159,x1:0.01,    y1:8.5733,  x2:10,     y2:351.5888},
+      {A:50, id:47.643,x1:0.01,    y1:17.7509, x2:10,     y2:724.4215},
+      {A:65, id:61.129,x1:0.01,    y1:34.2830, x2:10,     y2:1391.6016},
+      {A:80, id:73.896,x1:0.01,    y1:55.5807, x2:10,     y2:2327.8355},
+      {A:100,id:99.258,x1:0.01,    y1:120.5873,x2:10,     y2:5065.5411},
+    ],
+    velLines:[
+      {v:0.2,x1:0.01,     y1:41.8865,  x2:0.089482,y2:1},
+      {v:0.3,x1:0.01,     y1:212.9278, x2:0.243644,y2:1},
+      {v:0.4,x1:0.01,     y1:722.3670, x2:0.500356,y2:1},
+      {v:0.5,x1:0.01,     y1:1790.498, x2:0.828303,y2:1},
+      {v:0.6,x1:0.01,     y1:3877.770, x2:1.352471,y2:1},
+      {v:0.8,x1:0.010902, y1:10000,    x2:2.725551,y2:1},
+      {v:1.0,x1:0.019468, y1:10000,    x2:4.475825,y2:1},
+      {v:1.5,x1:0.051604, y1:10000,    x2:10,      y2:1.433675},
+      {v:2.0,x1:0.111729, y1:10000,    x2:10,      y2:4.367492},
+      {v:3.0,x1:0.289078, y1:10000,    x2:10,      y2:23.322529},
+      {v:5.0,x1:1.017828, y1:10000,    x2:10,      y2:196.704774},
+    ],
+    // 表7-9 局部抵抗の相当長 [単位：m]
+    eqLenTable: {
+      title:'表7-9　局部抵抗の相当長〔単位：m〕',
+      note:'備考 (1) フート弁は、アングル弁と同じとする。\n(2) ストレーナーは、スクリーン7メッシュ程度とする。\n注 * 管端防食機構付きの値を示す。',
+      cols:['呼び径\n[mm]','90°\nエルボ','45°\nエルボ','90°T\n(分流)','90°T\n(直流)','仕切弁','玉形弁','アング\nル弁','逆止弁\nスイング型','逆止弁\n衝撃吸収式','Y形スト\nレーナー'],
+      rows:[
+        [15,'*1.6','*0.8','*1.8','*0.6','*14.2','4.5','2.4','*14.2','','*4.25'],
+        [20,'*1.8','*0.9','*2.0','*0.6','*4.2','6.0','3.6','*4.9','','*3.22'],
+        [25,'*2.0','*1.0','*2.2','*0.5','*2.4','7.5','4.5','*2.9','','*3.38'],
+        [32,'*2.2','*1.0','*2.5','*0.5','*3.2','10.5','5.4','*3.8','','*5.52'],
+        [40,'*2.5','*1.2','*2.8','*0.6','*2.5','13.5','6.6','*2.7','','*6.25'],
+        [50,'*2.8','*1.3','*3.1','*0.6','*2.1','16.5','8.4','*5.0','9.3','*6.64'],
+        [65,'*2.8','*1.5','*4.0','*0.7','0.48','19.5','10.2','4.6','9.8','11.45'],
+        [80,'*3.3','*1.8','*5.0','*0.8','0.63','24.0','12.0','5.7','9.0','14.11'],
+        [100,'*4.2','*2.3','*6.8','*1.0','0.81','37.5','16.5','7.6','10.6','21.62'],
+      ]
+    }
+  },
+  // 図7-8: ポリエチレン管 (JIS K 6762) TWの式 C=215
+  poly: {
+    title:'ポリエチレン管流量線図　C＝215　TWの式による.',
+    figNo:'図7-8', C:215, label:'管径', suffix:'',
+    Xmin:0.1, Xmax:5, Ymin:10, Ymax:400,
+    sizes:[
+      {A:13,id:12.371,x1:1.029568,y1:10,     x2:5,      y2:24.5583},
+      {A:20,id:16.255,x1:0.280160,y1:10,     x2:5,      y2:51.1158},
+      {A:25,id:20.680,x1:0.1,     y1:10.835, x2:5,      y2:95.9641},
+      {A:30,id:27.189,x1:0.1,     y1:22.357, x2:5,      y2:196.2221},
+      {A:40,id:30.890,x1:0.1,     y1:30.901, x2:5,      y2:277.6959},
+      {A:50,id:39.130,x1:0.1,     y1:57.955, x2:3.1464, y2:400},
+    ],
+    velLines:[
+      {v:0.6,x1:0.1,     y1:51.471,  x2:0.295329,y2:10},
+      {v:0.8,x1:0.1,     y1:140.612, x2:0.610778,y2:10},
+      {v:1.0,x1:0.1,     y1:316.109, x2:1.047317,y2:10},
+      {v:1.5,x1:0.233774,y1:400,     x2:2.719451,y2:10},
+      {v:2.0,x1:0.488186,y1:400,     x2:5,       y2:11.219280},
+      {v:3.0,x1:1.330999,y1:400,     x2:5,       y2:51.514125},
+      {v:4.0,x1:2.640397,y1:400,     x2:5,       y2:148.184298},
+    ],
+    // 表7-10 管の均等表 — 4 sub-tables (a)-(d)
+    eqLenTable: {
+      title:'表7-10　管の均等表',
+      subtables: [
+        {
+          subtitle:'(a) 硬質塩化ビニルライニング鋼管',
+          cols:['呼び径','15','20','25','32'],
+          rows:[
+            [15,'1','','',''],
+            [20,'2.5','1','',''],
+            [25,'5.2','2.1','1',''],
+            [32,'11.1','4.4','2.1','1'],
+            [40,'17.2','6.8','3.3','1.5'],
+            [50,'33.7','13.9','6.4','3.0'],
+            [65,'67.3','26.8','12.8','6.1'],
+          ]
+        },
+        {
+          subtitle:'(b) 硬質ポリ塩化ビニル管',
+          cols:['呼び径','13','16','20','25','30'],
+          rows:[
+            [13,'1','','','',''],
+            [16,'1.7','1','','',''],
+            [20,'3.1','1.8','1','',''],
+            [25,'5.6','3.2','1.8','1',''],
+            [30,'9.8','5.7','3.2','1.8','1'],
+            [40,'19.2','11.1','6.2','3.4','2.0'],
+            [50,'36.4','21.1','11.7','6.5','3.7'],
+            [65,'74.6','43.2','24.0','13.4','7.6'],
+          ]
+        },
+        {
+          subtitle:'(c) ステンレス鋼管',
+          cols:['呼び径','13','20','25','30'],
+          rows:[
+            [13,'1','','',''],
+            [20,'2.5','1','',''],
+            [25,'5.1','2.1','1',''],
+            [30,'8.1','3.2','1.6','1'],
+            [40,'15.3','6.1','3.0','1.9'],
+            [50,'21.9','8.8','4.3','2.7'],
+            [60,'39.0','15.6','7.6','4.8'],
+          ]
+        },
+        {
+          subtitle:'(d) ポリエチレン管',
+          cols:['管径','13','20','25','30'],
+          rows:[
+            [13,'1','','',''],
+            [20,'2.0','1','',''],
+            [25,'3.9','1.8','1',''],
+            [30,'8.0','3.8','2.0','1'],
+            [40,'11.2','5.4','2.8','1.3'],
+            [50,'21.0','10.1','5.3','2.6'],
+          ]
+        }
+      ],
+      note:'備考 この表は、同一流量に対して同一圧力損失を生じる管径の関係を示す。'
+    }
+  },
+  // 表7-8: ステンレス鋼管 (JIS G 3448 一般配管用) C=140
+  sus: {
+    title:'ステンレス鋼管（一般配管用）流量線図　C＝140　ヘーゼン・ウィリアムスの式による.',
+    figNo:'図7-6', C:140, label:'呼び径', suffix:'Su',
+    Xmin:0.01, Xmax:10, Ymin:1, Ymax:10000,
+    sizes:[
+      {A:10, id:11.30},
+      {A:13, id:14.54, x1:0.01354,y1:1,        x2:10,     y2:34.140},
+      {A:20, id:20.56, x1:0.01,   y1:2.0934,   x2:10,     y2:85.722},
+      {A:25, id:26.90, x1:0.01,   y1:4.2785,   x2:10,     y2:172.263},
+      {A:30, id:32.11, x1:0.01,   y1:6.9427,   x2:10,     y2:269.297},
+      {A:40, id:40.78, x1:0.01,   y1:12.7218,  x2:10,     y2:516.891},
+      {A:50, id:46.98, x1:0.01,   y1:18.3245,  x2:10,     y2:755.753},
+      {A:60, id:58.47, x1:0.01,   y1:32.5837,  x2:10,     y2:1343.921},
+      {A:75, id:74.20, x1:0.01,   y1:62.3772,  x2:10,     y2:2456.675},
+      {A:80, id:86.68, x1:0.01,   y1:90.3744,  x2:10,     y2:3843.717},
+      {A:100,id:112.12,x1:0.01,   y1:182.702,  x2:10,     y2:7358.302},
+      {A:125,id:137.08,x1:0.01,   y1:312.825,  x2:6.745,  y2:10000},
+      {A:150,id:160.81,x1:0.01,   y1:478.306,  x2:3.127,  y2:10000},
+      {A:200,id:212.14,x1:0.01,   y1:985.136,  x2:0.802,  y2:10000},
+      {A:250,id:264.50,x1:0.01,   y1:1714.832, x2:0.261,  y2:10000},
+      {A:300,id:318.38,x1:0.01,   y1:2795.367, x2:0.106,  y2:10000},
+    ],
+    velLines:[
+      {v:0.2, x1:0.01,    y1:33.422,  x2:0.07647, y2:1},
+      {v:0.3, x1:0.01,    y1:179.068, x2:0.20463, y2:1},
+      {v:0.4, x1:0.01,    y1:586.070, x2:0.40981, y2:1},
+      {v:0.5, x1:0.01,    y1:1546.72, x2:0.69975, y2:1},
+      {v:0.6, x1:0.01,    y1:3335.48, x2:1.08770, y2:1},
+      {v:0.8, x1:0.01021, y1:10000,   x2:2.25377, y2:1},
+      {v:1.0, x1:0.01796, y1:10000,   x2:3.83909, y2:1},
+      {v:1.5, x1:0.04682, y1:10000,   x2:10,      y2:1.044},
+      {v:2.0, x1:0.09443, y1:10000,   x2:10,      y2:3.509},
+      {v:3.0, x1:0.25192, y1:10000,   x2:10,      y2:19.545},
+      {v:5.0, x1:0.86567, y1:10000,   x2:10,      y2:160.611},
+    ],
+    // 表7-8 局部抵抗の相当長 [単位：m]
+    eqLenTable: {
+      title:'表7-8　局部抵抗の相当長〔単位：m〕',
+      note:'備考 この表は、消火設備の配管には適用しない。\n注 *1 青銅鋳物製の値を示す。\n   *2 50A以下の場合は青銅鋳物製、65A以上の場合は鋳鉄製の値を示す。',
+      cols:['呼び径\n[mm]','90°\nエルボ','45°\nエルボ','90°T\n(分流)','90°T\n(直流)','仕切弁\n*1','玉形弁\n*2','アングル弁・\n逆止弁\nスイング型','ソケット'],
+      rows:[
+        [13,'0.30','0.18','0.45','0.09','0.06','2.27','2.4','0.09'],
+        [20,'0.38','0.23','0.61','0.12','0.08','3.03','3.6','0.12'],
+        [25,'0.45','0.30','0.76','0.14','0.09','3.79','4.5','0.14'],
+        [40,'0.61','0.36','0.91','0.18','0.12','5.45','5.4','0.18'],
+        [50,'0.76','0.45','1.06','0.24','0.15','6.97','6.8','0.24'],
+        [60,'1.06','0.61','1.52','0.30','0.21','8.48','8.4','0.30'],
+        [75,'1.21','0.76','1.82','0.39','0.24','10.00','10.2','0.39'],
+        [80,'1.52','0.91','2.27','0.45','0.30','12.12','12.0','0.45'],
+        [100,'2.12','1.21','3.18','0.61','0.42','19.09','16.5','0.61'],
+        [125,'2.73','1.52','3.94','0.76','0.52','21.21','21.0','0.76'],
+        [150,'3.03','1.82','4.55','0.91','0.61','25.45','21.0','0.91'],
+      ]
+    }
+  }
+};
+
+const X_MIN=0.01, X_MAX=10; // defaults; per-pipe Xmin/Xmax override these in draw()
+
+function Q_hw(C,d_m,i){ return 4.87*C*Math.pow(d_m,2.63)*Math.pow(i,0.54)*1000; }
+function i_hw(C,d_m,Q){ return Math.pow(Q/(4870*C*Math.pow(d_m,2.63)),1/0.54); }
+function vel(Q_lpm,id_mm){ const d=id_mm/1000; return (Q_lpm/60/1000)/(Math.PI/4*d*d); }
+
+// When a pipe size has digitized coordinates, back-calculate the effective inner
+// diameter from those points so all formula results are consistent with the graph.
+function effectiveId(s, C){
+  if(s.x1===undefined) return s.id;
+  const d1=((s.y1/(4870*C*Math.pow(s.x1,0.54)))**(1/2.63))*1000;
+  const d2=((s.y2/(4870*C*Math.pow(s.x2,0.54)))**(1/2.63))*1000;
+  return (d1+d2)/2;
+}
+
+function xi(i,W,xmin,xmax){ return (Math.log10(i)-Math.log10(xmin))/(Math.log10(xmax)-Math.log10(xmin))*W; }
+function yq(Q,H,Ymin,Ymax){ return H-(Math.log10(Q)-Math.log10(Ymin))/(Math.log10(Ymax)-Math.log10(Ymin))*H; }
+function px2i(px,W,xmin,xmax){ return Math.pow(10,px/W*(Math.log10(xmax)-Math.log10(xmin))+Math.log10(xmin)); }
+function px2q(py,H,Ymin,Ymax){ return Math.pow(10,(H-py)/H*(Math.log10(Ymax)-Math.log10(Ymin))+Math.log10(Ymin)); }
+
+function logTicks(vmin,vmax){
+  const t=[];
+  for(let d=Math.floor(Math.log10(vmin));d<=Math.ceil(Math.log10(vmax));d++)
+    for(let s=1;s<=9;s++){ const v=s*Math.pow(10,d); if(v>=vmin*0.999&&v<=vmax*1.001) t.push(v); }
+  return t;
+}
+
+let cur='sgpw', mouseX=-1, mouseY=-1;
+const PAD={top:22,right:18,bottom:50,left:68};
+
+function switchPipe(key,el){
+  cur=key;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('chartFigNo').textContent=PIPES[key].figNo;
+  document.getElementById('chartTitle').childNodes[1].textContent=PIPES[key].title;
+  buildDN(); buildTable(); buildEqLenTable(); calcFwd(); calcRev(); draw();
+}
+
+function buildEqLenTable(){
+  const p=PIPES[cur];
+  const wrap=document.getElementById('eqLenWrap');
+  const titleEl=document.getElementById('eqLenTitle');
+  if(!p.eqLenTable){ wrap.innerHTML='<div style="font-size:9px;color:#888;padding:4px;">（データなし）</div>'; return; }
+  const t=p.eqLenTable;
+  titleEl.innerHTML='▼ <span style="display:inline-block;background:#3a5a8a;color:white;font-size:9px;padding:1px 5px;border-radius:2px;margin-right:4px;letter-spacing:0.5px;">'+p.figNo+'</span>'+t.title;
+
+  function renderTable(cols, rows){
+    let html='<div style="overflow-x:auto;"><table class="eqt"><thead><tr>';
+    cols.forEach(c=>{ html+=`<th>${c}</th>`; });
+    html+='</tr></thead><tbody>';
+    rows.forEach(r=>{ html+='<tr>'; r.forEach(v=>{ html+=`<td>${v}</td>`; }); html+='</tr>'; });
+    html+='</tbody></table></div>';
+    return html;
+  }
+
+  let html='';
+  if(t.subtables){
+    // 4 sub-tables (a)-(d)
+    t.subtables.forEach(st=>{
+      html+=`<div style="font-size:9px;font-weight:bold;margin:5px 0 2px;font-family:'MS Gothic',monospace;">${st.subtitle}</div>`;
+      html+=renderTable(st.cols, st.rows);
+    });
+  } else {
+    html+=renderTable(t.cols, t.rows);
+  }
+  if(t.note) html+=`<div class="eqnote">${t.note}</div>`;
+  wrap.innerHTML=html;
+}
+
+function buildDN(){
+  const sel=document.getElementById('dnSel');
+  const prev=sel.value||'';
+  sel.innerHTML='';
+  PIPES[cur].sizes.forEach(s=>{
+    const o=document.createElement('option');
+    o.value=s.A; o.textContent=s.A+(PIPES[cur].suffix?' '+PIPES[cur].suffix:'');
+    if(String(s.A)===String(prev)) o.selected=true;
+    sel.appendChild(o);
+  });
+}
+
+function buildTable(){
+  const p=PIPES[cur], tb=document.getElementById('vtb');
+  tb.innerHTML='';
+  p.sizes.forEach(s=>{
+    const eid=effectiveId(s,p.C);
+    const Q=Q_hw(p.C,eid/1000,0.3), v=vel(Q,eid);
+    const tr=document.createElement('tr');
+    const suf=p.suffix?' '+p.suffix:'';
+    const vstyle=v>2?'color:#cc0000;font-weight:bold':'';
+    tr.innerHTML=`<td style="text-align:center">${s.A}${suf}</td><td>${eid.toFixed(1)}</td><td style="color:#003399;font-weight:bold">${Q.toFixed(1)}</td><td style="${vstyle}">${v.toFixed(2)}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function calcFwd(){
+  const p=PIPES[cur];
+  const A=document.getElementById('dnSel').value;
+  const iv=parseFloat(document.getElementById('iIn').value);
+  const s=p.sizes.find(x=>String(x.A)===String(A)); if(!s||isNaN(iv)||iv<=0) return;
+  const eid=effectiveId(s,p.C);
+  const Q=Q_hw(p.C,eid/1000,iv), v=vel(Q,eid);
+  document.getElementById('rQ').textContent=Q.toFixed(1);
+  const ve=document.getElementById('rV'); ve.textContent=v.toFixed(2); ve.className=v>2?'w':'v';
+}
+
+function calcRev(){
+  const p=PIPES[cur];
+  const Q=parseFloat(document.getElementById('qIn').value);
+  const vm=parseFloat(document.getElementById('vmIn').value);
+  if(isNaN(Q)||Q<=0) return;
+  let ch=null;
+  for(const s of p.sizes){
+    const eid=effectiveId(s,p.C);
+    if(vel(Q,eid)<=vm){ch=s;break;}
+  }
+  if(!ch){ document.getElementById('rDN').textContent='—（規格外）'; document.getElementById('rDet').textContent='最大口径でも流速超過'; return; }
+  const eid=effectiveId(ch,p.C);
+  const iv=i_hw(p.C,eid/1000,Q), v=vel(Q,eid);
+  const suf=p.suffix?' '+p.suffix:'';
+  document.getElementById('rDN').textContent=ch.A+suf;
+  document.getElementById('rDet').textContent=`v=${v.toFixed(2)}m/s  i=${iv.toFixed(3)}kPa/m`;
+}
+
+function draw(){
+  const canvas=document.getElementById('mainCanvas');
+  const wrap=canvas.parentElement;
+  const titleH=wrap.querySelector('.chart-title').offsetHeight;
+  canvas.width=wrap.clientWidth;
+  canvas.height=wrap.clientHeight-titleH;
+  const W=canvas.width, H=canvas.height;
+  const cW=W-PAD.left-PAD.right, cH=H-PAD.top-PAD.bottom;
+  const ctx=canvas.getContext('2d');
+  const p=PIPES[cur];
+  const Ymin=p.Ymin, Ymax=p.Ymax;
+  const Xmin=p.Xmin, Xmax=p.Xmax;
+
+  ctx.fillStyle='#ffffff';
+  ctx.fillRect(0,0,W,H);
+  ctx.save();
+  ctx.translate(PAD.left,PAD.top);
+
+  const xT=logTicks(Xmin,Xmax);
+  const yT=logTicks(Ymin,Ymax);
+
+  ctx.save();
+  ctx.rect(0,0,cW,cH); ctx.clip();
+  ctx.strokeStyle='#bbbbbb'; ctx.lineWidth=0.4;
+  xT.forEach(v=>{ const x=xi(v,cW,Xmin,Xmax); ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,cH);ctx.stroke(); });
+  yT.forEach(v=>{ const y=yq(v,cH,Ymin,Ymax); ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cW,y);ctx.stroke(); });
+  ctx.strokeStyle='#999'; ctx.lineWidth=0.7;
+  [0.01,0.1,1,10].filter(v=>v>=Xmin&&v<=Xmax).forEach(v=>{ const x=xi(v,cW,Xmin,Xmax); ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,cH);ctx.stroke(); });
+  for(let d=0;d<=5;d++){
+    const v=Math.pow(10,d); if(v<Ymin||v>Ymax) continue;
+    const y=yq(v,cH,Ymin,Ymax); ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cW,y);ctx.stroke();
+  }
+  ctx.restore();
+
+  ctx.strokeStyle='#000'; ctx.lineWidth=1.2;
+  ctx.strokeRect(0,0,cW,cH);
+
+  // Clip a log-log line segment (defined by two digitized endpoints) to graph bounds
+  // The two points ARE the endpoints — we clip only if they fall outside the graph
+  function clipLogLine(x1,y1,x2,y2){
+    const lx1=Math.log10(x1), ly1=Math.log10(y1);
+    const lx2=Math.log10(x2), ly2=Math.log10(y2);
+    const m=(ly2-ly1)/(lx2-lx1);
+    const b=ly1-m*lx1;
+    const lXmin=Math.log10(Xmin), lXmax=Math.log10(Xmax);
+    const lYmin=Math.log10(Ymin), lYmax=Math.log10(Ymax);
+    // Start from the actual digitized endpoints (not graph edges)
+    let lxa=Math.min(lx1,lx2), lxb=Math.max(lx1,lx2);
+    // Clip to graph bounds
+    lxa=Math.max(lxa,lXmin); lxb=Math.min(lxb,lXmax);
+    const lx_ymin=(lYmin-b)/m, lx_ymax=(lYmax-b)/m;
+    if(m>0){ lxa=Math.max(lxa,lx_ymin); lxb=Math.min(lxb,lx_ymax); }
+    else    { lxa=Math.max(lxa,lx_ymax); lxb=Math.min(lxb,lx_ymin); }
+    if(lxa>=lxb-1e-9) return null;
+    const cpx1=xi(Math.pow(10,lxa),cW,Xmin,Xmax), cpy1=yq(Math.pow(10,m*lxa+b),cH,Ymin,Ymax);
+    const cpx2=xi(Math.pow(10,lxb),cW,Xmin,Xmax), cpy2=yq(Math.pow(10,m*lxb+b),cH,Ymin,Ymax);
+    return {px1:cpx1,py1:cpy1,px2:cpx2,py2:cpy2,m,b,lxa,lxb,
+            angle:Math.atan2(cpy2-cpy1,cpx2-cpx1)};
+  }
+
+  // Draw pipe lines directly from digitized (x1,y1)→(x2,y2) anchor points
+  const suf=p.suffix?' '+p.suffix:'';
+  let firstLabel=true;
+  p.sizes.forEach(s=>{
+    // Get anchor points — from digitized data if present, else from formula
+    let ax1,ay1,ax2,ay2;
+    if(s.x1!==undefined){
+      ax1=s.x1; ay1=s.y1; ax2=s.x2; ay2=s.y2;
+    } else {
+      const eid=effectiveId(s,p.C)/1000;
+      ax1=Xmin; ay1=Q_hw(p.C,eid,Xmin);
+      ax2=Xmax; ay2=Q_hw(p.C,eid,Xmax);
+    }
+    const line=clipLogLine(ax1,ay1,ax2,ay2);
+    if(!line) return;
+    ctx.save(); ctx.rect(0,0,cW,cH); ctx.clip();
+    ctx.strokeStyle='#000'; ctx.lineWidth=0.85;
+    ctx.beginPath(); ctx.moveTo(line.px1,line.py1); ctx.lineTo(line.px2,line.py2); ctx.stroke();
+
+    // Label: near the upper-left (low-i, high-Q) end
+    const lxLabel=line.lxa + (line.lxb-line.lxa)*0.08;
+    const plx=xi(Math.pow(10,lxLabel),cW,Xmin,Xmax);
+    const ply=yq(Math.pow(10,line.m*lxLabel+line.b),cH,Ymin,Ymax);
+    if(plx>=0&&plx<=cW&&ply>=0&&ply<=cH){
+      const text=firstLabel?(p.label+' '+s.A+suf):(s.A+suf);
+      firstLabel=false;
+      ctx.translate(plx,ply); ctx.rotate(line.angle);
+      ctx.font='bold 8px MS Gothic, monospace';
+      const tw=ctx.measureText(text).width;
+      ctx.fillStyle='rgba(255,255,255,0.88)'; ctx.fillRect(-2,-9,tw+4,11);
+      ctx.fillStyle='#000'; ctx.textAlign='left'; ctx.textBaseline='bottom';
+      ctx.fillText(text,0,0);
+    } else { firstLabel=false; }
+    ctx.restore();
+  });
+
+  // Draw velocity lines directly from digitized anchor points
+  if(p.velLines){
+    p.velLines.forEach(({v,x1,y1,x2,y2})=>{
+      const line=clipLogLine(x1,y1,x2,y2);
+      if(!line) return;
+      ctx.save(); ctx.rect(0,0,cW,cH); ctx.clip();
+      ctx.strokeStyle='#555'; ctx.lineWidth=0.6; ctx.setLineDash([4,3]);
+      ctx.beginPath(); ctx.moveTo(line.px1,line.py1); ctx.lineTo(line.px2,line.py2); ctx.stroke();
+      ctx.setLineDash([]);
+      // Label near the right (high-i) end
+      const lxLabel=line.lxb - (line.lxb-line.lxa)*0.08;
+      const plx=xi(Math.pow(10,lxLabel),cW,Xmin,Xmax);
+      const ply=yq(Math.pow(10,line.m*lxLabel+line.b),cH,Ymin,Ymax);
+      if(plx>=2&&plx<=cW-2&&ply>=2&&ply<=cH-2){
+        const lbl=`v=${v}m/s`;
+        ctx.translate(plx,ply); ctx.rotate(line.angle);
+        ctx.font='7px MS Gothic,monospace';
+        const tw2=ctx.measureText(lbl).width;
+        ctx.fillStyle='rgba(255,255,255,0.85)'; ctx.fillRect(-1,-9,tw2+2,11);
+        ctx.fillStyle='#333'; ctx.textAlign='left'; ctx.textBaseline='bottom';
+        ctx.fillText(lbl,0,0);
+      }
+      ctx.restore();
+    });
+  } else {
+    // Fallback for pipes without digitized velocity data: compute from formula
+    [0.2,0.4,0.6,1.0,1.5,2.0,3.0,5.0].forEach(v=>{
+      const vpts=[];
+      for(let dm=3;dm<=400;dm+=0.5){
+        const d_m=dm/1000;
+        const Q=v*Math.PI/4*d_m*d_m*60000;
+        const iv=i_hw(p.C,d_m,Q);
+        if(iv>=Xmin&&iv<=Xmax&&Q>=Ymin&&Q<=Ymax)
+          vpts.push([xi(iv,cW,Xmin,Xmax),yq(Q,cH,Ymin,Ymax)]);
+      }
+      vpts.sort((a,b)=>a[0]-b[0]);
+      if(vpts.length<2) return;
+      ctx.save(); ctx.rect(0,0,cW,cH); ctx.clip();
+      ctx.strokeStyle='#555'; ctx.lineWidth=0.6; ctx.setLineDash([4,3]);
+      ctx.beginPath(); vpts.forEach(([x,y],i)=>i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)); ctx.stroke();
+      ctx.setLineDash([]);
+      const [lx,ly]=vpts[vpts.length-1];
+      const pa=vpts[Math.max(0,vpts.length-5)];
+      const ang=Math.atan2(ly-pa[1],lx-pa[0]);
+      const lbl=`v=${v}m/s`;
+      ctx.save(); ctx.translate(lx,ly); ctx.rotate(ang);
+      ctx.font='7px MS Gothic,monospace';
+      const tw2=ctx.measureText(lbl).width;
+      ctx.fillStyle='rgba(255,255,255,0.85)'; ctx.fillRect(-1,-9,tw2+2,11);
+      ctx.fillStyle='#333'; ctx.textAlign='left'; ctx.textBaseline='bottom';
+      ctx.fillText(lbl,0,0);
+      ctx.restore(); ctx.restore();
+    });
+  }
+
+  ctx.font='9px MS Gothic, monospace'; ctx.fillStyle='#000';
+  ctx.textAlign='left'; ctx.textBaseline='top';
+  const formulaLabel = cur==='poly' ? `C＝${p.C}　TWの式による.` : `C＝${p.C}　ヘーゼン・ウィリアムスの式による.`;
+  ctx.fillText(formulaLabel,6,4);
+
+  const yLbls=logTicks(Ymin,Ymax);
+  ctx.font='9px MS Gothic, monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  ctx.fillStyle='#000'; ctx.strokeStyle='#000'; ctx.lineWidth=1;
+  let prevY=9999;
+  yLbls.forEach(v=>{
+    const y=yq(v,cH,Ymin,Ymax);
+    ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(-4,y);ctx.stroke();
+    if(prevY-y>9){ ctx.fillText(String(v),-6,y); prevY=y; }
+  });
+
+  const xLbls=[0.01,0.02,0.03,0.04,0.05,0.06,0.08,0.1,0.2,0.3,0.4,0.5,0.6,0.8,1,2,3,4,5,6,8,10].filter(v=>v>=Xmin&&v<=Xmax);
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  let prevX=-9999;
+  xLbls.forEach(v=>{
+    const x=xi(v,cW,Xmin,Xmax);
+    ctx.beginPath();ctx.moveTo(x,cH);ctx.lineTo(x,cH+4);ctx.stroke();
+    if(x-prevX>14){ ctx.fillText(String(v),x,cH+5); prevX=x; }
+  });
+
+  ctx.strokeStyle='#000'; ctx.lineWidth=0.5;
+  xT.forEach(v=>{ const x=xi(v,cW,Xmin,Xmax); ctx.beginPath();ctx.moveTo(x,cH);ctx.lineTo(x,cH+2);ctx.stroke(); });
+  yT.forEach(v=>{ const y=yq(v,cH,Ymin,Ymax); ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(-2,y);ctx.stroke(); });
+
+  ctx.save();
+  ctx.translate(-52,cH/2); ctx.rotate(-Math.PI/2);
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.font='bold 10px MS Gothic, monospace'; ctx.fillStyle='#000';
+  ctx.fillText('流　量　〔L/min〕',0,0);
+  ctx.restore();
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  ctx.font='bold 10px MS Gothic, monospace'; ctx.fillStyle='#000';
+  ctx.fillText('単位長さ当たりの圧力損失〔kPa/m〕',cW/2,cH+32);
+
+  if(mouseX>=0&&mouseX<=cW&&mouseY>=0&&mouseY<=cH){
+    ctx.save(); ctx.rect(0,0,cW,cH); ctx.clip();
+    ctx.strokeStyle='rgba(0,0,200,0.4)'; ctx.lineWidth=0.8; ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(mouseX,0);ctx.lineTo(mouseX,cH);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,mouseY);ctx.lineTo(cW,mouseY);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#0000cc'; ctx.beginPath();ctx.arc(mouseX,mouseY,2.5,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  }
+
+  ctx.restore();
+}
+
+const canv=document.getElementById('mainCanvas');
+const tip=document.getElementById('tip');
+
+canv.addEventListener('mousemove',e=>{
+  const rect=canv.getBoundingClientRect();
+  const scaleX=canv.width/rect.width, scaleY=canv.height/rect.height;
+  const cx=(e.clientX-rect.left)*scaleX-PAD.left;
+  const cy=(e.clientY-rect.top)*scaleY-PAD.top;
+  const cW=canv.width-PAD.left-PAD.right, cH=canv.height-PAD.top-PAD.bottom;
+  const p=PIPES[cur];
+  if(cx<0||cx>cW||cy<0||cy>cH){ tip.style.display='none';mouseX=-1;mouseY=-1;draw();return; }
+  mouseX=cx; mouseY=cy;
+  const iv=px2i(cx,cW,p.Xmin,p.Xmax), Q=px2q(cy,cH,p.Ymin,p.Ymax);
+
+  // Find which pipe region the cursor is in.
+  // For each pipe, compute the Q value of its line at the current i (using digitized slope if available).
+  // Then find the pipe whose line is immediately BELOW (<=) the cursor Q — that's the region we're in.
+  const suf=p.suffix?' '+p.suffix:'';
+  function pipeQatI(s, i_val){
+    if(s.x1!==undefined){
+      // Use the digitized log-log line: log(Q) = m*log(i) + b
+      const lx1=Math.log10(s.x1), ly1=Math.log10(s.y1);
+      const lx2=Math.log10(s.x2), ly2=Math.log10(s.y2);
+      const m=(ly2-ly1)/(lx2-lx1), b=ly1-m*lx1;
+      return Math.pow(10, m*Math.log10(i_val)+b);
+    } else {
+      return Q_hw(p.C, effectiveId(s,p.C)/1000, i_val);
+    }
+  }
+
+  // Compute each pipe's Q at current i, sorted ascending
+  const pipeQs = p.sizes.map(s=>({s, lineQ: pipeQatI(s, iv)}))
+                         .sort((a,b)=>a.lineQ-b.lineQ);
+
+  // Find the pipe whose line Q is just below the cursor Q (cursor is above this line)
+  // The region between pipe[k] and pipe[k+1] belongs to pipe[k+1]
+  // (cursor is above pipe[k]'s line but below pipe[k+1]'s line → in pipe[k+1]'s region)
+  let near=null;
+  for(let k=0;k<pipeQs.length;k++){
+    if(pipeQs[k].lineQ >= Q){
+      near=pipeQs[k].s;
+      break;
+    }
+  }
+  // If cursor is above all lines, use the largest pipe
+  if(!near) near=pipeQs[pipeQs.length-1].s;
+
+  const eid=effectiveId(near,p.C);
+  const Qnear=pipeQatI(near,iv);
+  const vnear=vel(Qnear,eid);
+  let lines=[`圧損 i = ${iv.toFixed(4)} kPa/m`,`流量 Q = ${Q.toFixed(2)} L/min`,
+             `流速 v ≈ ${vnear.toFixed(2)} m/s [${near.A}${suf}]`];
+  tip.innerHTML=lines.join('<br>'); tip.style.display='block';
+  const tx=e.clientX-rect.left+12, ty=e.clientY-rect.top-8;
+  const tw=tip.offsetWidth, th2=tip.offsetHeight;
+  tip.style.left=(tx+tw>rect.width?tx-tw-24:tx)+'px';
+  tip.style.top=(ty<0?0:ty+th2>rect.height?rect.height-th2:ty)+'px';
+  draw();
+});
+
+canv.addEventListener('mouseleave',()=>{ tip.style.display='none';mouseX=-1;mouseY=-1;draw(); });
+let rafPending=false;
+new ResizeObserver(()=>{ if(!rafPending){rafPending=true;requestAnimationFrame(()=>{rafPending=false;draw();});} }).observe(document.getElementById('mainCanvas').parentElement);
+
+buildDN(); buildTable(); buildEqLenTable(); calcFwd(); calcRev();
+setTimeout(draw,80);
+</script>
+</body>
+</html>
