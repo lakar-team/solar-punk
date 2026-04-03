@@ -164,11 +164,11 @@ export default function HUD() {
                                     Download PDF
                                 </a>
                                 <a
-                                    href="/docs/profile-background.pdf"
+                                    href="/docs/personal-background.pdf"
                                     target="_blank"
                                     className="flex-1 py-4 bg-white/10 hover:bg-white/20 text-white text-center font-bold uppercase tracking-wider transition-colors rounded border border-white/10"
                                 >
-                                    CV Detail & Background
+                                    Personal Background
                                 </a>
                             </div>
                         </div>
