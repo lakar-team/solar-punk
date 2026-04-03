@@ -157,11 +157,11 @@ export default function HUD() {
 
                             <div className="flex gap-3 mt-6">
                                 <a
-                                    href="/Adam_Tech_CV.pdf"
-                                    download
+                                    href="/docs/coding-journey.pdf"
+                                    target="_blank"
                                     className="flex-1 py-4 bg-amber-600 hover:bg-amber-500 text-black text-center font-bold uppercase tracking-wider transition-colors rounded"
                                 >
-                                    Download PDF
+                                    Coding Journey
                                 </a>
                                 <a
                                     href="/docs/personal-background.pdf"
