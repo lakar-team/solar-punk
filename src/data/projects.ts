@@ -15,6 +15,8 @@ export interface Project {
     orbitSpeed: number; // Multiplier for orbit speed
     link?: string; // External or internal link
     image?: string; // Path to thumbnail/texture image
+    sidebarScreenshot?: string; // A dedicated screenshot for the sidebar preview only
+    hideEmbed?: boolean; // When true, don't show the live site preview (iframe/PDF)
     secondaryLinks?: { label: string; url: string }[]; // Additional resource links
 }
 
@@ -126,6 +128,8 @@ export const projects: Project[] = [
         orbitRadius: 45,
         orbitSpeed: 0.14,
         link: 'https://project-aibo.vercel.app/',
+        sidebarScreenshot: '/textures/aibo-preview.jpg',
+        hideEmbed: true,
     },
     {
         id: 'kanji-pad',

@@ -259,8 +259,27 @@ export default function HUD() {
                                 </div>
                             )}
 
+                            {/* Sidebar Screenshot Preview (Overrides Live Preview) */}
+                            {activeProject.sidebarScreenshot && (
+                                <div className="mt-4 rounded-lg overflow-hidden border border-white/10 bg-black/50">
+                                    <div className="p-2 border-b border-white/10 flex justify-between items-center bg-white/5">
+                                        <span className="text-[10px] text-white/50 uppercase tracking-widest">Interface Preview</span>
+                                        {activeProject.link && (
+                                            <a href={activeProject.link} target="_blank" rel="noopener noreferrer" className="text-[10px] text-amber-500 hover:text-amber-400 underline uppercase tracking-widest">Open Site</a>
+                                        )}
+                                    </div>
+                                    <div className="bg-white group/ss relative">
+                                        <img
+                                            src={activeProject.sidebarScreenshot}
+                                            alt={`${activeProject.name} Interface`}
+                                            className="w-full h-auto object-contain max-h-[600px]"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Project Link - Auto-embed PDF or Site Preview */}
-                            {activeProject.link && (
+                            {activeProject.link && !activeProject.hideEmbed && (
                                 <div className="space-y-4">
                                     {activeProject.link.toLowerCase().endsWith('.pdf') ? (
                                         <div className="mt-4 rounded-lg overflow-hidden border border-white/10 bg-black/50">
