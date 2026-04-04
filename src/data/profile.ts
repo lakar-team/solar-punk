@@ -22,7 +22,7 @@ export const profile: Profile = {
         'P&L Ownership', 'IoT & Smart Home Integration',
         'Energy Data Analysis', 'AI-Assisted Workflow Design'
     ],
-    bio: 'Ex-Founder and PhD Researcher with 10+ years of project leadership. I bridge the gap between technical engineering and business goals through human-centric design and automated operational workflows.',
+    bio: 'I solve problems by looking where others don’t—merging lessons from nature with deep technical engineering. After a decade of leadership and a successfully bootstrapped 100% YoY growth firm, I am currently on a Research Sabbatical focused on Climate Tech and AI-driven workflows. My expertise lies in making complex systems (Energy, Software, Physical Space) feel intuitive. I lead by understanding the "how" of the maker and the "why" of the user, pushing teams to generate creative solutions that are both sustainable and cutting-edge.',
     socials: {
         github: 'https://github.com/lakar-team',
         // Add other links here

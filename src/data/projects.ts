@@ -63,7 +63,7 @@ export const projects: Project[] = [
         texturePath: '/textures/planet-desert.png',
         emissiveColor: '#60a5fa',
         status: 'complete',
-        description: 'Early in my career I realized that great architecture is won before a single line is drawn — it lives in the trust you build and your ability to deliver under pressure. At S&A I led the projects that secured major redevelopment contracts in Shah Alam, culminating in the PAM Award 2017 for Denai Alam Phase J15. That experience shaped my understanding of design as a system, not just a visual craft.',
+        description: 'Within my first year as a Graduate Architect, I designed a sustainable low-rise master plan that secured a PAM Award 2017 for Denai Alam Phase J15. By anchoring housing nodes around connected green ribbons leading to a central social hub, the design prioritized human interaction and ecological flow. This concept was so successful it was adopted as a prototypical standard for one of Malaysia’s largest property developers, proving that human-centric urban design is as commercially viable as it is sustainable.',
         orbitRadius: 30,
         orbitSpeed: 0.3,
         link: '/docs/sa-architects-award.pdf',
