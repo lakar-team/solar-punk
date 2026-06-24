@@ -1,8 +1,8 @@
 /**
- * Kokoro-js 1.x WASM neural TTS hook.
- * NO caching — model always downloads fresh (Adam's constraint: first-visitor experience).
- *
- * API: KokoroTTS.from_pretrained() → tts.generate(text, { voice }) → RawAudio { audio, sampling_rate }
+ * Kokoro-js 1.x WASM neural TTS hook — streaming mode.
+ * Uses tts.stream() so the first sentence plays while the rest generates,
+ * cutting perceived latency from (full-response inference) to (one sentence).
+ * Model is pre-warmed on mount so it is ready by the time the first reply arrives.
  */
 'use client';
 
@@ -18,7 +18,7 @@ export interface KokoroTTSState {
     error: string | null;
 }
 
-const VOICE = 'af_heart'; // warm female English voice
+const VOICE = 'af_heart';
 
 export function useKokoroTTS(): KokoroTTSState {
     const [loading, setLoading] = useState(false);
@@ -29,6 +29,7 @@ export function useKokoroTTS(): KokoroTTSState {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pipelineRef = useRef<any>(null);
     const naturalizerRef = useRef<Naturalizer | null>(null);
+    const speakAbortRef = useRef<AbortController | null>(null);
 
     useEffect(() => {
         if (!naturalizerRef.current) {
@@ -49,7 +50,7 @@ export function useKokoroTTS(): KokoroTTSState {
             const { KokoroTTS } = await import('kokoro-js');
 
             const tts = await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX', {
-                dtype: 'q8',   // quantised — ~20MB vs ~80MB fp32, still good quality
+                dtype: 'q8',
                 device: 'wasm',
                 progress_callback: (info) => {
                     if ('progress' in info && typeof info.progress === 'number') {
@@ -70,14 +71,31 @@ export function useKokoroTTS(): KokoroTTSState {
         }
     }, []);
 
+    // Pre-warm the model on mount so it is ready when the first reply arrives.
+    // The loading bar in AiboPanel gives the user feedback while it downloads.
+    useEffect(() => {
+        loadModel().catch(() => { /* error surfaced via state */ });
+    }, [loadModel]);
+
     const speak = useCallback(async (text: string) => {
         if (!text.trim()) return;
+
+        // Cancel any in-flight stream from a previous speak() call
+        speakAbortRef.current?.abort();
+        const abort = new AbortController();
+        speakAbortRef.current = abort;
+
         try {
             const tts = await loadModel();
-            // RawAudio: { audio: Float32Array, sampling_rate: number }
-            const result = await tts.generate(text, { voice: VOICE });
-            naturalizerRef.current?.play(result.audio, result.sampling_rate);
+            // stream() splits text into sentences and yields each as audio is ready.
+            // The first sentence starts playing while the rest is still generating.
+            const stream = tts.stream(text, { voice: VOICE });
+            for await (const { audio } of stream) {
+                if (abort.signal.aborted) break;
+                naturalizerRef.current?.enqueue(audio.audio, audio.sampling_rate);
+            }
         } catch (err) {
+            if (abort.signal.aborted) return;
             const msg = err instanceof Error ? err.message : 'Speech synthesis failed';
             setError(msg);
             setIsSpeaking(false);
@@ -86,6 +104,7 @@ export function useKokoroTTS(): KokoroTTSState {
     }, [loadModel]);
 
     const stop = useCallback(() => {
+        speakAbortRef.current?.abort();
         naturalizerRef.current?.stop();
     }, []);
 
