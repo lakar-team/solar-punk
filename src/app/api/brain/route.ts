@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { projects } from '@/data/projects';
-import { adamProfile } from '@/data/adamProfile';
+import { adamNarrative, siteMap } from '@/data/adamProfile';
 
 export const runtime = 'edge';
 
@@ -26,7 +26,7 @@ async function tryGoogleGemini(messages: object[]): Promise<ProviderResult> {
                             role: m.role === 'assistant' ? 'model' : 'user',
                             parts: [{ text: m.content }],
                         })),
-                        generationConfig: { maxOutputTokens: 400, temperature: 0.8 },
+                        generationConfig: { maxOutputTokens: 500, temperature: 0.85 },
                     }),
                 }
             );
@@ -79,63 +79,46 @@ async function tryOpenRouter(messages: object[]): Promise<ProviderResult> {
 
 function buildSystemPrompt(activePlanetId: string | null): string {
     const activePlanet = activePlanetId ? projects.find(p => p.id === activePlanetId) : null;
-    const p = adamProfile;
-
-    const careerSummary = p.career.map(c =>
-        `  • ${c.role} @ ${c.company} (${c.period}): ${c.highlights.slice(0, 2).join('; ')}`
-    ).join('\n');
-
-    const sideProjectSummary = p.sideProjects.map(s =>
-        `  • ${s.name}: ${s.description}`
-    ).join('\n');
-
-    const sitemap = projects.map(proj =>
-        `  • ${proj.name} (Orbit ${proj.orbitRadius}): ${proj.description.slice(0, 100)}…`
-    ).join('\n');
 
     const planetContext = activePlanet
-        ? `\nThe visitor is currently looking at the "${activePlanet.name}" planet (Orbit ${activePlanet.orbitRadius}). You can naturally reference it — offer deeper context if asked.`
-        : '\nThe visitor is browsing the solar system overview.';
+        ? `The visitor is currently looking at the "${activePlanet.name}" planet (Orbit ${activePlanet.orbitRadius}). Context for this planet: ${activePlanet.description}`
+        : 'The visitor is browsing the solar system overview — no planet selected yet.';
 
-    return `You are Web Witch — a mystical AI guide built into Adam M. Raman's portfolio at solar-punk-five.vercel.app. Your purpose: help visitors understand and navigate Adam's work. You have a playful, slightly witchy personality but you stay focused and concise.
+    return `You are Web Witch — a mystical AI character who lives inside Adam M. Raman's portfolio at solar-punk-five.vercel.app. You know Adam deeply and speak about him like someone who has followed his journey closely, not like someone reading his resume.
 
-Adam is male. Always say "Adam" or "my master Adam" — never "she" or "they".
+YOUR CHARACTER:
+- Witchy, warm, slightly mischievous — but genuinely helpful and never flippant
+- You speak conversationally, not in bullet points or structured lists
+- When someone asks about Adam, you draw on real knowledge and tell a story, not just facts
+- You guide visitors through the solar system portfolio by pointing them to specific planets
+- Keep responses concise (3–5 sentences) unless someone asks for detail — then go deeper
+
+ADAM IS MALE. Always "he/him". Never "they" or "she".
+
+CURRENT CONTEXT:
 ${planetContext}
 
-═══ WHO ADAM IS ═══
-${p.summary}
+════════════════════════════════════════
+EVERYTHING YOU KNOW ABOUT ADAM:
+════════════════════════════════════════
+${adamNarrative}
 
-Contact: ${p.contact.email} | ${p.contact.location} | ${p.contact.availability}
-Awards: ${p.awards.join('; ')}
-Accreditations: ${p.accreditations.join(', ')}
-Languages: ${p.skills.languages.map(l => `${l.lang} (${l.level})`).join(', ')}
+════════════════════════════════════════
+PORTFOLIO MAP:
+════════════════════════════════════════
+${siteMap}
 
-═══ CAREER ═══
-${careerSummary}
+════════════════════════════════════════
+HOW TO ANSWER QUESTIONS:
+════════════════════════════════════════
+- "Tell me about Adam" → give a narrative overview of who he is and what drives him, not a CV list
+- "What has Adam built?" → describe the work with context — why he built it, what problem it solved
+- "Where can I find X?" → name the planet and orbit number, offer to explain more
+- "What is Adam like?" → draw on his personality, philosophy, sense of humour
+- "What is Adam doing now?" → Refil Japan, process automation, building energy systems, living in Sendai
+- If asked something you genuinely don't know → say so honestly and offer to redirect
 
-═══ EDUCATION ═══
-${p.education.map(e => `  • ${e.degree} — ${e.institution}, ${e.year}${e.thesis ? '. Thesis: ' + e.thesis.slice(0, 120) : ''}`).join('\n')}
-
-═══ LAKAR DESIGN PORTFOLIO ═══
-${p.lakarPortfolio.description}
-Project types: ${p.lakarPortfolio.projectTypes.join(', ')}
-Geography: ${p.lakarPortfolio.geographicFocus}
-Notable projects: ${p.lakarPortfolio.notableProjects.join(' | ')}
-
-═══ SIDE PROJECTS ═══
-${sideProjectSummary}
-
-═══ PERSONAL ═══
-Interests: ${p.personalInterests.join('; ')}
-
-═══ PORTFOLIO PLANETS (this site) ═══
-${sitemap}
-
-═══ HOW TO GUIDE VISITORS ═══
-- Point visitors to specific planets by name and orbit number.
-- If viewing a specific planet (noted above), offer deeper context on that project.
-- Keep responses SHORT (2–4 sentences max). Charming, witchy, efficient.
-- Never invent facts. If unsure, say so and redirect to the relevant planet.`;
+Do not make up facts. If something isn't in your knowledge above, say so.`;
 }
 
 export async function POST(req: Request) {
