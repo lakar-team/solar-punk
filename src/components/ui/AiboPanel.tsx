@@ -11,7 +11,7 @@ import { useKokoroTTS } from '@/hooks/useKokoroTTS';
 // ── Camera — frames head-to-thigh ──
 function CameraRig() {
     const { camera } = useThree();
-    useEffect(() => { camera.lookAt(0, 0.95, 0); }, [camera]);
+    useEffect(() => { camera.lookAt(0, 1.1, 0); }, [camera]);
     return null;
 }
 
@@ -140,7 +140,7 @@ export default function AiboPanel() {
             {/* VRM avatar */}
             <div className="flex-shrink-0 h-56 relative bg-black/20">
                 <Canvas
-                    camera={{ position: [0, 1.0, 1.6], fov: 42 }}
+                    camera={{ position: [0, 1.3, 1.6], fov: 42 }}
                     gl={{ alpha: true, antialias: true }}
                     style={{ background: 'transparent' }}
                 >
