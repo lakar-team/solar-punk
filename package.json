@@ -21,7 +21,7 @@
     "three": "^0.182.0",
     "zustand": "^5.0.10",
     "@pixiv/three-vrm": "^3.4.0",
-    "kokoro-js": "^0.0.15"
+    "kokoro-js": "^1.2.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
