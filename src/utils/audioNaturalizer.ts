@@ -1,7 +1,12 @@
 /**
- * Web Audio naturalizer chain.
- * Warmth EQ → De-harsh EQ → Air shelf → Compression → Pitch wobble LFO → Room reverb → Output
- * Supports sequential chunk queuing for streaming TTS (sentence-by-sentence playback).
+ * Web Audio naturalizer chain — single shared chain for all chunks.
+ *
+ * IMPORTANT: The chain (EQ → compressor → reverb → destination) is built ONCE
+ * per AudioContext and reused for every sentence chunk. Previously each chunk
+ * created a new chain, so reverb tails from chunk N and the audio from chunk
+ * N+1 both connected to destination simultaneously → words piling on top.
+ * With a shared chain the reverb tail naturally transitions into the next
+ * sentence exactly as it would through a hardware reverb unit.
  */
 
 export interface Naturalizer {
@@ -12,7 +17,7 @@ export interface Naturalizer {
     onEnd: (cb: () => void) => void;
 }
 
-function buildRoomIR(ctx: AudioContext, duration = 0.5, decay = 2.8): AudioBuffer {
+function buildRoomIR(ctx: AudioContext, duration = 0.4, decay = 2.5): AudioBuffer {
     const length = Math.floor(ctx.sampleRate * duration);
     const ir = ctx.createBuffer(2, length, ctx.sampleRate);
     for (let ch = 0; ch < 2; ch++) {
@@ -24,8 +29,54 @@ function buildRoomIR(ctx: AudioContext, duration = 0.5, decay = 2.8): AudioBuffe
     return ir;
 }
 
+function buildChain(ctx: AudioContext): AudioNode {
+    const warmth = ctx.createBiquadFilter();
+    warmth.type = 'peaking';
+    warmth.frequency.value = 260;
+    warmth.Q.value = 0.8;
+    warmth.gain.value = 3.5;
+
+    const deHarsh = ctx.createBiquadFilter();
+    deHarsh.type = 'peaking';
+    deHarsh.frequency.value = 3400;
+    deHarsh.Q.value = 1.0;
+    deHarsh.gain.value = -3.0;
+
+    const air = ctx.createBiquadFilter();
+    air.type = 'highshelf';
+    air.frequency.value = 8000;
+    air.gain.value = 1.5;
+
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -18;
+    comp.knee.value = 8;
+    comp.ratio.value = 3.5;
+    comp.attack.value = 0.004;
+    comp.release.value = 0.18;
+
+    const reverb = ctx.createConvolver();
+    reverb.buffer = buildRoomIR(ctx);
+
+    const dryGain = ctx.createGain(); dryGain.gain.value = 0.82;
+    const wetGain = ctx.createGain(); wetGain.gain.value = 0.18;
+    const master = ctx.createGain(); master.gain.value = 0.96;
+
+    warmth.connect(deHarsh);
+    deHarsh.connect(air);
+    air.connect(comp);
+    comp.connect(dryGain);
+    comp.connect(reverb);
+    reverb.connect(wetGain);
+    dryGain.connect(master);
+    wetGain.connect(master);
+    master.connect(ctx.destination);
+
+    return warmth; // input node
+}
+
 export function createNaturalizer(): Naturalizer {
     let ctx: AudioContext | null = null;
+    let chainInput: AudioNode | null = null; // reused across all chunks
     let activeSource: AudioBufferSourceNode | null = null;
     let activeLfo: OscillatorNode | null = null;
     let startCb: (() => void) | null = null;
@@ -33,71 +84,28 @@ export function createNaturalizer(): Naturalizer {
 
     const queue: Array<{ samples: Float32Array; sampleRate: number }> = [];
     let isPlaying = false;
-    // Incremented on stop() so stale onended callbacks don't trigger playNext
     let generation = 0;
 
-    function ensureCtx(): AudioContext {
-        if (!ctx || ctx.state === 'closed') ctx = new AudioContext();
+    function ensureCtx(): { ctx: AudioContext; input: AudioNode } {
+        if (!ctx || ctx.state === 'closed') {
+            ctx = new AudioContext();
+            chainInput = buildChain(ctx); // build chain once per context
+        }
         if (ctx.state === 'suspended') ctx.resume();
-        return ctx;
-    }
-
-    function buildChain(c: AudioContext): AudioNode {
-        const warmth = c.createBiquadFilter();
-        warmth.type = 'peaking';
-        warmth.frequency.value = 260;
-        warmth.Q.value = 0.8;
-        warmth.gain.value = 3.5;
-
-        const deHarsh = c.createBiquadFilter();
-        deHarsh.type = 'peaking';
-        deHarsh.frequency.value = 3400;
-        deHarsh.Q.value = 1.0;
-        deHarsh.gain.value = -3.0;
-
-        const air = c.createBiquadFilter();
-        air.type = 'highshelf';
-        air.frequency.value = 8000;
-        air.gain.value = 1.5;
-
-        const comp = c.createDynamicsCompressor();
-        comp.threshold.value = -18;
-        comp.knee.value = 8;
-        comp.ratio.value = 3.5;
-        comp.attack.value = 0.004;
-        comp.release.value = 0.18;
-
-        const reverb = c.createConvolver();
-        reverb.buffer = buildRoomIR(c);
-
-        const dryGain = c.createGain(); dryGain.gain.value = 0.82;
-        const wetGain = c.createGain(); wetGain.gain.value = 0.18;
-        const master = c.createGain(); master.gain.value = 0.96;
-
-        warmth.connect(deHarsh);
-        deHarsh.connect(air);
-        air.connect(comp);
-        comp.connect(dryGain);
-        comp.connect(reverb);
-        reverb.connect(wetGain);
-        dryGain.connect(master);
-        wetGain.connect(master);
-        master.connect(c.destination);
-
-        return warmth;
+        return { ctx, input: chainInput! };
     }
 
     function playChunk(samples: Float32Array, sampleRate: number) {
         const myGen = generation;
-        const c = ensureCtx();
+        const { ctx: c, input } = ensureCtx();
 
         const buf = c.createBuffer(1, samples.length, sampleRate);
         buf.copyToChannel(new Float32Array(samples), 0);
 
-        const inputNode = buildChain(c);
         const source = c.createBufferSource();
         source.buffer = buf;
 
+        // Micro-pitch wobble: 4.2 Hz LFO ±10 cents
         const lfo = c.createOscillator();
         const lfoGain = c.createGain();
         lfo.frequency.value = 4.2;
@@ -106,10 +114,12 @@ export function createNaturalizer(): Naturalizer {
         lfoGain.connect(source.detune);
         lfo.start();
 
-        source.connect(inputNode);
+        source.connect(input);
+
         source.onended = () => {
             try { lfo.stop(); } catch { /* ignore */ }
-            if (generation !== myGen) return; // stop() was called — don't chain
+            try { source.disconnect(); } catch { /* ignore */ }
+            if (generation !== myGen) return;
             activeSource = null;
             activeLfo = null;
             playNext();

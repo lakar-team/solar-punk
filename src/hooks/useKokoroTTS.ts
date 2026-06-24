@@ -80,9 +80,10 @@ export function useKokoroTTS(): KokoroTTSState {
             try {
                 const { KokoroTTS } = await import('kokoro-js');
                 const device = await detectDevice();
-
+                // fp32 recommended for WebGPU (q8+webgpu can produce garbled audio);
+                const dtype = device === 'webgpu' ? 'fp32' : 'q8';
                 const tts = await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX', {
-                    dtype: 'q8',
+                    dtype,
                     device,
                     progress_callback: (info) => {
                         if ('progress' in info && typeof info.progress === 'number') {
