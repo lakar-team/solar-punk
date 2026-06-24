@@ -51,8 +51,8 @@ export function useKokoroTTS(): KokoroTTSState {
             const tts = await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0', {
                 dtype: 'q8',   // quantised — ~20MB vs ~80MB fp32, still good quality
                 device: 'wasm',
-                progress_callback: (info: { progress?: number }) => {
-                    if (typeof info.progress === 'number') {
+                progress_callback: (info) => {
+                    if ('progress' in info && typeof info.progress === 'number') {
                         setProgress(Math.round(info.progress));
                     }
                 },
