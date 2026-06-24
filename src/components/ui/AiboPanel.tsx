@@ -11,7 +11,7 @@ import { useKokoroTTS } from '@/hooks/useKokoroTTS';
 // ── Camera — frames head-to-thigh ──
 function CameraRig() {
     const { camera } = useThree();
-    useEffect(() => { camera.lookAt(0, 1.1, 0); }, [camera]);
+    useEffect(() => { camera.lookAt(0, 1.35, 0); }, [camera]);
     return null;
 }
 

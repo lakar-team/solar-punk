@@ -48,7 +48,7 @@ export function useKokoroTTS(): KokoroTTSState {
         try {
             const { KokoroTTS } = await import('kokoro-js');
 
-            const tts = await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0', {
+            const tts = await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX', {
                 dtype: 'q8',   // quantised — ~20MB vs ~80MB fp32, still good quality
                 device: 'wasm',
                 progress_callback: (info) => {
