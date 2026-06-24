@@ -1,8 +1,16 @@
 /**
- * Kokoro-js 1.x WASM neural TTS hook — streaming mode.
- * Uses tts.stream() so the first sentence plays while the rest generates,
- * cutting perceived latency from (full-response inference) to (one sentence).
- * Model is pre-warmed on mount so it is ready by the time the first reply arrives.
+ * Kokoro-js 1.x WASM/WebGPU neural TTS hook.
+ *
+ * Strategy:
+ *  - Detect WebGPU on load; fall back to WASM. Chrome/Edge GPU inference is
+ *    10-50x faster than WASM (~200ms/sentence vs 3-8s).
+ *  - Pre-warm the model on mount so download races the first API reply.
+ *  - Run one short warmup inference after load to JIT-compile WASM kernels.
+ *  - Split text into sentences manually and generate each independently.
+ *    Per-sentence try/catch means one failed phonemization can't cut off
+ *    the rest of the response.
+ *  - Promise deduplication in loadModel() prevents double-downloads if
+ *    speak() fires before the pre-warm finishes.
  */
 'use client';
 
@@ -13,12 +21,31 @@ export interface KokoroTTSState {
     speak: (text: string) => Promise<void>;
     stop: () => void;
     loading: boolean;
-    progress: number;   // 0–100
+    progress: number;
     isSpeaking: boolean;
     error: string | null;
 }
 
 const VOICE = 'af_heart';
+
+function splitSentences(text: string): string[] {
+    return text
+        .split(/(?<=[.!?…])\s+|\n\n+/)
+        .map(s => s.trim())
+        .filter(s => s.length > 1);
+}
+
+async function detectDevice(): Promise<'webgpu' | 'wasm'> {
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const gpu = (navigator as any).gpu;
+        if (gpu) {
+            const adapter = await gpu.requestAdapter();
+            if (adapter) return 'webgpu';
+        }
+    } catch { /* ignore */ }
+    return 'wasm';
+}
 
 export function useKokoroTTS(): KokoroTTSState {
     const [loading, setLoading] = useState(false);
@@ -28,6 +55,8 @@ export function useKokoroTTS(): KokoroTTSState {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const pipelineRef = useRef<any>(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const loadingPromiseRef = useRef<Promise<any> | null>(null);
     const naturalizerRef = useRef<Naturalizer | null>(null);
     const speakAbortRef = useRef<AbortController | null>(null);
 
@@ -41,58 +70,75 @@ export function useKokoroTTS(): KokoroTTSState {
 
     const loadModel = useCallback(async () => {
         if (pipelineRef.current) return pipelineRef.current;
+        // Return the in-flight promise so concurrent callers share one load
+        if (loadingPromiseRef.current) return loadingPromiseRef.current;
 
-        setLoading(true);
-        setProgress(0);
-        setError(null);
+        loadingPromiseRef.current = (async () => {
+            setLoading(true);
+            setProgress(0);
+            setError(null);
+            try {
+                const { KokoroTTS } = await import('kokoro-js');
+                const device = await detectDevice();
 
-        try {
-            const { KokoroTTS } = await import('kokoro-js');
+                const tts = await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX', {
+                    dtype: 'q8',
+                    device,
+                    progress_callback: (info) => {
+                        if ('progress' in info && typeof info.progress === 'number') {
+                            setProgress(Math.round(info.progress));
+                        }
+                    },
+                });
 
-            const tts = await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX', {
-                dtype: 'q8',
-                device: 'wasm',
-                progress_callback: (info) => {
-                    if ('progress' in info && typeof info.progress === 'number') {
-                        setProgress(Math.round(info.progress));
-                    }
-                },
-            });
+                setProgress(100);
+                setLoading(false);
 
-            pipelineRef.current = tts;
-            setProgress(100);
-            return tts;
-        } catch (err) {
-            const msg = err instanceof Error ? err.message : 'Failed to load voice model';
-            setError(msg);
-            throw err;
-        } finally {
-            setLoading(false);
-        }
+                // Warmup: JIT-compiles WASM kernels so the first real sentence
+                // doesn't pay the compilation penalty (~2-4s on WASM).
+                // Runs silently after the loading bar disappears.
+                try { await tts.generate('Hi', { voice: VOICE }); } catch { /* ignore */ }
+
+                pipelineRef.current = tts;
+                return tts;
+            } catch (err) {
+                const msg = err instanceof Error ? err.message : 'Failed to load voice model';
+                setError(msg);
+                setLoading(false);
+                loadingPromiseRef.current = null; // allow retry
+                throw err;
+            }
+        })();
+
+        return loadingPromiseRef.current;
     }, []);
 
-    // Pre-warm the model on mount so it is ready when the first reply arrives.
-    // The loading bar in AiboPanel gives the user feedback while it downloads.
+    // Pre-warm on mount so model download races the first API round-trip
     useEffect(() => {
-        loadModel().catch(() => { /* error surfaced via state */ });
+        loadModel().catch(() => {});
     }, [loadModel]);
 
     const speak = useCallback(async (text: string) => {
         if (!text.trim()) return;
 
-        // Cancel any in-flight stream from a previous speak() call
         speakAbortRef.current?.abort();
         const abort = new AbortController();
         speakAbortRef.current = abort;
 
         try {
             const tts = await loadModel();
-            // stream() splits text into sentences and yields each as audio is ready.
-            // The first sentence starts playing while the rest is still generating.
-            const stream = tts.stream(text, { voice: VOICE });
-            for await (const { audio } of stream) {
+            const sentences = splitSentences(text);
+
+            for (const sentence of sentences) {
                 if (abort.signal.aborted) break;
-                naturalizerRef.current?.enqueue(audio.audio, audio.sampling_rate);
+                try {
+                    const result = await tts.generate(sentence, { voice: VOICE });
+                    if (!abort.signal.aborted) {
+                        naturalizerRef.current?.enqueue(result.audio, result.sampling_rate);
+                    }
+                } catch {
+                    // One bad sentence (phonemizer error, etc.) — skip it, keep going
+                }
             }
         } catch (err) {
             if (abort.signal.aborted) return;
