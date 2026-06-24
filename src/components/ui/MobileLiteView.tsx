@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { projects } from '@/data/projects';
 import { profile } from '@/data/profile';
 import { Canvas } from '@react-three/fiber';
+import MobileAiboChat from './MobileAiboChat';
 
 // Dynamic import for PlanetPreview
 const PlanetPreview = dynamic(() => import('./PlanetPreview'), { ssr: false });
@@ -285,13 +286,8 @@ const MobileLiteView = () => {
                                 </button>
 
                                 {/* Chat Container */}
-                                <div className="flex-1 relative bg-black/50">
-                                    <iframe
-                                        src="https://project-aibo.vercel.app/?embed=true&mobile=true&chatOnly=true&noAudio=true&voice=false&silent=true&muted=true&autoSpeak=false"
-                                        className="absolute inset-0 w-full h-full border-0"
-                                        title="Aibo Assistant"
-                                        allow=""
-                                    />
+                                <div className="flex-1 min-h-0 overflow-hidden">
+                                    <MobileAiboChat />
                                 </div>
                             </div>
                         </div>
@@ -299,15 +295,7 @@ const MobileLiteView = () => {
                 )}
             </AnimatePresence>
 
-            {/* Aibo Invisible Iframe for background loading */}
-            {!showAibo && (
-                <div className="hidden">
-                    <iframe
-                        src="https://project-aibo.vercel.app/?embed=true&mobile=true&chatOnly=true&noAudio=true&voice=false&silent=true&muted=true&autoSpeak=false"
-                        title="Aibo Preloader"
-                    />
-                </div>
-            )}
+
 
             {/* Floating Ask Aibo Button */}
             <AnimatePresence>
