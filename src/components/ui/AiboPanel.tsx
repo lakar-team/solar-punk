@@ -6,17 +6,16 @@ import { VRMLoaderPlugin, VRMUtils, VRM } from '@pixiv/three-vrm';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { useStore } from '@/store/useStore';
 import { projects } from '@/data/projects';
+import { useKokoroTTS } from '@/hooks/useKokoroTTS';
 
-// ── Camera — frames head-to-thigh, slightly looking up ──
+// ── Camera — frames head-to-thigh ──
 function CameraRig() {
     const { camera } = useThree();
-    useEffect(() => {
-        camera.lookAt(0, 0.95, 0);
-    }, [camera]);
+    useEffect(() => { camera.lookAt(0, 0.95, 0); }, [camera]);
     return null;
 }
 
-// ── VRM model with full idle animation ──
+// ── VRM model with idle animation ──
 function VrmModel({ isSpeaking }: { isSpeaking: boolean }) {
     const [vrm, setVrm] = useState<VRM | null>(null);
 
@@ -46,7 +45,6 @@ function VrmModel({ isSpeaking }: { isSpeaking: boolean }) {
             if (lArm) lArm.rotation.z = 1.2 + Math.sin(t * 0.5) * 0.02;
             if (rArm) rArm.rotation.z = -1.2 + Math.sin(t * 0.5 + 0.5) * 0.02;
 
-            // Blinking
             if (vrm.expressionManager) {
                 const blinkCycle = t % 4;
                 if (blinkCycle > 3.8) {
@@ -55,8 +53,6 @@ function VrmModel({ isSpeaking }: { isSpeaking: boolean }) {
                 } else {
                     vrm.expressionManager.setValue('blink', 0);
                 }
-
-                // Lip sync
                 if (isSpeaking) {
                     vrm.expressionManager.setValue('aa', (Math.sin(t * 12) + 1) * 0.25);
                     vrm.expressionManager.setValue('oh', (Math.cos(t * 9) + 1) * 0.15);
@@ -72,47 +68,20 @@ function VrmModel({ isSpeaking }: { isSpeaking: boolean }) {
     return <primitive object={vrm.scene} />;
 }
 
-// ── Web Speech API TTS ──
-function useSpeech() {
-    const [isSpeaking, setIsSpeaking] = useState(false);
-    const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-
-    const speak = useCallback((text: string) => {
-        if (typeof window === 'undefined' || !window.speechSynthesis) return;
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(text);
-
-        // Pick a good voice — prefer a female English voice
-        const pickVoice = () => {
-            const voices = window.speechSynthesis.getVoices();
-            return (
-                voices.find(v => v.name === 'Microsoft Zira - English (United States)') ||
-                voices.find(v => v.name === 'Samantha') ||
-                voices.find(v => v.name.includes('Google UK English Female')) ||
-                voices.find(v => v.lang === 'en-GB' && v.localService) ||
-                voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female')) ||
-                voices.find(v => v.lang.startsWith('en'))
-            );
-        };
-
-        const voice = pickVoice();
-        if (voice) u.voice = voice;
-        u.rate = 0.92;
-        u.pitch = 1.15;
-        u.volume = 1.0;
-        u.onstart = () => setIsSpeaking(true);
-        u.onend = () => setIsSpeaking(false);
-        u.onerror = () => setIsSpeaking(false);
-        utteranceRef.current = u;
-        window.speechSynthesis.speak(u);
-    }, []);
-
-    const stop = useCallback(() => {
-        if (typeof window !== 'undefined') window.speechSynthesis?.cancel();
-        setIsSpeaking(false);
-    }, []);
-
-    return { isSpeaking, speak, stop };
+// ── Loading bar component ──
+function LoadingBar({ progress, label }: { progress: number; label: string }) {
+    return (
+        <div className="flex flex-col items-center gap-1.5 px-4 py-2">
+            <span className="text-[10px] text-amber-400/60 uppercase tracking-widest">{label}</span>
+            <div className="w-full h-[2px] bg-white/10 rounded-full overflow-hidden">
+                <div
+                    className="h-full bg-amber-400/70 rounded-full transition-all duration-300"
+                    style={{ width: `${progress}%` }}
+                />
+            </div>
+            <span className="text-[10px] text-zinc-600">{progress}%</span>
+        </div>
+    );
 }
 
 // ── Main panel ──
@@ -125,7 +94,8 @@ export default function AiboPanel() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isThinking, setIsThinking] = useState(false);
-    const { isSpeaking, speak, stop } = useSpeech();
+
+    const { speak, stop, loading: ttsLoading, progress: ttsProgress, isSpeaking, error: ttsError } = useKokoroTTS();
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const hasGreeted = useRef(false);
@@ -149,6 +119,7 @@ export default function AiboPanel() {
             const data = await res.json() as { reply?: string };
             const reply = data.reply ?? "I seem to have lost my crystal ball. Try again?";
             setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+            // Fire-and-forget — Kokoro loads model then plays audio
             speak(reply);
         } catch {
             setMessages(prev => [...prev, { role: 'assistant', content: "Connection lost. Try again shortly." }]);
@@ -166,7 +137,7 @@ export default function AiboPanel() {
 
     return (
         <div className="flex flex-col h-full w-full">
-            {/* VRM avatar — camera framed head-to-thigh */}
+            {/* VRM avatar */}
             <div className="flex-shrink-0 h-56 relative bg-black/20">
                 <Canvas
                     camera={{ position: [0, 1.0, 1.6], fov: 42 }}
@@ -179,13 +150,13 @@ export default function AiboPanel() {
                     <VrmModel isSpeaking={isSpeaking} />
                 </Canvas>
 
-                {/* Voice toggle */}
+                {/* Voice status */}
                 <button
                     onClick={() => isSpeaking ? stop() : undefined}
                     className="absolute top-2 right-2 text-[10px] text-amber-400/50 hover:text-amber-400 uppercase tracking-widest transition-colors"
-                    title={isSpeaking ? 'Click to stop voice' : 'Voice active'}
+                    title={isSpeaking ? 'Click to stop voice' : 'Voice ready'}
                 >
-                    {isSpeaking ? '🔊 speaking' : '🔇 muted'}
+                    {isSpeaking ? '🔊 speaking' : '✦ voice'}
                 </button>
 
                 {activePlanet && (
@@ -196,6 +167,20 @@ export default function AiboPanel() {
                     </div>
                 )}
             </div>
+
+            {/* Kokoro model loading indicator */}
+            {ttsLoading && (
+                <div className="flex-shrink-0 border-b border-amber-500/10 bg-black/30">
+                    <LoadingBar progress={ttsProgress} label="Loading voice model…" />
+                </div>
+            )}
+
+            {/* TTS error (non-blocking) */}
+            {ttsError && !ttsLoading && (
+                <div className="flex-shrink-0 px-4 py-1 text-[10px] text-red-400/60 text-center">
+                    Voice unavailable — text only
+                </div>
+            )}
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-0">
