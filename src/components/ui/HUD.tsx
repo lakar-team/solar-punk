@@ -10,6 +10,7 @@ import dynamic from 'next/dynamic';
 // Dynamic import to avoid SSR issues with Three.js
 const PlanetPreview = dynamic(() => import('./PlanetPreview'), { ssr: false });
 const SunPreview = dynamic(() => import('./SunPreview'), { ssr: false });
+const AiboPanel = dynamic(() => import('./AiboPanel'), { ssr: false });
 
 export default function HUD() {
     const { activePlanetId, setActivePlanet, setFocusedPlanet, focusedPlanetId } = useStore();
@@ -392,30 +393,17 @@ export default function HUD() {
                 )}
             </AnimatePresence>
 
-            {/* AI Guide Early Loading Container */}
+            {/* AI Guide Panel — native AiboPanel, no iframe */}
             <div className={`pointer-events-auto absolute bottom-8 left-8 z-40 flex flex-col items-start gap-4 transition-all duration-500 ease-in-out ${showGuide ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0 pointer-events-none'}`}>
                 <div className="w-[calc(100vw-4rem)] md:w-[400px] h-[650px] bg-black/80 backdrop-blur-xl border border-amber-500/30 rounded-lg overflow-hidden shadow-2xl flex flex-col">
-                    <div className="flex items-center justify-between p-3 border-b border-amber-500/20 bg-amber-500/5">
+                    <div className="flex items-center p-3 border-b border-amber-500/20 bg-amber-500/5">
                         <span className="text-xs font-bold text-amber-400 uppercase tracking-widest flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                            Aibo Guide Interface
+                            Web Witch
                         </span>
-                        <a
-                            href="https://project-aibo.vercel.app/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[10px] text-white/50 hover:text-white hover:underline mr-4"
-                        >
-                            Open Externally
-                        </a>
                     </div>
-                    <div className="flex-1 relative bg-black/50">
-                        <iframe
-                            src="https://project-aibo.vercel.app/?embed=true&noAudio=true&voice=false&silent=true&muted=true&autoSpeak=false"
-                            className="absolute inset-0 w-full h-full border-0"
-                            title="Project Aibo Avatar"
-                            allow="camera"
-                        />
+                    <div className="flex-1 min-h-0">
+                        {showGuide && <AiboPanel />}
                     </div>
                 </div>
             </div>
