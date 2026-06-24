@@ -7,16 +7,16 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { useStore } from '@/store/useStore';
 import { projects } from '@/data/projects';
 
-// ── Camera rig — points at Adam's chest/face area ──
+// ── Camera — frames head-to-thigh, slightly looking up ──
 function CameraRig() {
     const { camera } = useThree();
     useEffect(() => {
-        camera.lookAt(0, 1.25, 0);
+        camera.lookAt(0, 0.95, 0);
     }, [camera]);
     return null;
 }
 
-// ── VRM model with idle sway ──
+// ── VRM model with full idle animation ──
 function VrmModel({ isSpeaking }: { isSpeaking: boolean }) {
     const [vrm, setVrm] = useState<VRM | null>(null);
 
@@ -27,8 +27,7 @@ function VrmModel({ isSpeaking }: { isSpeaking: boolean }) {
             const v: VRM = gltf.userData.vrm;
             VRMUtils.removeUnnecessaryVertices(gltf.scene);
             VRMUtils.combineSkeletons(gltf.scene);
-            v.scene.rotation.y = Math.PI; // face camera
-            v.scene.position.set(0, -0.1, 0); // slight down offset
+            v.scene.rotation.y = Math.PI;
             setVrm(v);
         });
     }, []);
@@ -37,49 +36,34 @@ function VrmModel({ isSpeaking }: { isSpeaking: boolean }) {
         if (!vrm) return;
         const t = performance.now() / 1000;
         vrm.update(delta);
-
         if (vrm.humanoid) {
-            // Gentle spine sway
             const spine = vrm.humanoid.getNormalizedBoneNode('spine');
-            if (spine) {
-                spine.rotation.z = Math.sin(t * 0.6) * 0.025;
-                spine.rotation.x = Math.sin(t * 0.4) * 0.01;
-            }
-            // Head look around subtly
+            if (spine) { spine.rotation.z = Math.sin(t * 0.6) * 0.025; spine.rotation.x = Math.sin(t * 0.4) * 0.01; }
             const head = vrm.humanoid.getNormalizedBoneNode('head');
-            if (head) {
-                head.rotation.y = Math.sin(t * 0.25) * 0.08;
-                head.rotation.x = Math.sin(t * 0.3) * 0.02;
-            }
-            // Arms down from T-pose
+            if (head) { head.rotation.y = Math.sin(t * 0.25) * 0.08; head.rotation.x = Math.sin(t * 0.3) * 0.02; }
             const lArm = vrm.humanoid.getNormalizedBoneNode('leftUpperArm');
             const rArm = vrm.humanoid.getNormalizedBoneNode('rightUpperArm');
-            const lFore = vrm.humanoid.getNormalizedBoneNode('leftLowerArm');
-            const rFore = vrm.humanoid.getNormalizedBoneNode('rightLowerArm');
             if (lArm) lArm.rotation.z = 1.2 + Math.sin(t * 0.5) * 0.02;
             if (rArm) rArm.rotation.z = -1.2 + Math.sin(t * 0.5 + 0.5) * 0.02;
-            if (lFore) lFore.rotation.y = -0.3;
-            if (rFore) rFore.rotation.y = 0.3;
 
             // Blinking
-            const blink = vrm.expressionManager;
-            if (blink) {
-                const blinkCycle = t % 4; // blink every ~4s
+            if (vrm.expressionManager) {
+                const blinkCycle = t % 4;
                 if (blinkCycle > 3.8) {
                     const prog = (blinkCycle - 3.8) / 0.2;
-                    blink.setValue('blink', prog < 0.5 ? prog * 2 : 2 - prog * 2);
+                    vrm.expressionManager.setValue('blink', prog < 0.5 ? prog * 2 : 2 - prog * 2);
                 } else {
-                    blink.setValue('blink', 0);
+                    vrm.expressionManager.setValue('blink', 0);
                 }
-            }
 
-            // Lip sync
-            if (isSpeaking && vrm.expressionManager) {
-                vrm.expressionManager.setValue('aa', (Math.sin(t * 12) + 1) * 0.25);
-                vrm.expressionManager.setValue('oh', (Math.cos(t * 9) + 1) * 0.15);
-            } else if (vrm.expressionManager) {
-                vrm.expressionManager.setValue('aa', 0);
-                vrm.expressionManager.setValue('oh', 0);
+                // Lip sync
+                if (isSpeaking) {
+                    vrm.expressionManager.setValue('aa', (Math.sin(t * 12) + 1) * 0.25);
+                    vrm.expressionManager.setValue('oh', (Math.cos(t * 9) + 1) * 0.15);
+                } else {
+                    vrm.expressionManager.setValue('aa', 0);
+                    vrm.expressionManager.setValue('oh', 0);
+                }
             }
         }
     });
@@ -88,7 +72,50 @@ function VrmModel({ isSpeaking }: { isSpeaking: boolean }) {
     return <primitive object={vrm.scene} />;
 }
 
-// ── Chat panel ──
+// ── Web Speech API TTS ──
+function useSpeech() {
+    const [isSpeaking, setIsSpeaking] = useState(false);
+    const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+    const speak = useCallback((text: string) => {
+        if (typeof window === 'undefined' || !window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+
+        // Pick a good voice — prefer a female English voice
+        const pickVoice = () => {
+            const voices = window.speechSynthesis.getVoices();
+            return (
+                voices.find(v => v.name === 'Microsoft Zira - English (United States)') ||
+                voices.find(v => v.name === 'Samantha') ||
+                voices.find(v => v.name.includes('Google UK English Female')) ||
+                voices.find(v => v.lang === 'en-GB' && v.localService) ||
+                voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female')) ||
+                voices.find(v => v.lang.startsWith('en'))
+            );
+        };
+
+        const voice = pickVoice();
+        if (voice) u.voice = voice;
+        u.rate = 0.92;
+        u.pitch = 1.15;
+        u.volume = 1.0;
+        u.onstart = () => setIsSpeaking(true);
+        u.onend = () => setIsSpeaking(false);
+        u.onerror = () => setIsSpeaking(false);
+        utteranceRef.current = u;
+        window.speechSynthesis.speak(u);
+    }, []);
+
+    const stop = useCallback(() => {
+        if (typeof window !== 'undefined') window.speechSynthesis?.cancel();
+        setIsSpeaking(false);
+    }, []);
+
+    return { isSpeaking, speak, stop };
+}
+
+// ── Main panel ──
 interface Message { role: 'user' | 'assistant'; content: string; }
 
 export default function AiboPanel() {
@@ -98,7 +125,8 @@ export default function AiboPanel() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isThinking, setIsThinking] = useState(false);
-    const [isSpeaking, setIsSpeaking] = useState(false);
+    const { isSpeaking, speak, stop } = useSpeech();
+
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const hasGreeted = useRef(false);
 
@@ -111,6 +139,7 @@ export default function AiboPanel() {
         if (!isSystem) setMessages(prev => [...prev, { role: 'user', content: text }]);
         setInput('');
         setIsThinking(true);
+        stop();
         try {
             const res = await fetch('/api/brain', {
                 method: 'POST',
@@ -120,28 +149,27 @@ export default function AiboPanel() {
             const data = await res.json() as { reply?: string };
             const reply = data.reply ?? "I seem to have lost my crystal ball. Try again?";
             setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
-            setIsSpeaking(true);
-            setTimeout(() => setIsSpeaking(false), Math.min(reply.length * 60, 8000));
+            speak(reply);
         } catch {
             setMessages(prev => [...prev, { role: 'assistant', content: "Connection lost. Try again shortly." }]);
         } finally {
             setIsThinking(false);
         }
-    }, [activePlanetId]);
+    }, [activePlanetId, speak, stop]);
 
     useEffect(() => {
         if (!hasGreeted.current) {
             hasGreeted.current = true;
-            sendMessage('Greet the visitor warmly and briefly. Offer to guide them through the portfolio.', true);
+            sendMessage('Greet the visitor warmly and briefly. Offer to guide them.', true);
         }
     }, [sendMessage]);
 
     return (
         <div className="flex flex-col h-full w-full">
-            {/* VRM avatar */}
-            <div className="flex-shrink-0 h-52 relative bg-black/20">
+            {/* VRM avatar — camera framed head-to-thigh */}
+            <div className="flex-shrink-0 h-56 relative bg-black/20">
                 <Canvas
-                    camera={{ position: [0, 1.4, 1.1], fov: 28 }}
+                    camera={{ position: [0, 1.0, 1.6], fov: 42 }}
                     gl={{ alpha: true, antialias: true }}
                     style={{ background: 'transparent' }}
                 >
@@ -150,6 +178,16 @@ export default function AiboPanel() {
                     <ambientLight intensity={0.6} />
                     <VrmModel isSpeaking={isSpeaking} />
                 </Canvas>
+
+                {/* Voice toggle */}
+                <button
+                    onClick={() => isSpeaking ? stop() : undefined}
+                    className="absolute top-2 right-2 text-[10px] text-amber-400/50 hover:text-amber-400 uppercase tracking-widest transition-colors"
+                    title={isSpeaking ? 'Click to stop voice' : 'Voice active'}
+                >
+                    {isSpeaking ? '🔊 speaking' : '🔇 muted'}
+                </button>
+
                 {activePlanet && (
                     <div className="absolute bottom-1 left-0 right-0 text-center pointer-events-none">
                         <span className="text-[10px] text-amber-400/50 uppercase tracking-widest">
