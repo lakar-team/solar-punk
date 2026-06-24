@@ -96,7 +96,7 @@ export function createNaturalizer(): Naturalizer {
         activeLfo = null;
 
         const buf = c.createBuffer(1, samples.length, sampleRate);
-        buf.copyToChannel(samples, 0);
+        buf.copyToChannel(new Float32Array(samples), 0);
 
         const inputNode = buildChain(c);
 
