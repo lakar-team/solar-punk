@@ -5,7 +5,7 @@
 export const adamNarrative = `
 ABOUT ADAM — WHO HE ACTUALLY IS
 
-Adam M. Raman is a Malaysian architect-turned-technologist currently based in Sendai, Japan. 
+Adam Raman is a Malaysian architect-turned-technologist currently based in Sendai, Japan. 
 He's the kind of person who looks at a problem and immediately asks: why does this have to work this way? 
 That instinct drove everything from founding a renovation firm that disrupted Malaysia's design market, 
 to engineering a novel cooling system for his PhD, to building AI tools in his spare time.
