@@ -22,8 +22,10 @@ const STARS: StarDatum[] = Array.from({ length: 220 }, (_, i) => ({
 }));
 
 const DELTA_THRESHOLD = 180;
-const LOCK_MS = 750;
-const SCENE_COUNT = 5;
+const LOCK_MS = 700;
+// Scene 4 is the warp-exit animation, not a resting state.
+// Advancing from scene 3 triggers completeIntro() directly.
+const SCENE_COUNT = 4; // navigable scenes: 0-3
 
 const fadeV: Variants = {
   hidden: { opacity: 0 },
@@ -223,13 +225,14 @@ export default function IntroScroll() {
   const [scene, setScene] = useState(0);
   const [visible, setVisible] = useState(true);
 
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const starsRef   = useRef<HTMLDivElement>(null);
-  const deltaRef   = useRef(0);
-  const lockRef    = useRef(false);
-  const sceneRef   = useRef(0);
-  const touchYRef  = useRef(0);
-  const gsapTlRef  = useRef<gsap.core.Timeline | null>(null);
+  const wrapperRef    = useRef<HTMLDivElement>(null);
+  const starsRef      = useRef<HTMLDivElement>(null);
+  const deltaRef      = useRef(0);         // signed: +ve = scroll-down, -ve = scroll-up
+  const lockRef       = useRef(false);
+  const completingRef = useRef(false);     // true once warp-exit has started
+  const sceneRef      = useRef(0);
+  const touchYRef     = useRef(0);
+  const gsapTlRef     = useRef<gsap.core.Timeline | null>(null);
 
   useEffect(() => { sceneRef.current = scene; }, [scene]);
 
@@ -307,8 +310,11 @@ export default function IntroScroll() {
   }, []);
 
   // ── Complete intro: warp out then unmount ────────────────────────────────
+  // NOTE: intentionally does NOT check lockRef — advance() sets the lock before
+  // calling this, and we must proceed despite it.
   const completeIntro = useCallback(() => {
-    if (!visible || lockRef.current) return;
+    if (!visible || completingRef.current) return;
+    completingRef.current = true;
     lockRef.current = true;
     runStarAnim(4);
     setScene(4);
@@ -323,10 +329,11 @@ export default function IntroScroll() {
 
   // ── Advance to next scene ────────────────────────────────────────────────
   const advance = useCallback(() => {
-    if (lockRef.current || !visible) return;
+    if (lockRef.current || !visible || completingRef.current) return;
     lockRef.current = true;
     const next = sceneRef.current + 1;
     if (next >= SCENE_COUNT) {
+      // Let completeIntro run even though lockRef is already set
       completeIntro();
       return;
     }
@@ -335,35 +342,56 @@ export default function IntroScroll() {
     setTimeout(() => { lockRef.current = false; }, LOCK_MS);
   }, [visible, completeIntro, runStarAnim]);
 
-  // Stable ref so event listener never rebinds on every advance change
-  const advanceRef = useRef(advance);
-  useEffect(() => { advanceRef.current = advance; }, [advance]);
+  // ── Retreat to previous scene ────────────────────────────────────────────
+  const retreat = useCallback(() => {
+    if (lockRef.current || !visible || completingRef.current) return;
+    const prev = sceneRef.current - 1;
+    if (prev < 0) return; // already at first scene
+    lockRef.current = true;
+    setScene(prev);
+    runStarAnim(prev);
+    setTimeout(() => { lockRef.current = false; }, LOCK_MS);
+  }, [visible, runStarAnim]);
 
-  // ── Capture wheel + touch, preventDefault to block solar-system canvas ──
+  // Stable refs so event listeners never need to rebind on every callback change
+  const advanceRef = useRef(advance);
+  const retreatRef  = useRef(retreat);
+  useEffect(() => { advanceRef.current = advance; }, [advance]);
+  useEffect(() => { retreatRef.current = retreat; }, [retreat]);
+
+  // ── Capture wheel + touch with direction — blocks OrbitControls ──────────
   useEffect(() => {
     if (!visible) return;
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
-      deltaRef.current += Math.abs(e.deltaY);
+      deltaRef.current += e.deltaY; // signed: down = positive
       if (deltaRef.current >= DELTA_THRESHOLD) {
         deltaRef.current = 0;
         advanceRef.current();
+      } else if (deltaRef.current <= -DELTA_THRESHOLD) {
+        deltaRef.current = 0;
+        retreatRef.current();
       }
     };
 
     const onTouchStart = (e: TouchEvent) => {
       touchYRef.current = e.touches[0]?.clientY ?? 0;
+      deltaRef.current = 0; // reset accumulator on new touch gesture
     };
 
     const onTouchMove = (e: TouchEvent) => {
       e.preventDefault();
       const cy = e.touches[0]?.clientY ?? 0;
-      deltaRef.current += Math.abs(touchYRef.current - cy);
+      // swipe UP (cy decreases) = positive delta = advance
+      deltaRef.current += touchYRef.current - cy;
       touchYRef.current = cy;
       if (deltaRef.current >= DELTA_THRESHOLD) {
         deltaRef.current = 0;
         advanceRef.current();
+      } else if (deltaRef.current <= -DELTA_THRESHOLD) {
+        deltaRef.current = 0;
+        retreatRef.current();
       }
     };
 
@@ -409,7 +437,7 @@ export default function IntroScroll() {
         </motion.div>
       </AnimatePresence>
 
-      {scene < 4 && (
+      {!completingRef.current && (
         <button
           onClick={completeIntro}
           className="absolute top-5 right-6 z-10 font-mono text-[10px] tracking-[0.3em] uppercase text-white/25 hover:text-white/55 transition-colors duration-200"
