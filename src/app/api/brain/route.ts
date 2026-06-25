@@ -130,7 +130,7 @@ Always respond with valid JSON in this exact shape:
 When navigating to a planet, set focusPlanet to one of these exact IDs (otherwise null):
 hydrocalc, phd-research, sa-architects, lakar-design, smart-home, cultural-engagement, project-aibo, adamtool, demon-hunter, momotaro-book, redbubble-shop, nature-vibe-channel, islamic-advisor
 
-Do NOT use orbit numbers anywhere. Return ONLY the raw JSON object, no markdown, no code fences.\`;
+Do NOT use orbit numbers anywhere. Return ONLY the raw JSON object, no markdown, no code fences.`;
 }
 
 export async function POST(req: Request) {
