@@ -153,18 +153,37 @@ function star5(cx: number, cy: number, r: number) {
 // — Per-beat art —
 function renderArt(i: number): React.ReactNode {
   switch (i) {
-    case 0: // Forward motion streaks → Visionary
-      return streaks();
-
-    case 1: { // Drawing a box → Innovator
-      const cx = 500, cy = 300, hw = 300, hh = 150, t = (-8 * Math.PI) / 180;
-      const rot = (x: number, y: number) =>
-        [cx + x * Math.cos(t) - y * Math.sin(t), cy + x * Math.sin(t) + y * Math.cos(t)];
-      const [ax, ay] = rot(-hw, -hh), [bx, by] = rot(hw, -hh);
-      const [dx, dy] = rot(hw, hh),  [ex, ey] = rot(-hw, hh);
-      const box = `M ${ax.toFixed(0)} ${ay.toFixed(0)} L ${bx.toFixed(0)} ${by.toFixed(0)} L ${dx.toFixed(0)} ${dy.toFixed(0)} L ${ex.toFixed(0)} ${ey.toFixed(0)} Z`;
-      return <DrawPath d={box} dur={2.0} />;
+    case 0: { // Hyperspace streaks → Visionary
+      const pts: [number, number][] = [
+        [500,5],[915,67],[995,230],[995,300],[940,475],[737,595],
+        [500,595],[245,595],[30,485],[5,300],[40,120],[205,10],
+        [685,19],[865,144],[885,408],[630,581],[350,586],[105,461],[70,156],[300,12],
+      ];
+      const dim: [number, number][] = [
+        [550,247],[580,283],[575,336],[540,360],[460,360],[425,331],[430,264],[462,240],
+      ];
+      return (
+        <>
+          {pts.map(([x, y], k) => (
+            <DrawPath key={k} d={`M 500 300 L ${x} ${y}`} delay={k * 0.03} dur={0.65} />
+          ))}
+          {dim.map(([x, y], k) => (
+            <DrawPath key={`d${k}`} d={`M 500 300 L ${x} ${y}`} delay={0.05} dur={0.4} width={1.1} opacity={0.3} />
+          ))}
+        </>
+      );
     }
+
+    case 1: // Continuous-line triangle → Innovator
+      return (
+        <>
+          <DrawPath d="M 0 508 C 55 494 90 533 145 504" dur={0.5} />
+          <DrawPath d="M 145 504 L 500 72 L 855 504" delay={0.4} dur={1.8} />
+          <DrawPath d="M 855 504 L 500 101 L 180 499" delay={2.0} dur={1.3} />
+          <DrawPath d="M 180 499 L 500 130 L 820 499" delay={3.1} dur={1.1} />
+          <DrawPath d="M 855 504 C 910 533 960 494 1000 508" delay={4.0} dur={0.5} />
+        </>
+      );
 
     case 2: // Picasso-ish face → Designer
       return (
@@ -181,19 +200,80 @@ function renderArt(i: number): React.ReactNode {
         </>
       );
 
-    case 3: // City skyline → Builder
+    case 3: { // NYC one-line skyline → Builder
+      const sky =
+        "M 0 570 L 0 528 L 20 528 L 20 543 L 38 543 L 38 507 " +
+        "L 52 507 L 52 520 L 64 520 L 64 498 " +
+        "L 78 498 L 78 475 L 83 458 L 88 434 L 93 405 L 97 374 L 100 340 " +
+        "L 103 304 L 106 268 L 108 230 L 106 204 L 106 178 L 108 150 " +
+        "L 112 122 L 116 100 L 120 82 L 124 66 L 128 52 L 131 40 L 134 30 " +
+        "L 137 40 L 140 56 L 144 78 L 148 106 L 151 270 " +
+        "L 165 270 L 165 410 L 180 410 L 180 378 L 196 378 L 196 410 " +
+        "L 210 410 L 210 376 L 230 360 L 232 262 L 234 232 L 237 202 " +
+        "L 240 174 L 243 148 L 246 126 L 249 106 L 252 90 L 255 76 " +
+        "L 258 64 L 261 54 L 264 46 L 266 40 L 268 46 L 270 58 " +
+        "L 272 74 L 274 96 L 274 542 " +
+        "L 298 542 L 298 435 L 318 435 L 318 506 " +
+        "L 335 506 L 335 448 L 360 448 L 360 542 " +
+        "L 388 542 L 388 503 L 408 503 L 408 528 " +
+        "C 422 480 445 478 458 505 C 470 478 493 478 506 505 " +
+        "L 525 505 L 525 530 L 545 530 L 545 490 L 564 490 L 564 530 " +
+        "L 582 530 L 588 500 L 600 480 L 614 468 L 622 452 L 630 438 " +
+        "L 638 424 L 644 412 L 650 404 L 656 402 L 662 412 L 668 424 " +
+        "L 676 440 L 686 460 L 698 484 L 708 506 L 716 530 " +
+        "L 742 530 L 742 506 L 762 506 L 762 520 L 784 520 L 784 506 " +
+        "L 806 506 L 806 528 L 826 528 L 826 542 L 848 542 L 848 528 " +
+        "L 870 528 L 870 542 L 895 542 L 895 558 L 1000 558";
+      return <DrawPath d={sky} dur={2.8} />;
+    }
+
+    case 4: { // Fireworks doodle → Creator of New Possibilities
+      type Pt = [number, number];
+      const clusters: { cx: number; cy: number; delay: number; rays: Pt[] }[] = [
+        { cx: 362, cy: 156, delay: 0,    rays: [[362,106],[390,110],[408,127],[412,154],[400,185],[380,202],[362,206],[338,199],[315,185],[310,156],[318,125],[340,108]] },
+        { cx: 725, cy: 168, delay: 0.12, rays: [[725,125],[750,132],[768,152],[768,175],[750,205],[725,214],[700,205],[682,180],[682,168],[700,130]] },
+        { cx: 570, cy: 336, delay: 0.24, rays: [[570,274],[608,283],[635,298],[645,336],[635,398],[608,398],[570,403],[532,398],[505,384],[495,336],[508,289],[538,271]] },
+        { cx: 280, cy: 461, delay: 0.36, rays: [[280,419],[305,426],[325,443],[325,461],[305,498],[280,504],[255,498],[235,461],[235,443],[255,422],[265,416],[290,416]] },
+        { cx: 830, cy: 444, delay: 0.48, rays: [[830,408],[845,415],[856,432],[856,450],[845,475],[830,486],[815,475],[804,450],[804,432],[819,415]] },
+      ];
       return (
-        <DrawPath
-          d="M 60 360 L 200 360 L 200 252 L 252 252 L 252 360 L 300 360 L 300 182 L 360 182 L 360 360 L 430 360 L 430 222 L 472 222 L 472 360 L 540 360 L 540 150 L 602 150 L 602 360 L 680 360 L 680 240 L 722 240 L 722 360 L 800 360 L 800 200 L 842 200 L 842 360 L 940 360"
-          dur={2.4}
-        />
+        <>
+          {clusters.flatMap(({ cx, cy, rays, delay }, ci) =>
+            rays.map(([x, y], ri) => (
+              <DrawPath key={`${ci}-${ri}`} d={`M ${cx} ${cy} L ${x} ${y}`} delay={delay + ri * 0.025} dur={0.32} width={1.4} />
+            ))
+          )}
+          <DrawPath d="M 400 182 L 520 317" delay={0.6} dur={0.5} width={1.1} opacity={0.4} />
+          <DrawPath d="M 320 444 L 500 360" delay={0.7} dur={0.5} width={1.1} opacity={0.4} />
+        </>
       );
+    }
 
-    case 4: // Fireworks → Creator of New Possibilities
-      return fireworks();
-
-    case 5: // Digital rain → Designer of Digital Systems
-      return digitalRain();
+    case 5: { // Rain teardrops → Designer of Digital Systems
+      const drops = [
+        "M 188 115 C 192 144 218 168 218 223 C 218 278 207 310 188 310 C 169 310 158 278 158 223 C 158 168 184 144 188 115 Z",
+        "M 490 139 C 494 168 518 192 518 245 C 518 298 509 326 490 326 C 471 326 463 298 463 245 C 463 192 487 168 490 139 Z",
+        "M 795 103 C 799 132 822 156 822 206 C 822 256 817 278 795 278 C 773 278 769 256 769 206 C 769 156 791 132 795 103 Z",
+        "M 340 206 C 343 230 360 247 360 283 C 360 318 353 334 340 334 C 327 334 320 318 320 283 C 320 247 337 230 340 206 Z",
+        "M 645 192 C 648 216 668 233 668 269 C 668 305 660 317 645 317 C 630 317 622 305 622 269 C 622 233 642 216 645 192 Z",
+        "M 100 48 C 102 70 118 84 118 115 C 118 142 112 156 100 156 C 88 156 82 142 82 115 C 82 84 98 70 100 48 Z",
+        "M 900 67 C 903 89 918 106 918 137 C 918 168 910 175 900 175 C 890 175 882 168 882 137 C 882 106 897 89 900 67 Z",
+        "M 270 38 C 272 58 283 67 283 91 C 283 115 277 125 270 125 C 263 125 257 115 257 91 C 257 67 268 58 270 38 Z",
+        "M 420 19 C 422 38 433 46 433 67 C 433 89 427 98 420 98 C 413 98 407 89 407 67 C 407 46 418 38 420 19 Z",
+        "M 595 14 C 597 34 608 41 608 62 C 608 84 602 94 595 94 C 588 94 582 84 582 62 C 582 41 593 34 595 14 Z",
+        "M 720 86 C 722 108 735 118 735 144 C 735 168 729 168 720 168 C 711 168 705 168 705 144 C 705 118 718 108 720 86 Z",
+        "M 50 355 C 52 374 65 389 65 418 C 65 446 58 456 50 456 C 42 456 35 446 35 418 C 35 389 48 374 50 355 Z",
+        "M 438 384 C 440 403 453 413 453 437 C 453 461 445 466 438 466 C 431 466 423 461 423 437 C 423 413 436 403 438 384 Z",
+        "M 845 384 C 847 406 860 418 860 446 C 860 474 852 474 845 474 C 838 474 830 474 830 446 C 830 418 843 406 845 384 Z",
+      ];
+      return (
+        <>
+          {drops.map((d, k) => <DrawPath key={k} d={d} delay={k * 0.06} dur={0.75} />)}
+          <DrawPath d="M 543 121 L 549 127" delay={0.8} dur={0.2} width={5} opacity={0.9} />
+          <DrawPath d="M 733 385 L 739 391" delay={0.9} dur={0.2} width={5} opacity={0.9} />
+        </>
+      );
+    }
 
     case 6: // Trees growing → Shaper of Built Environments
       return (
@@ -205,39 +285,67 @@ function renderArt(i: number): React.ReactNode {
         </>
       );
 
-    case 7: // Paper certificate → Master / PhD
-      return (
-        <DrawPath
-          d="M 400 200 L 592 194 L 700 530 L 300 536 Z"
-          dur={1.8}
-        />
-      );
-
-    case 8: // Construction crane → 10 yrs business / construction
+    case 7: // Graduate figure → Master of Architecture, PhD
       return (
         <>
-          <DrawPath d="M 555 545 L 555 175" dur={1.2} />
-          <DrawPath d="M 468 360 L 1010 175" delay={0.5} dur={1.4} />
-          <DrawPath d="M 555 200 L 470 358" delay={1.1} dur={0.7} />
-          <DrawPath d="M 1002 180 L 1002 298" delay={1.4} dur={0.6} />
+          <DrawPath d="M 295 132 L 485 67 L 600 96 L 410 163 Z" dur={1.1} />
+          <DrawPath d="M 485 67 L 495 84 L 505 130 L 500 173" delay={0.9} dur={0.5} />
+          <DrawPath d="M 410 163 C 388 173 370 211 370 240 C 370 264 380 283 396 298" delay={1.2} dur={0.7} />
+          <DrawPath d="M 396 298 C 404 314 404 330 396 346 C 388 362 388 378 396 394 C 406 410 403 424 393 434 L 384 445" delay={1.7} dur={0.8} />
+          <DrawPath d="M 384 445 C 375 458 370 472 370 484 L 370 490" delay={2.3} dur={0.4} />
+          <DrawPath d="M 370 490 C 344 509 315 538 300 571 L 644 571" delay={2.6} dur={1.0} />
+          <DrawPath d="M 644 571 C 656 552 656 528 650 506" delay={3.4} dur={0.6} />
+          <DrawPath d="M 650 506 C 612 355 588 352 574 356 L 524 356" delay={3.8} dur={0.8} />
+          <DrawPath d="M 524 356 C 517 344 504 338 493 340 C 482 348 484 371 496 379 C 509 387 524 382 528 370 C 532 358 527 346 524 356" delay={4.4} dur={0.7} />
+          <DrawPath d="M 650 506 C 624 344 620 302 622 283 C 625 264 634 246 638 228 C 632 208 618 186 600 176 C 595 168 596 163 600 163 L 410 163" delay={4.8} dur={1.2} />
         </>
       );
 
-    case 9: // Computer + figure → 10 yrs applied AI and IoT
+    case 8: // Construction crane → 10 yrs business + construction
       return (
         <>
-          {/* monitor */}
-          <DrawPath d="M 205 248 L 402 232 L 412 360 L 212 376 Z" dur={1.4} />
-          <DrawPath d="M 306 376 L 306 404" delay={0.6} dur={0.4} />
-          <DrawPath d="M 232 420 Q 320 400 410 420 Q 320 446 232 420" delay={0.8} dur={1.0} />
-          {/* walking figure */}
-          <DrawPath d="M 778 178 C 752 176, 740 208, 762 224 C 784 236, 808 222, 800 200 C 796 182, 786 176, 778 178" delay={0.4} dur={1.0} />
-          <DrawPath d="M 770 226 L 760 360 L 722 470 M 760 360 L 802 360 L 822 470" delay={1.0} dur={1.2} />
-          <DrawPath d="M 764 268 L 720 332 M 764 268 L 818 300" delay={1.4} dur={0.9} />
+          <DrawPath d="M 0 576 L 0 528 L 37 528 L 37 552 L 70 552 L 70 516 L 100 516 L 100 542 L 130 542 L 130 499 L 160 499 L 160 523 L 190 523 L 190 499 L 220 499" dur={1.0} />
+          <DrawPath d="M 763 499 L 795 499 L 795 528 L 830 528 L 830 499 L 865 499 L 865 528 L 900 528 L 900 499 L 940 499 L 940 523 L 988 523 L 988 576 L 0 576" delay={0.2} dur={0.9} />
+          <DrawPath d="M 705 576 L 705 34" delay={0.9} dur={1.4} />
+          <DrawPath d="M 745 576 L 745 34" delay={1.0} dur={1.4} />
+          {([86, 182, 278, 374, 470, 518] as number[]).map((y, k) => (
+            <DrawPath key={`xa${k}`} d={`M 705 ${y} L 745 ${y + 48}`} delay={1.1 + k * 0.05} dur={0.3} width={1.1} opacity={0.35} />
+          ))}
+          {([86, 182, 278, 374, 470, 518] as number[]).map((y, k) => (
+            <DrawPath key={`xb${k}`} d={`M 745 ${y} L 705 ${y + 48}`} delay={1.1 + k * 0.05} dur={0.3} width={1.1} opacity={0.35} />
+          ))}
+          <DrawPath d="M 105 192 L 705 34" delay={0.7} dur={1.5} />
+          <DrawPath d="M 105 226 L 705 67" delay={0.8} dur={1.5} />
+          <DrawPath d="M 105 192 C 92 199 90 211 100 221 L 105 226" delay={2.1} dur={0.3} />
+          {([[220, 166], [330, 152], [440, 138], [550, 124], [660, 110]] as [number, number][]).map(([x, y], k) => (
+            <DrawPath key={`tr${k}`} d={`M ${x} ${y} C ${x+8} ${y-18} ${x+38} ${y-20} ${x+48} ${y-8} C ${x+52} ${y+6} ${x+40} ${y+16} ${x+24} ${y+14}`} delay={1.7 + k * 0.08} dur={0.4} width={1.1} opacity={0.35} />
+          ))}
+          <DrawPath d="M 320 187 L 320 470" delay={2.3} dur={0.8} />
+          <DrawPath d="M 300 463 C 290 485 290 509 305 518 C 320 526 335 518 340 504 C 345 487 335 466 320 463" delay={3.0} dur={0.5} />
+          <DrawPath d="M 745 34 L 900 72" delay={1.5} dur={0.6} />
+          <DrawPath d="M 745 67 L 900 101" delay={1.6} dur={0.6} />
+          <DrawPath d="M 880 67 L 910 77 L 915 106 L 885 96 Z" delay={2.0} dur={0.4} />
         </>
       );
 
-    case 10: // Award medal (no sketch provided — one-line medal + star + ribbons)
+    case 9: // Open laptop → 10 yrs applied AI and IoT
+      return (
+        <>
+          <DrawPath d="M 0 490 C 50 480 85 509 140 485" dur={0.5} />
+          <DrawPath d="M 140 485 L 175 130" delay={0.4} dur={0.9} />
+          <DrawPath d="M 175 130 L 745 130" delay={1.2} dur={1.0} />
+          <DrawPath d="M 745 130 L 785 470" delay={2.1} dur={0.9} />
+          <DrawPath d="M 205 161 L 220 439 L 755 439 L 740 161 Z" delay={2.8} dur={0.7} width={1.1} opacity={0.35} />
+          <DrawPath d="M 140 485 L 105 514 L 100 538" delay={3.4} dur={0.5} />
+          <DrawPath d="M 785 470 L 830 509 L 840 538" delay={3.4} dur={0.5} />
+          <DrawPath d="M 100 538 L 840 538 L 845 566 L 95 566 Z" delay={3.8} dur={0.8} />
+          <DrawPath d="M 130 552 L 620 552" delay={4.4} dur={0.4} width={1.1} opacity={0.35} />
+          <DrawPath d="M 640 540 L 775 540 L 778 564 L 635 564 Z" delay={4.6} dur={0.3} width={1.1} opacity={0.35} />
+          <DrawPath d="M 845 566 C 900 576 945 547 1000 557" delay={4.8} dur={0.4} />
+        </>
+      );
+
+    case 10: // Award medal
       return (
         <>
           <DrawPath
@@ -250,13 +358,22 @@ function renderArt(i: number): React.ReactNode {
         </>
       );
 
-    case 11: // AIBO robed outline → handoff
+    case 11: // AIBO close-up face → handoff
     case 12: // lingers through "Ask me anything."
       return (
-        <DrawPath
-          d="M 778 92 C 752 150, 735 202, 750 236 C 720 250, 705 254, 722 270 C 700 302, 690 362, 700 432 C 695 502, 706 562, 732 600 L 818 600 C 838 540, 840 470, 847 420 C 854 360, 850 300, 836 270 C 856 252, 850 236, 832 236 C 840 200, 824 150, 800 110 C 793 98, 784 90, 778 92 Z"
-          dur={2.4}
-        />
+        <>
+          <DrawPath d="M 455 19 C 412 48 370 91 345 139 C 320 192 315 252 330 312 C 345 372 365 418 375 466 C 385 516 380 557 370 595" dur={1.8} />
+          <DrawPath d="M 380 173 C 410 144 465 137 510 154" delay={0.5} dur={0.6} />
+          <DrawPath d="M 360 211 C 400 175 470 170 520 197 C 540 211 550 240 535 264 C 515 293 460 302 400 283 C 360 266 345 240 360 211 Z" delay={0.8} dur={1.1} />
+          <DrawPath d="M 375 216 C 415 185 470 182 515 206 C 530 221 535 245 520 264" delay={1.6} dur={0.5} width={1.1} opacity={0.35} />
+          <DrawPath d="M 495 293 C 488 322 475 350 465 372 L 495 377 L 525 372 C 515 350 505 322 500 293" delay={1.9} dur={0.7} />
+          <DrawPath d="M 445 379 C 432 398 435 422 455 418 C 475 413 480 389 468 377" delay={2.4} dur={0.5} />
+          <DrawPath d="M 505 374 C 522 365 545 374 542 401 C 540 425 518 427 502 410 C 492 396 495 379 505 374" delay={2.7} dur={0.5} />
+          <DrawPath d="M 400 446 C 430 420 460 410 495 415 C 530 410 560 420 590 446" delay={3.0} dur={0.7} />
+          <DrawPath d="M 445 446 C 465 427 495 420 520 425" delay={3.4} dur={0.4} />
+          <DrawPath d="M 400 446 C 420 480 445 504 495 511 C 545 504 570 480 590 446" delay={3.6} dur={0.7} />
+          <DrawPath d="M 500 562 C 540 576 600 562 650 528" delay={4.1} dur={0.5} />
+        </>
       );
 
     default:
