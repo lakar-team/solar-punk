@@ -89,6 +89,8 @@ interface Message { role: 'user' | 'assistant'; content: string; }
 
 export default function AiboPanel() {
     const activePlanetId = useStore(s => s.activePlanetId);
+    const setActivePlanet = useStore(s => s.setActivePlanet);
+    const setFocusedPlanet = useStore(s => s.setFocusedPlanet);
     const activePlanet = activePlanetId ? projects.find(p => p.id === activePlanetId) : null;
 
     const [messages, setMessages] = useState<Message[]>([]);
@@ -116,9 +118,14 @@ export default function AiboPanel() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: text, activePlanetId }),
             });
-            const data = await res.json() as { reply?: string };
+            const data = await res.json() as { reply?: string; focusPlanet?: string | null };
             const reply = data.reply ?? "I seem to have lost my crystal ball. Try again?";
             setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+            // Navigate camera if AIBO pointed to a planet
+            if (data.focusPlanet) {
+                setActivePlanet(data.focusPlanet);
+                setFocusedPlanet(data.focusPlanet);
+            }
             // Fire-and-forget — Kokoro loads model then plays audio
             speak(reply);
         } catch {
@@ -126,7 +133,7 @@ export default function AiboPanel() {
         } finally {
             setIsThinking(false);
         }
-    }, [activePlanetId, speak, stop]);
+    }, [activePlanetId, speak, stop, setActivePlanet, setFocusedPlanet]);
 
     useEffect(() => {
         if (!hasGreeted.current) {
