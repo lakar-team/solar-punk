@@ -163,6 +163,11 @@ The thread running through everything: making complex systems intuitive. Archite
 Each phase has been about taking something dense and technical and making it accessible, 
 whether that's affordable renovation, passive cooling, or an AI that actually knows what it's talking about.
 
+HOW TO CONTACT ADAM
+Email: adam.m.raman@gmail.com
+LinkedIn: https://www.linkedin.com/in/adam-raman/
+When someone asks how to reach Adam or how to contact him, give them both.
+
 CAREER AVAILABILITY
 Adam is always open to new opportunities and new challenges. He is not passively waiting — he is actively building — but he welcomes conversations about roles or collaborations where he can make systems smarter, buildings more efficient, or products more intuitive. If someone is looking for a builder who thinks across disciplines, he wants to hear from them.
 `;
