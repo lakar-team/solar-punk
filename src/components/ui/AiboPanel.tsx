@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
@@ -8,14 +8,12 @@ import { useStore } from '@/store/useStore';
 import { projects } from '@/data/projects';
 import { useKokoroTTS } from '@/hooks/useKokoroTTS';
 
-// ── Camera — frames head-to-thigh ──
 function CameraRig() {
     const { camera } = useThree();
     useEffect(() => { camera.lookAt(0, 1.35, 0); }, [camera]);
     return null;
 }
 
-// ── VRM model with idle animation ──
 function VrmModel({ isSpeaking }: { isSpeaking: boolean }) {
     const [vrm, setVrm] = useState<VRM | null>(null);
 
@@ -68,7 +66,6 @@ function VrmModel({ isSpeaking }: { isSpeaking: boolean }) {
     return <primitive object={vrm.scene} />;
 }
 
-// ── Loading bar component ──
 function LoadingBar({ progress, label }: { progress: number; label: string }) {
     return (
         <div className="flex flex-col items-center gap-1.5 px-4 py-2">
@@ -84,10 +81,11 @@ function LoadingBar({ progress, label }: { progress: number; label: string }) {
     );
 }
 
-// ── Main panel ──
 interface Message { role: 'user' | 'assistant'; content: string; }
 
-export default function AiboPanel() {
+interface AiboPanelProps { isOpen: boolean; }
+
+export default function AiboPanel({ isOpen }: AiboPanelProps) {
     const activePlanetId = useStore(s => s.activePlanetId);
     const setActivePlanet = useStore(s => s.setActivePlanet);
     const setFocusedPlanet = useStore(s => s.setFocusedPlanet);
@@ -97,10 +95,10 @@ export default function AiboPanel() {
     const [input, setInput] = useState('');
     const [isThinking, setIsThinking] = useState(false);
 
-    const { speak, stop, loading: ttsLoading, progress: ttsProgress, isSpeaking, error: ttsError } = useKokoroTTS();
+    const { speak, stop, warmup, loading: ttsLoading, progress: ttsProgress, isSpeaking, error: ttsError } = useKokoroTTS();
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const hasGreeted = useRef(false);
+    const hasOpenedOnce = useRef(false);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -121,12 +119,10 @@ export default function AiboPanel() {
             const data = await res.json() as { reply?: string; focusPlanet?: string | null };
             const reply = data.reply ?? "I seem to have lost my crystal ball. Try again?";
             setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
-            // Navigate camera if AIBO pointed to a planet
             if (data.focusPlanet) {
                 setActivePlanet(data.focusPlanet);
                 setFocusedPlanet(data.focusPlanet);
             }
-            // Fire-and-forget — Kokoro loads model then plays audio
             speak(reply);
         } catch {
             setMessages(prev => [...prev, { role: 'assistant', content: "Connection lost. Try again shortly." }]);
@@ -135,16 +131,20 @@ export default function AiboPanel() {
         }
     }, [activePlanetId, speak, stop, setActivePlanet, setFocusedPlanet]);
 
+    // Greeting + model pre-warm fire only when the panel first opens.
+    // AudioContext is created after the user gesture (clicking "Ask Aibo"),
+    // satisfying Chrome autoplay policy. WebGPU model loading is deferred
+    // until after the 3D scene is stable, preventing WebGL context loss.
     useEffect(() => {
-        if (!hasGreeted.current) {
-            hasGreeted.current = true;
+        if (isOpen && !hasOpenedOnce.current) {
+            hasOpenedOnce.current = true;
+            warmup();
             sendMessage('Greet the visitor warmly and briefly. Offer to guide them.', true);
         }
-    }, [sendMessage]);
+    }, [isOpen, warmup, sendMessage]);
 
     return (
         <div className="flex flex-col h-full w-full">
-            {/* VRM avatar */}
             <div className="flex-shrink-0 h-56 relative bg-black/20">
                 <Canvas
                     camera={{ position: [0, 1.3, 1.6], fov: 42 }}
@@ -157,7 +157,6 @@ export default function AiboPanel() {
                     <VrmModel isSpeaking={isSpeaking} />
                 </Canvas>
 
-                {/* Voice status */}
                 <button
                     onClick={() => isSpeaking ? stop() : undefined}
                     className="absolute top-2 right-2 text-[10px] text-amber-400/50 hover:text-amber-400 uppercase tracking-widest transition-colors"
@@ -175,24 +174,21 @@ export default function AiboPanel() {
                 )}
             </div>
 
-            {/* Kokoro model loading indicator */}
             {ttsLoading && (
                 <div className="flex-shrink-0 border-b border-amber-500/10 bg-black/30">
-                    <LoadingBar progress={ttsProgress} label="Loading voice model…" />
+                    <LoadingBar progress={ttsProgress} label="Loading voice model..." />
                 </div>
             )}
 
-            {/* TTS error (non-blocking) */}
             {ttsError && !ttsLoading && (
                 <div className="flex-shrink-0 px-4 py-1 text-[10px] text-red-400/60 text-center">
                     Voice unavailable — text only
                 </div>
             )}
 
-            {/* Messages */}
             <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 min-h-0">
                 {messages.length === 0 && !isThinking && (
-                    <p className="text-zinc-600 text-xs text-center pt-4 uppercase tracking-widest">Ask about the portfolio…</p>
+                    <p className="text-zinc-600 text-xs text-center pt-4 uppercase tracking-widest">Ask about the portfolio...</p>
                 )}
                 {messages.map((msg, i) => (
                     <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -213,14 +209,13 @@ export default function AiboPanel() {
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* Input */}
             <div className="flex-shrink-0 border-t border-amber-500/20 p-3 flex gap-2">
                 <input
                     type="text"
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter' && !isThinking && input.trim()) sendMessage(input); }}
-                    placeholder={isThinking ? 'Thinking…' : 'Ask about the portfolio…'}
+                    placeholder={isThinking ? 'Thinking...' : 'Ask about the portfolio...'}
                     disabled={isThinking}
                     className="flex-1 bg-white/5 rounded-full px-4 py-2 text-xs text-white placeholder-zinc-600 outline-none border border-white/10 focus:border-amber-500/50 transition-colors disabled:opacity-40"
                 />
@@ -228,7 +223,7 @@ export default function AiboPanel() {
                     onClick={() => { if (!isThinking && input.trim()) sendMessage(input); }}
                     disabled={isThinking || !input.trim()}
                     className="px-3 py-2 rounded-full text-sm text-amber-400 border border-amber-500/40 hover:bg-amber-500/10 transition-colors disabled:opacity-30"
-                >➤</button>
+                >&#x27A4;</button>
             </div>
         </div>
     );

@@ -412,7 +412,7 @@ export default function HUD() {
                         </button>
                     </div>
                     <div className="flex-1 min-h-0">
-                        <AiboPanel />
+                        <AiboPanel isOpen={showGuide} />
                     </div>
                 </div>
             </div>
