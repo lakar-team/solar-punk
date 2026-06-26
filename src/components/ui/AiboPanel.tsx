@@ -99,9 +99,11 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const hasOpenedOnce = useRef(false);
+    const messagesRef = useRef<Message[]>([]);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        messagesRef.current = messages;
     }, [messages]);
 
     const sendMessage = useCallback(async (text: string, isSystem = false) => {
@@ -114,7 +116,7 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
             const res = await fetch('/api/brain', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: text, activePlanetId }),
+                body: JSON.stringify({ message: text, activePlanetId, history: messagesRef.current.slice(-8) }),
             });
             const data = await res.json() as { reply?: string; focusPlanet?: string | null };
             const reply = data.reply ?? "I seem to have lost my crystal ball. Try again?";
