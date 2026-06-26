@@ -16,23 +16,47 @@ interface ConversationTurn {
     content: string;
 }
 
+// Validated set of planet IDs from projects.ts.
+// parseStructuredReply checks against this so the model can't hallucinate an ID.
+const VALID_PLANET_IDS = new Set([
+    'hydrocalc', 'phd-research', 'sa-architects', 'lakar-design',
+    'smart-home', 'cultural-engagement', 'project-aibo', 'adamtool',
+    'demon-hunter', 'momotaro-book', 'redbubble-shop',
+    'nature-vibe-channel', 'islamic-advisor',
+]);
+
 /**
- * Strip structured-output artifacts that some free OpenRouter models append
- * to their response unprompted. They pattern-match on "planet" vocabulary and
- * output a JSON block like ```json {"reply": "...", "focusPlanet": null}```
- * even though the system prompt never asks for it.
+ * Extract reply text and optional planet navigation from the model's response.
  *
- * Also strips other markdown formatting that should not reach the UI or TTS.
+ * The system prompt asks for {"reply": "...", "planet": "id-or-null"}.
+ * Some free models ignore this and return plain text -- we handle that gracefully.
+ * The planet field is validated against VALID_PLANET_IDS so a hallucinated ID
+ * never reaches the frontend.
  */
-function sanitizeReply(text: string): string {
-    return text
-        // ```json { ... } ``` code blocks (the main offender)
+function parseStructuredReply(raw: string): { reply: string; planet: string | null } {
+    // Strip any code fences first
+    const stripped = raw
         .replace(/```json[\s\S]*?```/gi, '')
-        // Any other fenced code blocks
         .replace(/```[\s\S]*?```/g, '')
-        // Trailing bare JSON object that contains a "reply" field
-        .replace(/\s*\{[^}]*"reply"[^}]*\}\s*$/, '')
         .trim();
+
+    // Try to extract and parse the outermost JSON object
+    const jsonMatch = stripped.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+        try {
+            const parsed = JSON.parse(jsonMatch[0]) as Record<string, unknown>;
+            if (typeof parsed.reply === 'string' && parsed.reply.trim()) {
+                const planet =
+                    typeof parsed.planet === 'string' && VALID_PLANET_IDS.has(parsed.planet)
+                        ? parsed.planet
+                        : null;
+                return { reply: parsed.reply.trim(), planet };
+            }
+        } catch { /* fall through to plain text */ }
+    }
+
+    // Model returned plain text -- no navigation, use text as-is
+    return { reply: stripped, planet: null };
 }
 
 async function tryGoogleGemini(messages: object[]): Promise<ProviderResult> {
@@ -109,14 +133,23 @@ async function tryOpenRouter(messages: object[]): Promise<ProviderResult> {
 function buildSystemPrompt(activePlanetId: string | null): string {
     const activePlanet = activePlanetId ? projects.find(p => p.id === activePlanetId) : null;
 
-    // Light background note -- not a directive to only talk about this planet.
-    // The heavy "currently looking at" framing caused the model to anchor every
-    // answer back to the open planet even when the visitor asked about other things.
     const planetContext = activePlanet
         ? `Background: the visitor has the "${activePlanet.name}" planet panel open. Use this as context if their question is about it, but follow their lead -- answer what they actually ask, not what the open panel is about.`
         : 'The visitor is browsing the solar system overview.';
 
     return `You are Web Witch -- a mystical AI character who lives inside Adam Raman's portfolio at solar-punk-five.vercel.app. You know Adam deeply and speak about him like someone who has followed his journey closely, not like someone reading his resume.
+
+OUTPUT FORMAT (required):
+Respond with JSON only: {"reply": "your response", "planet": "id-or-null"}
+- "reply": your plain conversational response. No markdown, no formatting, no JSON inside this string.
+- "planet": set to the ID of a planet when your response is focused on a specific project; null otherwise.
+  Navigate to a planet when: the visitor asks about a specific project, you are directing them somewhere,
+  OR the topic has shifted to a different project from what is currently open -- always follow the visitor's
+  interest, not the currently open panel.
+
+Valid planet IDs (use exact strings):
+hydrocalc | phd-research | sa-architects | lakar-design | smart-home | cultural-engagement |
+project-aibo | adamtool | demon-hunter | momotaro-book | redbubble-shop | nature-vibe-channel | islamic-advisor
 
 YOUR CHARACTER:
 - Witchy, warm, slightly mischievous -- but genuinely helpful and never flippant
@@ -126,9 +159,6 @@ YOUR CHARACTER:
 - Keep responses concise (3-5 sentences) unless someone asks for detail -- then go deeper
 
 ADAM IS MALE. Always "he/him". Never "they" or "she".
-
-REPLY FORMAT:
-Plain conversational text ONLY. Never output JSON, code blocks, markdown formatting, or any structured data. If you want to direct someone to a planet, just name it in your sentence (e.g. "head to the Lakar Design planet at Orbit 35").
 
 CURRENT CONTEXT:
 ${planetContext}
@@ -148,7 +178,7 @@ HOW TO ANSWER QUESTIONS:
 ════════════════════════════════════════
 - "Tell me about Adam" → give a narrative overview of who he is and what drives him, not a CV list
 - "What has Adam built?" → describe the work with context — why he built it, what problem it solved
-- "Where can I find X?" → name the planet by name and set focusPlanet to its ID — do not mention orbit numbers
+- "Where can I find X?" → name the planet and navigate there (set the planet field)
 - "What is Adam like?" → draw on his personality, philosophy, sense of humour
 - "What is Adam doing now?" → Refil Japan, process automation, building energy systems, living in Sendai
 - "Is Adam looking for work?" / "Is he available?" → Yes -- always open to new opportunities and new challenges. He is actively building right now, but he welcomes conversations about roles or collaborations where he can make complex systems more intuitive.
@@ -180,12 +210,12 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Invalid message' }, { status: 400 });
         }
 
-        // Build conversation history. Strip any JSON artifacts from stored messages
-        // (from before this fix), and ensure history starts with a user turn so
-        // Gemini's strict user-first rule is satisfied.
+        // Build conversation history. Sanitize stored messages (strips any old JSON
+        // artifacts from before this fix). Ensure history starts with a user turn --
+        // Gemini rejects contents arrays that begin with model/assistant role.
         const rawHistory = (history ?? []).map(m => ({
             role: m.role,
-            content: sanitizeReply(m.content),
+            content: parseStructuredReply(m.content).reply, // extract just the text
         }));
         const firstUser = rawHistory.findIndex(m => m.role === 'user');
         const cleanHistory = firstUser >= 0 ? rawHistory.slice(firstUser) : [];
@@ -202,15 +232,8 @@ export async function POST(req: Request) {
         ]) {
             const result = await provider.fn(messages);
             if (result.success && result.reply) {
-                let reply = result.reply;
-                let focusPlanet: string | null = null;
-                try {
-                    const clean = result.reply.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
-                    const parsed = JSON.parse(clean) as { reply?: string; focusPlanet?: string | null };
-                    if (parsed.reply) { reply = sanitizeReply(parsed.reply); focusPlanet = parsed.focusPlanet ?? null; }
-                    else { reply = sanitizeReply(result.reply); }
-                } catch { reply = sanitizeReply(result.reply); }
-                return NextResponse.json({ reply, focusPlanet, model: result.model, provider: provider.name });
+                const { reply, planet } = parseStructuredReply(result.reply);
+                return NextResponse.json({ reply, planet, model: result.model, provider: provider.name });
             }
         }
         return NextResponse.json({ error: 'All AI providers failed.' }, { status: 503 });
