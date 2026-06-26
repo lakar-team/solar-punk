@@ -87,6 +87,7 @@ interface AiboPanelProps { isOpen: boolean; }
 
 export default function AiboPanel({ isOpen }: AiboPanelProps) {
     const activePlanetId = useStore(s => s.activePlanetId);
+    const setFocusedPlanet = useStore(s => s.setFocusedPlanet);
     const activePlanet = activePlanetId ? projects.find(p => p.id === activePlanetId) : null;
 
     const [messages, setMessages] = useState<Message[]>([]);
@@ -116,16 +117,17 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: text, activePlanetId, history: messagesRef.current.slice(-8) }),
             });
-            const data = await res.json() as { reply?: string };
+            const data = await res.json() as { reply?: string; planet?: string | null };
             const reply = data.reply ?? "I seem to have lost my crystal ball. Try again?";
             setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+            if (data.planet) setFocusedPlanet(data.planet);
             speak(reply);
         } catch {
             setMessages(prev => [...prev, { role: 'assistant', content: "Connection lost. Try again shortly." }]);
         } finally {
             setIsThinking(false);
         }
-    }, [activePlanetId, speak, stop]);
+    }, [activePlanetId, speak, stop, setFocusedPlanet]);
 
     // Greeting + model pre-warm fire only when the panel first opens.
     // AudioContext is created after the user gesture (clicking "Ask Aibo"),
