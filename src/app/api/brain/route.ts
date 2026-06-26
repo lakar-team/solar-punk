@@ -190,12 +190,12 @@ Do not make up facts. If something isn't in your knowledge above, say so.
 RESPONSE FORMAT — IMPORTANT:
 ════════════════════════════════════════
 Always respond with valid JSON in this exact shape:
-{ "reply": "your message here", "focusPlanet": null }
+{ "reply": "your message here", "planet": null }
 
-When navigating to a planet, set focusPlanet to one of these exact IDs (otherwise null):
+When navigating to a planet, set planet to one of these exact IDs (otherwise null):
 hydrocalc, phd-research, sa-architects, lakar-design, smart-home, cultural-engagement, project-aibo, adamtool, demon-hunter, momotaro-book, redbubble-shop, nature-vibe-channel, islamic-advisor
 
-Do NOT use orbit numbers anywhere. Return ONLY the raw JSON object, no markdown, no code fences.\`;
+Do NOT use orbit numbers anywhere. Return ONLY the raw JSON object, no markdown, no code fences.`;
 }
 
 export async function POST(req: Request) {
