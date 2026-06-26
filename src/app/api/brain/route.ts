@@ -47,10 +47,10 @@ function parseStructuredReply(raw: string): { reply: string; planet: string | nu
             const parsed = JSON.parse(jsonMatch[0]) as Record<string, unknown>;
             if (typeof parsed.reply === 'string' && parsed.reply.trim()) {
                 const planet =
-                    typeof parsed.focusPlanet === 'string' && VALID_PLANET_IDS.has(parsed.focusPlanet)
-                        ? parsed.focusPlanet
+                    typeof parsed.planet === 'string' && VALID_PLANET_IDS.has(parsed.planet)
+                        ? parsed.planet
                         : null;
-                return { reply: parsed.reply.trim(), planet: focusPlanet };
+                return { reply: parsed.reply.trim(), planet };
             }
         } catch { /* fall through to plain text */ }
     }
@@ -178,7 +178,7 @@ HOW TO ANSWER QUESTIONS:
 ════════════════════════════════════════
 - "Tell me about Adam" → give a narrative overview of who he is and what drives him, not a CV list
 - "What has Adam built?" → describe the work with context — why he built it, what problem it solved
-- "Where can I find X?" → name the planet by name and set focusPlanet to its ID — do not mention orbit numbers
+- "Where can I find X?" → name the planet and navigate there (set the planet field)
 - "What is Adam like?" → draw on his personality, philosophy, sense of humour
 - "What is Adam doing now?" → Refil Japan, process automation, building energy systems, living in Sendai
 - "Is Adam looking for work?" / "Is he available?" → Yes -- always open to new opportunities and new challenges. He is actively building right now, but he welcomes conversations about roles or collaborations where he can make complex systems more intuitive.
@@ -190,9 +190,9 @@ Do not make up facts. If something isn't in your knowledge above, say so.
 RESPONSE FORMAT — IMPORTANT:
 ════════════════════════════════════════
 Always respond with valid JSON in this exact shape:
-{ "reply": "your message here", "focusPlanet": null }
+{ "reply": "your message here", "planet": null }
 
-When navigating to a planet, set focusPlanet to one of these exact IDs (otherwise null):
+When navigating to a planet, set planet to one of these exact IDs (otherwise null):
 hydrocalc, phd-research, sa-architects, lakar-design, smart-home, cultural-engagement, project-aibo, adamtool, demon-hunter, momotaro-book, redbubble-shop, nature-vibe-channel, islamic-advisor
 
 Do NOT use orbit numbers anywhere. Return ONLY the raw JSON object, no markdown, no code fences.`;
@@ -232,15 +232,8 @@ export async function POST(req: Request) {
         ]) {
             const result = await provider.fn(messages);
             if (result.success && result.reply) {
-                // Parse structured JSON response { reply, focusPlanet }
-                let reply = result.reply;
-                let focusPlanet: string | null = null;
-                try {
-                    const clean = result.reply.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
-                    const parsed = JSON.parse(clean) as { reply?: string; focusPlanet?: string | null };
-                    if (parsed.reply) { reply = parsed.reply; focusPlanet = parsed.focusPlanet ?? null; }
-                } catch { /* not JSON — use raw reply as-is */ }
-                return NextResponse.json({ reply, focusPlanet, model: result.model, provider: provider.name });
+                const { reply, planet } = parseStructuredReply(result.reply);
+                return NextResponse.json({ reply, planet, model: result.model, provider: provider.name });
             }
         }
         return NextResponse.json({ error: 'All AI providers failed.' }, { status: 503 });

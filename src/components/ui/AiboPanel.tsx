@@ -87,7 +87,6 @@ interface AiboPanelProps { isOpen: boolean; }
 
 export default function AiboPanel({ isOpen }: AiboPanelProps) {
     const activePlanetId = useStore(s => s.activePlanetId);
-    const setActivePlanet = useStore(s => s.setActivePlanet);
     const setFocusedPlanet = useStore(s => s.setFocusedPlanet);
     const activePlanet = activePlanetId ? projects.find(p => p.id === activePlanetId) : null;
 
@@ -118,22 +117,17 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: text, activePlanetId, history: messagesRef.current.slice(-8) }),
             });
-            const data = await res.json() as { reply?: string; focusPlanet?: string | null };
+            const data = await res.json() as { reply?: string; planet?: string | null };
             const reply = data.reply ?? "I seem to have lost my crystal ball. Try again?";
             setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
-            // Navigate camera if AIBO pointed to a planet
-            if (data.focusPlanet) {
-                setActivePlanet(data.focusPlanet);
-                setFocusedPlanet(data.focusPlanet);
-            }
-            // Fire-and-forget — Kokoro loads model then plays audio
+            if (data.planet) setFocusedPlanet(data.planet);
             speak(reply);
         } catch {
             setMessages(prev => [...prev, { role: 'assistant', content: "Connection lost. Try again shortly." }]);
         } finally {
             setIsThinking(false);
         }
-    }, [activePlanetId, speak, stop, setActivePlanet, setFocusedPlanet]);
+    }, [activePlanetId, speak, stop, setFocusedPlanet]);
 
     // Greeting + model pre-warm fire only when the panel first opens.
     // AudioContext is created after the user gesture (clicking "Ask Aibo"),
