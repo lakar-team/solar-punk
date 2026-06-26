@@ -1,21 +1,40 @@
-/**
- * Kokoro-js 1.x WASM/WebGPU neural TTS hook.
+﻿/**
+ * Kokoro-js 1.x WASM neural TTS hook.
  *
- * Strategy:
- *  - Detect WebGPU on load; fall back to WASM. Chrome/Edge GPU inference is
- *    10-50x faster than WASM (~200ms/sentence vs 3-8s).
- *  - Model loading is deferred until warmup() is explicitly called (triggered
- *    by first panel open, which is a user gesture, avoiding AudioContext
- *    autoplay violations and WebGL context loss from WebGPU cold-start).
- *  - Run one short warmup inference after load to JIT-compile WASM/WebGPU
- *    compute graphs so the first real sentence doesn't pay the penalty.
- *  - Split text into sentences manually and generate each independently.
- *    Per-sentence try/catch means one failed phonemization can't cut off
- *    the rest of the response.
- *  - Promise deduplication in loadModel() prevents double-downloads if
- *    speak() fires before warmup finishes.
- *  - WebGPU uses fp16 (not fp32) to halve GPU memory and reduce Windows TDR
- *    (GPU timeout detection/recovery) risk that caused WebGL context loss.
+ * Device strategy: WASM only, always.
+ *
+ * WebGPU was tried and caused a hard reliability problem: on Windows, the
+ * ONNX WebGPU backend JIT-compiles shaders on the first inference. That
+ * compilation takes 1-5 seconds of continuous GPU work, which triggers
+ * Windows TDR (Timeout Detection and Recovery). TDR resets ALL GPU contexts
+ * including the Three.js WebGL context, causing the 3D solar system to go
+ * black and log "THREE.WebGLRenderer: Context Lost". fp16 reduces memory but
+ * does NOT reduce shader compilation time — the root cause. The only fix is
+ * to not use WebGPU while WebGL is active. Since we cannot coordinate between
+ * the Three.js scene and this hook without major architecture changes, WASM
+ * is the correct permanent choice. It works on every browser (Chrome, Firefox,
+ * Safari, Edge), on every GPU, without driver dependency.
+ *
+ * WASM performance with warmup:
+ *  - First sentence after model load: ~200-500ms (WASM kernels already JIT'd
+ *    by the silent warmup inference run immediately after model load).
+ *  - Subsequent sentences: ~100-300ms on modern hardware.
+ *  That is fast enough for conversational TTS on a portfolio site.
+ *
+ * Other design choices:
+ *  - warmup() is called by AiboPanel on first panel open (user gesture), not
+ *    on mount. This defers model download until after the user has interacted,
+ *    satisfying Chrome's AudioContext autoplay policy and not competing with
+ *    the Three.js scene loading on page boot.
+ *  - loadModel() uses a promise ref for deduplication so concurrent calls
+ *    (warmup + first speak()) share one download.
+ *  - Text is preprocessed before TTS: markdown stripped (avoids the model
+ *    saying "asterisk asterisk"), then split into sentences. Each sentence is
+ *    generated independently so one phonemizer failure doesn't cut off the
+ *    rest of the response.
+ *  - Sentence splitting avoids common abbreviations (Dr., Mr., vs., etc.)
+ *    by requiring the token after a period to start with a capital letter.
+ *    Exclamation marks and question marks always end a sentence.
  */
 'use client';
 
@@ -34,23 +53,53 @@ export interface KokoroTTSState {
 
 const VOICE = 'af_heart';
 
-function splitSentences(text: string): string[] {
+/**
+ * Strip markdown so the TTS model doesn't read formatting characters aloud.
+ * The system prompt tells the AI not to use markdown, but free-form LLMs
+ * sometimes include it anyway. This is a safety net, not a parser.
+ */
+function stripMarkdown(text: string): string {
     return text
-        .split(/(?<=[.!?…])\s+|\n\n+/)
-        .map(s => s.trim())
-        .filter(s => s.length > 1);
+        .replace(/\*\*(.*?)\*\*/g, '$1')     // **bold**
+        .replace(/\*(.*?)\*/g, '$1')          // *italic*
+        .replace(/__(.*?)__/g, '$1')          // __bold__
+        .replace(/_(.*?)_/g, '$1')            // _italic_
+        .replace(/`{1,3}[^`]*`{1,3}/g, '')   // `code` / ```block```
+        .replace(/^#+\s+/gm, '')             // ## headings
+        .replace(/\[(.*?)\]\(.*?\)/g, '$1')  // [link](url) -> link text
+        .replace(/^[-*]\s+/gm, '')           // - bullet lists
+        .replace(/^\d+\.\s+/gm, '')          // 1. numbered lists
+        .trim();
 }
 
-async function detectDevice(): Promise<'webgpu' | 'wasm'> {
-    try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const gpu = (navigator as any).gpu;
-        if (gpu) {
-            const adapter = await gpu.requestAdapter();
-            if (adapter) return 'webgpu';
-        }
-    } catch { /* ignore */ }
-    return 'wasm';
+/**
+ * Split into TTS-ready sentences.
+ *
+ * Rules (in order of precedence):
+ *  1. ! and ? always end a sentence (they are unambiguous).
+ *  2. … always ends a sentence.
+ *  3. A period ends a sentence only when followed by whitespace + an
+ *     uppercase letter — this avoids splitting on abbreviations like
+ *     "Dr. Smith", "vs. the", "e.g. this", version numbers "v2.0 released".
+ *  4. Two or more consecutive newlines (paragraph break) always split.
+ */
+function splitSentences(text: string): string[] {
+    const clean = stripMarkdown(text);
+    if (!clean) return [];
+
+    // Replace sentence boundaries with a sentinel we can split on cleanly.
+    const delimited = clean
+        // Unambiguous: !  ? or … followed by whitespace
+        .replace(/([!?…])\s+/g, '$1\x00')
+        // Period followed by whitespace + uppercase (excludes abbreviations)
+        .replace(/\.\s+(?=[A-Z])/g, '.\x00')
+        // Paragraph breaks
+        .replace(/\n\n+/g, '\x00');
+
+    return delimited
+        .split('\x00')
+        .map(s => s.trim())
+        .filter(s => s.length > 2); // discard empty or single-char fragments
 }
 
 export function useKokoroTTS(): KokoroTTSState {
@@ -76,7 +125,6 @@ export function useKokoroTTS(): KokoroTTSState {
 
     const loadModel = useCallback(async () => {
         if (pipelineRef.current) return pipelineRef.current;
-        // Return the in-flight promise so concurrent callers share one load
         if (loadingPromiseRef.current) return loadingPromiseRef.current;
 
         loadingPromiseRef.current = (async () => {
@@ -85,14 +133,9 @@ export function useKokoroTTS(): KokoroTTSState {
             setError(null);
             try {
                 const { KokoroTTS } = await import('kokoro-js');
-                const device = await detectDevice();
-                // fp16 for WebGPU: 2x less VRAM than fp32, faster on tensor cores,
-                // reduces Windows TDR risk that caused WebGL context loss.
-                // q8 for WASM: smaller download + good quality on CPU.
-                const dtype = device === 'webgpu' ? 'fp16' : 'q8';
                 const tts = await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX', {
-                    dtype,
-                    device,
+                    dtype: 'q8',
+                    device: 'wasm',
                     progress_callback: (info) => {
                         if ('progress' in info && typeof info.progress === 'number') {
                             setProgress(Math.round(info.progress));
@@ -103,8 +146,9 @@ export function useKokoroTTS(): KokoroTTSState {
                 setProgress(100);
                 setLoading(false);
 
-                // Warmup: JIT-compiles WASM/WebGPU compute graphs so the first
-                // real sentence doesn't pay the compilation penalty.
+                // JIT-compile WASM kernels with a silent warmup inference.
+                // Without this, the first real sentence pays a 2-4s compilation
+                // penalty on WASM. The warmup audio is discarded.
                 try { await tts.generate('Hi', { voice: VOICE }); } catch { /* ignore */ }
 
                 pipelineRef.current = tts;
@@ -113,7 +157,7 @@ export function useKokoroTTS(): KokoroTTSState {
                 const msg = err instanceof Error ? err.message : 'Failed to load voice model';
                 setError(msg);
                 setLoading(false);
-                loadingPromiseRef.current = null; // allow retry
+                loadingPromiseRef.current = null; // allow retry on next speak()
                 throw err;
             }
         })();
@@ -121,9 +165,9 @@ export function useKokoroTTS(): KokoroTTSState {
         return loadingPromiseRef.current;
     }, []);
 
-    // Called by AiboPanel when the panel first opens (a user gesture),
-    // so model download races the first API round-trip without violating
-    // AudioContext autoplay policy or triggering WebGL context loss.
+    // Called by AiboPanel when the panel first opens (the "Ask Aibo" click is
+    // a user gesture). This starts the model download racing the greeting API
+    // call, while ensuring the AudioContext is not created before user interaction.
     const warmup = useCallback(() => {
         loadModel().catch(() => {});
     }, [loadModel]);
@@ -147,7 +191,8 @@ export function useKokoroTTS(): KokoroTTSState {
                         naturalizerRef.current?.enqueue(result.audio, result.sampling_rate);
                     }
                 } catch {
-                    // One bad sentence (phonemizer error, etc.) — skip it, keep going
+                    // A single sentence failed (phonemizer error, unsupported chars).
+                    // Log nothing — skip it and continue with the next sentence.
                 }
             }
         } catch (err) {

@@ -1,12 +1,21 @@
-/**
+﻿/**
  * Web Audio naturalizer chain — single shared chain for all chunks.
  *
- * IMPORTANT: The chain (EQ → compressor → reverb → destination) is built ONCE
- * per AudioContext and reused for every sentence chunk. Previously each chunk
- * created a new chain, so reverb tails from chunk N and the audio from chunk
- * N+1 both connected to destination simultaneously → words piling on top.
- * With a shared chain the reverb tail naturally transitions into the next
- * sentence exactly as it would through a hardware reverb unit.
+ * Architecture note: the processing chain (EQ -> compressor -> reverb ->
+ * destination) is built ONCE per AudioContext and reused for all sentence
+ * chunks. A per-chunk chain caused reverb tails from chunk N to overlap
+ * with chunk N+1 audio, making words pile on top of each other. With a
+ * shared chain the reverb tail transitions naturally into the next sentence.
+ *
+ * Reliability:
+ *  - AudioContext is created lazily on first enqueue (never on page load).
+ *    Callers must ensure first enqueue follows a user gesture so Chrome's
+ *    autoplay policy allows the context to start in running state.
+ *  - If AudioContext creation fails (unsupported browser, page-level block),
+ *    ensureCtx throws a descriptive error that surfaces in the TTS hook's
+ *    error state, showing "Voice unavailable — text only" in the UI.
+ *  - stop() uses generation counters so stale onended callbacks from stopped
+ *    playback never trigger playNext on a new playback session.
  */
 
 export interface Naturalizer {
@@ -76,7 +85,7 @@ function buildChain(ctx: AudioContext): AudioNode {
 
 export function createNaturalizer(): Naturalizer {
     let ctx: AudioContext | null = null;
-    let chainInput: AudioNode | null = null; // reused across all chunks
+    let chainInput: AudioNode | null = null;
     let activeSource: AudioBufferSourceNode | null = null;
     let activeLfo: OscillatorNode | null = null;
     let startCb: (() => void) | null = null;
@@ -88,16 +97,30 @@ export function createNaturalizer(): Naturalizer {
 
     function ensureCtx(): { ctx: AudioContext; input: AudioNode } {
         if (!ctx || ctx.state === 'closed') {
-            ctx = new AudioContext();
-            chainInput = buildChain(ctx); // build chain once per context
+            // Throws if AudioContext is not supported or blocked at the browser
+            // level. The error propagates through playChunk -> enqueue -> speak(),
+            // where useKokoroTTS catches it and sets error state ("Voice unavailable").
+            try {
+                ctx = new AudioContext();
+            } catch (e) {
+                throw new Error(
+                    'AudioContext unavailable: ' + (e instanceof Error ? e.message : String(e))
+                );
+            }
+            chainInput = buildChain(ctx);
         }
-        if (ctx.state === 'suspended') ctx.resume();
+        // Resume if suspended (e.g. browser paused it on tab switch).
+        // Not awaited because: (a) Chrome doesn't advance currentTime while
+        // suspended, so source.start() queues correctly and plays on resume;
+        // (b) making the whole chain async for a no-op in the common path
+        // adds complexity with no practical benefit.
+        if (ctx.state === 'suspended') ctx.resume().catch(() => {});
         return { ctx, input: chainInput! };
     }
 
     function playChunk(samples: Float32Array, sampleRate: number) {
         const myGen = generation;
-        const { ctx: c, input } = ensureCtx();
+        const { ctx: c, input } = ensureCtx(); // may throw — propagates to caller
 
         const buf = c.createBuffer(1, samples.length, sampleRate);
         buf.copyToChannel(new Float32Array(samples), 0);
@@ -117,9 +140,9 @@ export function createNaturalizer(): Naturalizer {
         source.connect(input);
 
         source.onended = () => {
-            try { lfo.stop(); } catch { /* ignore */ }
-            try { source.disconnect(); } catch { /* ignore */ }
-            if (generation !== myGen) return;
+            try { lfo.stop(); } catch { /* already stopped */ }
+            try { source.disconnect(); } catch { /* already disconnected */ }
+            if (generation !== myGen) return; // this playback session was stopped
             activeSource = null;
             activeLfo = null;
             playNext();
@@ -138,7 +161,14 @@ export function createNaturalizer(): Naturalizer {
             return;
         }
         const item = queue.shift()!;
-        playChunk(item.samples, item.sampleRate);
+        try {
+            playChunk(item.samples, item.sampleRate);
+        } catch {
+            // AudioContext failed mid-queue — drain remaining and signal end
+            queue.length = 0;
+            isPlaying = false;
+            endCb?.();
+        }
     }
 
     function enqueue(samples: Float32Array, sampleRate: number) {
