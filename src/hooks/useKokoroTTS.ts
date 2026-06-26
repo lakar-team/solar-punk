@@ -4,13 +4,18 @@
  * Strategy:
  *  - Detect WebGPU on load; fall back to WASM. Chrome/Edge GPU inference is
  *    10-50x faster than WASM (~200ms/sentence vs 3-8s).
- *  - Pre-warm the model on mount so download races the first API reply.
- *  - Run one short warmup inference after load to JIT-compile WASM kernels.
+ *  - Model loading is deferred until warmup() is explicitly called (triggered
+ *    by first panel open, which is a user gesture, avoiding AudioContext
+ *    autoplay violations and WebGL context loss from WebGPU cold-start).
+ *  - Run one short warmup inference after load to JIT-compile WASM/WebGPU
+ *    compute graphs so the first real sentence doesn't pay the penalty.
  *  - Split text into sentences manually and generate each independently.
  *    Per-sentence try/catch means one failed phonemization can't cut off
  *    the rest of the response.
  *  - Promise deduplication in loadModel() prevents double-downloads if
- *    speak() fires before the pre-warm finishes.
+ *    speak() fires before warmup finishes.
+ *  - WebGPU uses fp16 (not fp32) to halve GPU memory and reduce Windows TDR
+ *    (GPU timeout detection/recovery) risk that caused WebGL context loss.
  */
 'use client';
 
@@ -20,6 +25,7 @@ import { createNaturalizer, type Naturalizer } from '@/utils/audioNaturalizer';
 export interface KokoroTTSState {
     speak: (text: string) => Promise<void>;
     stop: () => void;
+    warmup: () => void;
     loading: boolean;
     progress: number;
     isSpeaking: boolean;
@@ -80,8 +86,10 @@ export function useKokoroTTS(): KokoroTTSState {
             try {
                 const { KokoroTTS } = await import('kokoro-js');
                 const device = await detectDevice();
-                // fp32 recommended for WebGPU (q8+webgpu can produce garbled audio);
-                const dtype = device === 'webgpu' ? 'fp32' : 'q8';
+                // fp16 for WebGPU: 2x less VRAM than fp32, faster on tensor cores,
+                // reduces Windows TDR risk that caused WebGL context loss.
+                // q8 for WASM: smaller download + good quality on CPU.
+                const dtype = device === 'webgpu' ? 'fp16' : 'q8';
                 const tts = await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX', {
                     dtype,
                     device,
@@ -95,9 +103,8 @@ export function useKokoroTTS(): KokoroTTSState {
                 setProgress(100);
                 setLoading(false);
 
-                // Warmup: JIT-compiles WASM kernels so the first real sentence
-                // doesn't pay the compilation penalty (~2-4s on WASM).
-                // Runs silently after the loading bar disappears.
+                // Warmup: JIT-compiles WASM/WebGPU compute graphs so the first
+                // real sentence doesn't pay the compilation penalty.
                 try { await tts.generate('Hi', { voice: VOICE }); } catch { /* ignore */ }
 
                 pipelineRef.current = tts;
@@ -114,8 +121,10 @@ export function useKokoroTTS(): KokoroTTSState {
         return loadingPromiseRef.current;
     }, []);
 
-    // Pre-warm on mount so model download races the first API round-trip
-    useEffect(() => {
+    // Called by AiboPanel when the panel first opens (a user gesture),
+    // so model download races the first API round-trip without violating
+    // AudioContext autoplay policy or triggering WebGL context loss.
+    const warmup = useCallback(() => {
         loadModel().catch(() => {});
     }, [loadModel]);
 
@@ -155,5 +164,5 @@ export function useKokoroTTS(): KokoroTTSState {
         naturalizerRef.current?.stop();
     }, []);
 
-    return { speak, stop, loading, progress, isSpeaking, error };
+    return { speak, stop, warmup, loading, progress, isSpeaking, error };
 }
