@@ -11,12 +11,12 @@ import { gsap } from 'gsap';
    ────────────────────────────────────────────────────────────────────────── */
 interface StarDatum { id: number; x: number; y: number; size: number; op: number }
 
-const STARS: StarDatum[] = Array.from({ length: 200 }, (_, i) => ({
+const STARS: StarDatum[] = Array.from({ length: 240 }, (_, i) => ({
   id: i,
   x: Math.random() * 100,
   y: Math.random() * 100,
   size: Math.random() * 1.5 + 0.3,
-  op: Math.random() * 0.5 + 0.2,
+  op: Math.min((Math.random() * 0.5 + 0.2) * 1.1, 1),
 }));
 
 const STAR_ANGLES: number[] = STARS.map(s =>
@@ -44,8 +44,8 @@ const BEATS: BeatDef[] = [
   { text: '10 years in applied AI and IoT.',                                    cls: 'text-lg md:text-2xl font-semibold text-white/85 tracking-tight' },
   { text: 'Award winning architectural designer.',                              cls: 'text-lg md:text-2xl font-semibold text-white/85 tracking-tight' },
   // AIBO handoff
-  { text: '“I am AIBO, created by Adam to be a guide through the vast universe of Adam’s Portfolio.”', cls: 'text-xl md:text-3xl font-semibold text-white/90 leading-relaxed max-w-2xl' },
-  { text: '“Ask me anything.”', cls: 'text-3xl md:text-5xl font-semibold text-white/80' },
+  { text: ‘”AIBO will be your AI guide through Adams portfolio.”’, cls: ‘text-xl md:text-3xl font-semibold text-white/90 leading-relaxed max-w-2xl’ },
+  { text: ‘”Explore freely, or Ask AIBO for help.”’, cls: ‘text-3xl md:text-5xl font-semibold text-white/80’ },
 ];
 
 const SCENE_COUNT     = BEATS.length; // 13
@@ -149,6 +149,11 @@ function star5(cx: number, cy: number, r: number) {
   }
   return d + 'Z';
 }
+
+// Maps scene (-1…12) to the art case index.
+// scene -1 (name card) → case 0 (hyperspace), scene 0 (Visionary) → case 1, …
+// scene 10 (Award winning) → case 12, scenes 11 & 12 both → case 11 (sustain).
+const ART_CASE = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11, 11];
 
 // — Per-beat art —
 function renderArt(i: number): React.ReactNode {
@@ -349,7 +354,7 @@ function renderArt(i: number): React.ReactNode {
 }
 
 function LineArtLayer({ scene }: { scene: number }) {
-  const artKey = scene;
+  const artKey = ART_CASE[scene + 1] ?? 0;
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
       <AnimatePresence mode="wait">
@@ -491,13 +496,16 @@ export default function IntroScroll() {
 
   useEffect(() => { sceneRef.current = scene; }, [scene]);
 
-  // Gentle, continuous drift of the whole star field — alive but calm.
+  // Gentle, continuous drift + slow rotation of the whole star field.
   useEffect(() => {
     if (!starsRef.current) return;
-    const tween = gsap.to(starsRef.current, {
+    const drift = gsap.to(starsRef.current, {
       x: 14, y: -10, duration: 16, ease: 'sine.inOut', repeat: -1, yoyo: true,
     });
-    return () => { tween.kill(); };
+    const rotate = gsap.to(starsRef.current, {
+      rotation: 360, duration: 180, ease: 'none', repeat: -1,
+    });
+    return () => { drift.kill(); rotate.kill(); };
   }, []);
 
   // ── Final warp-exit: stars streak radially out, then reveal solar system ──
@@ -611,7 +619,7 @@ export default function IntroScroll() {
     <div ref={wrapperRef} className="fixed inset-0 z-50 bg-[#02050a]">
       <StarField containerRef={starsRef} />
 
-      {scene >= 0 && scene < SCENE_COUNT && <LineArtLayer scene={scene} />}
+      {scene < SCENE_COUNT && <LineArtLayer scene={scene} />}
 
       {/* Text layer */}
       <AnimatePresence mode="wait">
