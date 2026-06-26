@@ -44,8 +44,8 @@ const BEATS: BeatDef[] = [
   { text: '10 years in applied AI and IoT.',                                    cls: 'text-lg md:text-2xl font-semibold text-white/85 tracking-tight' },
   { text: 'Award winning architectural designer.',                              cls: 'text-lg md:text-2xl font-semibold text-white/85 tracking-tight' },
   // AIBO handoff
-  { text: `”AIBO will be your AI guide through Adams portfolio.”`, cls: ‘text-xl md:text-3xl font-semibold text-white/90 leading-relaxed max-w-2xl’ },
-  { text: `”Explore freely, or Ask AIBO for help.”`, cls: ‘text-3xl md:text-5xl font-semibold text-white/80’ },
+  { text: `“AIBO will be your AI guide through Adams portfolio.”`, cls: `text-xl md:text-3xl font-semibold text-white/90 leading-relaxed max-w-2xl` },
+  { text: `“Explore freely, or Ask AIBO for help.”`, cls: `text-3xl md:text-5xl font-semibold text-white/80` },
 ];
 
 const SCENE_COUNT     = BEATS.length; // 13
