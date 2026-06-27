@@ -1,18 +1,20 @@
 export type ProjectType = 'work' | 'hobby' | 'research' | 'merch' | 'core';
 export type ProjectStatus = 'complete' | 'in-progress';
+export type ProjectCategory = 'architecture' | 'digital' | 'products';
 
 export interface Project {
     id: string;
     name: string;
     type: ProjectType;
+    category: ProjectCategory;
     size: number; // 1-10 scale
     texture: string; // Style ID
     texturePath?: string; // Path to generated abstract texture
     emissiveColor?: string; // Bright color for visibility
     status: ProjectStatus;
     description: string;
-    orbitRadius: number; // Distance from sun
-    orbitSpeed: number; // Multiplier for orbit speed
+    orbitRadius: number; // Distance from sun (legacy — not used in two-tier system)
+    orbitSpeed: number; // Multiplier for orbit speed (legacy)
     link?: string; // External or internal link (never a PDF — PDFs go in detail pages)
     image?: string; // Path to thumbnail/texture image
     images?: string[]; // Multiple inline images shown in HUD panel (from public/)
@@ -23,11 +25,56 @@ export interface Project {
     secondaryLinks?: { label: string; url: string }[]; // Additional non-PDF resource links
 }
 
+export interface Category {
+    id: ProjectCategory;
+    name: string;
+    size: number;
+    color: string;
+    emissiveColor: string;
+    orbitRadius: number;
+    orbitSpeed: number;
+    texturePath: string;
+}
+
+export const categories: Category[] = [
+    {
+        id: 'architecture',
+        name: 'Architecture',
+        size: 9,
+        color: '#f59e0b',
+        emissiveColor: '#fb923c',
+        orbitRadius: 22,
+        orbitSpeed: 0.35,
+        texturePath: '/textures/planet-desert.png',
+    },
+    {
+        id: 'digital',
+        name: 'Digital',
+        size: 7,
+        color: '#3b82f6',
+        emissiveColor: '#60a5fa',
+        orbitRadius: 38,
+        orbitSpeed: 0.22,
+        texturePath: '/textures/planet-tech.png',
+    },
+    {
+        id: 'products',
+        name: 'Products',
+        size: 5,
+        color: '#22c55e',
+        emissiveColor: '#4ade80',
+        orbitRadius: 54,
+        orbitSpeed: 0.15,
+        texturePath: '/textures/planet-forest.png',
+    },
+];
+
 export const projects: Project[] = [
     {
         id: 'hydrocalc',
         name: 'HydroCalc v2',
         type: 'work',
+        category: 'digital',
         size: 8,
         texture: 'planet-tech',
         texturePath: '/textures/planet-tech.png',
@@ -51,6 +98,7 @@ export const projects: Project[] = [
         id: 'building-energy',
         name: 'Building Energy',
         type: 'work',
+        category: 'architecture',
         size: 7,
         texture: 'planet-scaffold',
         texturePath: '/textures/planet-desert.png',
@@ -75,6 +123,7 @@ export const projects: Project[] = [
         id: 'phd-research',
         name: 'Climate Tech R&D',
         type: 'research',
+        category: 'architecture',
         size: 7,
         texture: 'planet-ice',
         texturePath: '/textures/planet-arctic.png',
@@ -96,6 +145,7 @@ export const projects: Project[] = [
         id: 'sa-architects',
         name: 'S&A Architects',
         type: 'work',
+        category: 'architecture',
         size: 5,
         texture: 'planet-scaffold',
         texturePath: '/textures/planet-desert.png',
@@ -116,6 +166,7 @@ export const projects: Project[] = [
         id: 'lakar-design',
         name: 'Lakar Design',
         type: 'work',
+        category: 'architecture',
         size: 9,
         texture: 'planet-forest',
         texturePath: '/textures/planet-forest.png',
@@ -142,6 +193,7 @@ export const projects: Project[] = [
         id: 'smart-home',
         name: 'Smart Home Lab',
         type: 'hobby',
+        category: 'products',
         size: 6,
         texture: 'planet-tech',
         texturePath: '/textures/planet-tech.png',
@@ -168,6 +220,7 @@ export const projects: Project[] = [
         id: 'cultural-engagement',
         name: 'Cultural Engagement',
         type: 'research',
+        category: 'architecture',
         size: 5,
         texture: 'planet-forest',
         texturePath: '/textures/planet-forest.png',
@@ -186,6 +239,7 @@ export const projects: Project[] = [
         id: 'project-aibo',
         name: 'Project Aibo',
         type: 'work',
+        category: 'digital',
         size: 4,
         texture: 'planet-scaffold',
         texturePath: '/textures/planet-tech.png',
@@ -202,6 +256,7 @@ export const projects: Project[] = [
         id: 'adamtool',
         name: 'Adamtool',
         type: 'hobby',
+        category: 'digital',
         size: 6,
         texture: 'planet-lava',
         texturePath: '/textures/planet-desert.png',
@@ -216,6 +271,7 @@ export const projects: Project[] = [
         id: 'demon-hunter',
         name: 'Demon Hunter',
         type: 'hobby',
+        category: 'digital',
         size: 5,
         texture: 'planet-ice',
         texturePath: '/textures/planet-arctic.png',
@@ -231,6 +287,7 @@ export const projects: Project[] = [
         id: 'momotaro-book',
         name: 'Momotaro Kids Book',
         type: 'hobby',
+        category: 'digital',
         size: 6,
         texture: 'planet-desert',
         texturePath: '/textures/planet-desert.png',
@@ -246,6 +303,7 @@ export const projects: Project[] = [
         id: 'redbubble-shop',
         name: 'Merchandising',
         type: 'merch',
+        category: 'products',
         size: 6,
         texture: 'planet-tech',
         texturePath: '/textures/planet-tech.png',
@@ -261,6 +319,7 @@ export const projects: Project[] = [
         id: 'nature-vibe-channel',
         name: 'Nature Vibe YouTube',
         type: 'hobby',
+        category: 'products',
         size: 5,
         texture: 'planet-gas',
         texturePath: '/textures/planet-arctic.png',
@@ -276,6 +335,7 @@ export const projects: Project[] = [
         id: 'islamic-advisor',
         name: 'Online Sheikh AI',
         type: 'work',
+        category: 'digital',
         size: 5,
         texture: 'planet-forest',
         texturePath: '/textures/planet-forest.png',

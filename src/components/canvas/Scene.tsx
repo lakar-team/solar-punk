@@ -9,6 +9,7 @@ import * as THREE from 'three';
 import Universe from './Universe';
 import CentralStar from './CentralStar';
 import PlanetSystem from './PlanetSystem';
+import CameraController from './CameraController';
 
 export default function Scene() {
     return (
@@ -28,6 +29,7 @@ export default function Scene() {
                     {/* The Sun's core light - made slightly harsher for space realism */}
                     <pointLight position={[0, 0, 0]} intensity={3} color="#ffedd5" distance={150} decay={2} />
 
+                    <CameraController />
                     <CentralStar />
                     <PlanetSystem />
 
@@ -41,6 +43,7 @@ export default function Scene() {
                     </EffectComposer>
 
                     <OrbitControls
+                        makeDefault
                         enablePan={true}
                         enableZoom={true}
                         maxDistance={250}

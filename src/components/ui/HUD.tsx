@@ -1,7 +1,7 @@
 'use client';
 
 import { useStore } from '@/store/useStore';
-import { projects } from '@/data/projects';
+import { projects, categories } from '@/data/projects';
 import { profile } from '@/data/profile';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
@@ -13,7 +13,7 @@ const SunPreview = dynamic(() => import('./SunPreview'), { ssr: false });
 const AiboPanel = dynamic(() => import('./AiboPanel'), { ssr: false });
 
 export default function HUD() {
-    const { activePlanetId, setActivePlanet, setFocusedPlanet, focusedPlanetId } = useStore();
+    const { activePlanetId, setActivePlanet, setFocusedPlanet, viewMode, focusedCategoryId, returnToSolar } = useStore();
     const [showNav, setShowNav] = useState(false);
     const [showGuide, setShowGuide] = useState(false);
 
@@ -23,29 +23,19 @@ export default function HUD() {
     // Unified Navigation List (Sun + Projects)
     const navItems = [{ id: 'cv-core', type: 'core' }, ...projects];
 
-    // Navigation handlers
+    // Panel navigation — only cycles the open detail panel, doesn't change camera
     const handleNext = () => {
         if (!activePlanetId) return;
         const currentIndex = navItems.findIndex(item => item.id === activePlanetId);
         if (currentIndex === -1) return;
-
-        const nextIndex = (currentIndex + 1) % navItems.length;
-        const nextItem = navItems[nextIndex];
-
-        setActivePlanet(nextItem.id);
-        setFocusedPlanet(nextItem.id === 'cv-core' ? null : nextItem.id);
+        setActivePlanet(navItems[(currentIndex + 1) % navItems.length].id);
     };
 
     const handlePrev = () => {
         if (!activePlanetId) return;
         const currentIndex = navItems.findIndex(item => item.id === activePlanetId);
         if (currentIndex === -1) return;
-
-        const prevIndex = (currentIndex - 1 + navItems.length) % navItems.length;
-        const prevItem = navItems[prevIndex];
-
-        setActivePlanet(prevItem.id);
-        setFocusedPlanet(prevItem.id === 'cv-core' ? null : prevItem.id);
+        setActivePlanet(navItems[(currentIndex - 1 + navItems.length) % navItems.length].id);
     };
 
     return (
@@ -102,6 +92,32 @@ export default function HUD() {
                 </div>
             </header>
 
+            {/* Lunar view breadcrumb — floats below header */}
+            <AnimatePresence>
+                {viewMode === 'lunar' && (
+                    <motion.div
+                        key="lunar-breadcrumb"
+                        initial={{ y: -16, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -16, opacity: 0 }}
+                        transition={{ type: 'spring', damping: 22, stiffness: 180 }}
+                        className="pointer-events-auto absolute top-20 md:top-24 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3"
+                    >
+                        <button
+                            onClick={returnToSolar}
+                            className="flex items-center gap-2 px-4 py-1.5 bg-black/80 backdrop-blur-md border border-white/20 rounded-full text-xs uppercase tracking-widest text-white/60 hover:text-white hover:border-amber-500/40 transition-all"
+                        >
+                            ← Solar System
+                        </button>
+                        {focusedCategoryId && (
+                            <span className="text-xs text-white/30 uppercase tracking-widest">
+                                / {categories.find(c => c.id === focusedCategoryId)?.name}
+                            </span>
+                        )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* CV Core View (Sun clicked) */}
             <AnimatePresence>
                 {isCVView && (
@@ -114,7 +130,7 @@ export default function HUD() {
                     >
                         <div className="flex justify-between items-center mb-6">
                             <button
-                                onClick={() => { setActivePlanet(null); setFocusedPlanet(null); }}
+                                onClick={() => { setActivePlanet(null); if (viewMode === 'solar') setFocusedPlanet(null); }}
                                 className="rounded-full border border-amber-500/30 px-4 py-1.5 text-xs uppercase tracking-widest hover:bg-amber-500/10 transition-colors text-amber-400"
                             >
                                 ← Return to Orbit
@@ -218,10 +234,10 @@ export default function HUD() {
                     >
                         <div className="flex justify-between items-center mb-4">
                             <button
-                                onClick={() => { setActivePlanet(null); setFocusedPlanet(null); }}
+                                onClick={() => setActivePlanet(null)}
                                 className="rounded-full border border-white/20 px-4 py-1.5 text-xs uppercase tracking-widest hover:bg-white/10 transition-colors"
                             >
-                                ← Return to Orbit
+                                ← Close
                             </button>
 
                             {/* Panel Navigation */}
@@ -419,7 +435,7 @@ export default function HUD() {
 
                         {/* Sun/CV */}
                         <button
-                            onClick={() => { setActivePlanet('cv-core'); setFocusedPlanet(null); setShowNav(false); }}
+                            onClick={() => { setActivePlanet('cv-core'); setShowNav(false); }}
                             className={`w-full text-left px-3 py-3 rounded transition-all flex items-center justify-between group ${activePlanetId === 'cv-core' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/50' : 'text-amber-500/80 hover:bg-amber-500/10 border border-amber-500/10'}`}
                         >
                             <div className="flex items-center gap-3">
@@ -434,7 +450,6 @@ export default function HUD() {
                                 <button
                                     key={project.id}
                                     onClick={() => {
-                                        setFocusedPlanet(project.id);
                                         setActivePlanet(project.id);
                                         setShowNav(false);
                                     }}
