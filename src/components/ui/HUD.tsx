@@ -262,7 +262,23 @@ export default function HUD() {
                                 {activeProject.description}
                             </p>
 
-                            {activeProject.image && (
+                            {/* Inline image gallery */}
+                            {activeProject.images && activeProject.images.length > 0 && (
+                                <div className={`mt-4 grid gap-2 ${activeProject.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                                    {activeProject.images.map((src, i) => (
+                                        <div key={i} className="rounded-lg overflow-hidden border border-white/10 bg-black/30">
+                                            <img
+                                                src={src}
+                                                alt={`${activeProject.name} — ${i + 1}`}
+                                                className="w-full h-40 object-cover"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Single thumbnail (only when no images array) */}
+                            {activeProject.image && !activeProject.images && (
                                 <div className="mt-4 rounded-lg overflow-hidden border border-white/10 bg-white/5 flex justify-center items-center">
                                     <img
                                         src={activeProject.image}
@@ -272,7 +288,19 @@ export default function HUD() {
                                 </div>
                             )}
 
-                            {/* Secondary Links */}
+                            {/* Key Facts */}
+                            {activeProject.keyFacts && activeProject.keyFacts.length > 0 && (
+                                <div className="space-y-2">
+                                    {activeProject.keyFacts.map((fact, i) => (
+                                        <div key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                                            <span className="mt-0.5 text-amber-500 shrink-0">▸</span>
+                                            <span>{fact}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Secondary Links (non-PDF) */}
                             {activeProject.secondaryLinks && activeProject.secondaryLinks.length > 0 && (
                                 <div className="flex flex-wrap gap-2 mt-4">
                                     {activeProject.secondaryLinks.map((secLink, i) => (
@@ -287,6 +315,16 @@ export default function HUD() {
                                         </a>
                                     ))}
                                 </div>
+                            )}
+
+                            {/* Explore button for projects with dedicated detail pages */}
+                            {activeProject.detailPage && (
+                                <a
+                                    href={activeProject.detailPage}
+                                    className="flex items-center justify-center gap-2 w-full py-3 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-amber-500/40 text-white hover:text-amber-300 text-center font-bold uppercase tracking-wider transition-colors rounded"
+                                >
+                                    Explore →
+                                </a>
                             )}
 
                             {/* Sidebar Screenshot Preview (Overrides Live Preview) */}
