@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 
+// consolidated: solar-punk-portfolio renamed to solar-punk 2026-06-27
 const nextConfig: NextConfig = {
   // Prevent server-side bundling of Node.js-only native packages
   serverExternalPackages: ["onnxruntime-node", "sharp"],
