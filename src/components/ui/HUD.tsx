@@ -20,6 +20,12 @@ export default function HUD() {
     const activeProject = projects.find(p => p.id === activePlanetId);
     const isCVView = activePlanetId === 'cv-core';
 
+    const focusedCategory = categories.find(c => c.id === focusedCategoryId) ?? null;
+    const focusedCategoryProjects = focusedCategory
+        ? projects.filter(p => p.category === focusedCategoryId)
+        : [];
+    const showCategoryCard = viewMode === 'lunar' && focusedCategory && !activePlanetId;
+
     // Unified Navigation List (Sun + Projects)
     const navItems = [{ id: 'cv-core', type: 'core' }, ...projects];
 
@@ -216,6 +222,98 @@ export default function HUD() {
                                 >
                                     Personal Background
                                 </a>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Category Intro Card — shown when a category planet is entered but no moon selected */}
+            <AnimatePresence>
+                {showCategoryCard && focusedCategory && (
+                    <motion.div
+                        key={`cat-${focusedCategory.id}`}
+                        initial={{ x: '100%', opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: '100%', opacity: 0 }}
+                        transition={{ type: 'spring', damping: 20, stiffness: 100 }}
+                        className="pointer-events-auto absolute right-0 top-0 bottom-0 w-full md:w-[480px] bg-black/60 backdrop-blur-md shadow-2xl flex flex-col overflow-y-auto"
+                        style={{ borderLeft: `1px solid ${focusedCategory.color}28` }}
+                    >
+                        <div className="flex justify-between items-center p-8 pb-0">
+                            <button
+                                onClick={returnToSolar}
+                                className="rounded-full px-4 py-1.5 text-xs uppercase tracking-widest hover:bg-white/10 transition-colors border"
+                                style={{ borderColor: `${focusedCategory.color}40`, color: focusedCategory.color }}
+                            >
+                                ← Solar System
+                            </button>
+                        </div>
+
+                        <div className="flex-1 flex flex-col p-8 pt-6 space-y-6">
+                            {/* Badge + title */}
+                            <div>
+                                <span
+                                    className="inline-block px-2 py-1 rounded text-[10px] uppercase tracking-wider mb-3 border"
+                                    style={{
+                                        background: `${focusedCategory.color}18`,
+                                        borderColor: `${focusedCategory.color}40`,
+                                        color: focusedCategory.color,
+                                    }}
+                                >
+                                    {focusedCategory.name} · {focusedCategoryProjects.length} Projects
+                                </span>
+                                <h2
+                                    className="text-4xl md:text-5xl font-bold mb-2"
+                                    style={{
+                                        backgroundImage: `linear-gradient(to right, #ffffff, ${focusedCategory.color}bb)`,
+                                        WebkitBackgroundClip: 'text',
+                                        WebkitTextFillColor: 'transparent',
+                                        backgroundClip: 'text',
+                                    }}
+                                >
+                                    {focusedCategory.name}
+                                </h2>
+                            </div>
+
+                            <div className="h-px" style={{ background: `linear-gradient(to right, ${focusedCategory.color}50, transparent)` }} />
+
+                            <p className="text-base text-gray-300 leading-relaxed">
+                                {focusedCategory.description}
+                            </p>
+
+                            {/* Project name chips */}
+                            <div>
+                                <p className="text-[10px] text-white/30 uppercase tracking-widest mb-3">Projects in this cluster</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {focusedCategoryProjects.map(p => (
+                                        <span
+                                            key={p.id}
+                                            className="px-2.5 py-1 rounded-full text-xs border"
+                                            style={{ borderColor: `${focusedCategory.color}28`, color: 'rgba(255,255,255,0.55)' }}
+                                        >
+                                            {p.name}
+                                            {p.status === 'in-progress' && (
+                                                <span className="ml-1 text-[9px] text-amber-400">WIP</span>
+                                            )}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Spacer */}
+                            <div className="flex-1" />
+
+                            {/* Hint */}
+                            <div
+                                className="flex items-center gap-3 text-sm pb-4"
+                                style={{ color: `${focusedCategory.color}90` }}
+                            >
+                                <span
+                                    className="w-2 h-2 rounded-full animate-pulse shrink-0"
+                                    style={{ background: focusedCategory.color }}
+                                />
+                                Select a moon to explore a project
                             </div>
                         </div>
                     </motion.div>

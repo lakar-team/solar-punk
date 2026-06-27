@@ -28,6 +28,7 @@ export interface Project {
 export interface Category {
     id: ProjectCategory;
     name: string;
+    description: string;
     size: number;
     color: string;
     emissiveColor: string;
@@ -40,6 +41,7 @@ export const categories: Category[] = [
     {
         id: 'architecture',
         name: 'Architecture',
+        description: 'A decade of built environment work — from award-winning residential master plans to PhD-level thermal comfort research and smart building systems. Each project bridges design intent with technical rigour.',
         size: 9,
         color: '#f59e0b',
         emissiveColor: '#fb923c',
@@ -50,6 +52,7 @@ export const categories: Category[] = [
     {
         id: 'digital',
         name: 'Digital',
+        description: 'Software tools, AI applications, and interactive experiences built from scratch — each one solving a real problem. From hydraulic engineering suites to generative AI avatars, the through-line is precision over noise.',
         size: 7,
         color: '#3b82f6',
         emissiveColor: '#60a5fa',
@@ -60,6 +63,7 @@ export const categories: Category[] = [
     {
         id: 'products',
         name: 'Products',
+        description: 'Creative and commercial projects with a global footprint — books, merchandise, and media. These are experiments in distribution, consistency, and what it means to put something into the world at scale.',
         size: 5,
         color: '#22c55e',
         emissiveColor: '#4ade80',
@@ -107,10 +111,6 @@ export const projects: Project[] = [
         description: 'Translating a decade of architectural practice into the precision language of building systems engineering. I produce HVAC drawings and AC load calculations for new residential and commercial builds across Tohoku — working directly with local municipalities and architecture firms to navigate Japanese building standards. The tools are Rebro and Stabro: Japan\'s specialist MEP and building energy platforms, which sit at the intersection of traditional engineering rigour and modern BIM workflow. The goal is always the same: buildings that are thermally honest from day one.',
         orbitRadius: 20,
         orbitSpeed: 0.45,
-        images: [
-            '/images/building-energy/hvac-duct-diagram.jpg',
-            '/images/building-energy/ventilation-cycle.jpg',
-        ],
         keyFacts: [
             'HVAC drawings & AC load calculations for new builds in Tohoku',
             'Software: Rebro (MEP/BIM) and Stabro (building energy)',
@@ -132,7 +132,6 @@ export const projects: Project[] = [
         description: 'The central question: how much can a small amount of context awareness amplify what a passive building system can already do? I engineered a solar-regenerated desiccant cooling system that achieved a validated 50% reduction in cooling loads — not through brute force, but by making it responsive to real-world environmental data. The bigger vision is buildings that are alive and self-regulating: structures that feel their environment, interpret that data, and adapt. This research is the first step toward that goal.',
         orbitRadius: 25,
         orbitSpeed: 0.35,
-        images: ['/images/phd-research/mall-ac.jpg'],
         keyFacts: [
             '50% cooling load reduction — validated',
             'Tohoku University PhD, 2022–2025',
@@ -176,10 +175,9 @@ export const projects: Project[] = [
         orbitRadius: 35,
         orbitSpeed: 0.25,
         images: [
-            '/images/lakar/restaurant-exterior.jpg',
-            '/images/lakar/tea-cafe.jpg',
-            '/images/lakar/restaurant-interior.jpg',
-            '/images/lakar/residential.jpg',
+            '/textures/lakar-1.jpg',
+            '/textures/lakar-2.jpg',
+            '/textures/lakar-3.jpg',
         ],
         keyFacts: [
             '100% YoY revenue growth for 8 consecutive years',
@@ -202,10 +200,6 @@ export const projects: Project[] = [
         description: 'It started as a free add-on for architecture clients — a way to test smart home systems in real environments while I figured out what actually worked. Each client project was a live experiment: sensors, automations, dashboards, all field-tested against real usage. As my understanding deepened, I integrated a more comprehensive and personal version into my own home, treating the space as a living UX platform I could refine from the inside out.',
         orbitRadius: 40,
         orbitSpeed: 0.18,
-        images: [
-            '/images/smart-home/interior.jpg',
-            '/images/smart-home/system-diagram.jpg',
-        ],
         keyFacts: [
             'Field-tested across client projects before personal install',
             'Multi-protocol: Zigbee, IR, RF, WiFi, Bluetooth',
@@ -287,7 +281,7 @@ export const projects: Project[] = [
         id: 'momotaro-book',
         name: 'Momotaro Kids Book',
         type: 'hobby',
-        category: 'digital',
+        category: 'products',
         size: 6,
         texture: 'planet-desert',
         texturePath: '/textures/planet-desert.png',
