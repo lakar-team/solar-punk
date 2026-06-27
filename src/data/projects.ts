@@ -193,7 +193,7 @@ export const projects: Project[] = [
         id: 'smart-home',
         name: 'Smart Home Lab',
         type: 'hobby',
-        category: 'products',
+        category: 'architecture',
         size: 6,
         texture: 'planet-tech',
         texturePath: '/textures/planet-tech.png',
