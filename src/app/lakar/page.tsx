@@ -226,6 +226,68 @@ export default function LakarPage() {
                 </div>
             </section>
 
+            {/* Design Philosophy */}
+            <section className="max-w-5xl mx-auto px-6 py-16 border-t border-white/8">
+                <div className="mb-10">
+                    <span className="text-[10px] uppercase tracking-[0.35em] text-white/25">Philosophy</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {[
+                        {
+                            title: "Renovation Over New Build",
+                            body: "Malaysia's mass housing stock has a hidden opportunity - occupants constantly modify their units to express identity. Lakar's model was built on this insight: designer renovation at 20-30% less than boutique rates, by treating the design system as a repeatable product rather than a bespoke service.",
+                        },
+                        {
+                            title: "Design + Technology",
+                            body: "Smart home integration started as a free add-on for architecture clients - a live testing ground. Field-testing across real client projects before personal deployment meant every system that made it into the offering had been proven in use. Multi-protocol (Zigbee, IR, RF, WiFi, Bluetooth) unified into a single-app experience.",
+                        },
+                        {
+                            title: "Controlled Growth",
+                            body: "Three entities in nine years: design studio to design+build firm to Sdn Bhd. Each evolution was driven by a specific barrier - design-only contracts moving too slowly through approval chains, then the need for clean partner structures and delegation. Growth was deliberate, not reactive.",
+                        },
+                    ].map((item, i) => (
+                        <div key={i} className="p-6 bg-green-500/5 border border-green-500/12 rounded-2xl">
+                            <h3 className="text-base font-bold text-white mb-3">{item.title}</h3>
+                            <p className="text-sm text-gray-400 leading-relaxed">{item.body}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* The Next Chapter */}
+            <section className="max-w-5xl mx-auto px-6 py-16 border-t border-white/8">
+                <div className="mb-10">
+                    <span className="text-[10px] uppercase tracking-[0.35em] text-white/25">What Came Next</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    <div>
+                        <h2 className="text-3xl font-black text-white mb-6 leading-tight">From founder to researcher</h2>
+                        <p className="text-gray-400 leading-relaxed mb-4">
+                            Smart home experiments during the Lakar years raised a question that kept coming back: why did buildings still feel uncomfortable despite all the technology available? The gap wasn't in the hardware — it was in the building envelope itself.
+                        </p>
+                        <p className="text-gray-400 leading-relaxed mb-4">
+                            That question pulled toward Japan: prefabricated manufacturing, lightweight fireproof structures, passive cooling and dehumidification, thermal insulation — a construction culture built around energy-honest buildings from the ground up.
+                        </p>
+                        <p className="text-gray-400 leading-relaxed">
+                            The research at Tohoku University answered it with numbers — a 50% validated reduction in cooling loads via solar-regenerated passive desiccant. The longer vision remains the same: living buildings that feel their environment, interpret it, and respond.
+                        </p>
+                    </div>
+                    <div className="space-y-3">
+                        {[
+                            { label: 'Motivation', value: 'Smart home experiments surfaced a deeper question — the building shell was the bottleneck, not the tech' },
+                            { label: 'Research focus', value: 'Passive cooling, prefabricated construction, thermal insulation, lightweight fire-resistant structures' },
+                            { label: 'Outcome', value: 'PhD at Tohoku University — 50% cooling load reduction, validated in hot-humid climate conditions' },
+                            { label: 'Vision', value: 'Living buildings: comfortable, passive, and self-regulating from the envelope outward' },
+                        ].map((row, i) => (
+                            <div key={i} className="p-4 border border-white/8 rounded-xl">
+                                <div className="text-[10px] text-green-400/60 uppercase tracking-widest mb-1">{row.label}</div>
+                                <div className="text-sm text-gray-300 leading-relaxed">{row.value}</div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
             {/* PDF embed */}
             <section className="max-w-5xl mx-auto px-6 py-16 border-t border-white/8">
                 <div className="mb-8 flex items-center justify-between">

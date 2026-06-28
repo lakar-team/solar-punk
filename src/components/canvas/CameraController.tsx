@@ -5,13 +5,13 @@ import { useStore } from '@/store/useStore';
 import * as THREE from 'three';
 import { useRef, useEffect } from 'react';
 
-const SOLAR_POS = new THREE.Vector3(0, 60, 90);
+const SOLAR_POS = new THREE.Vector3(0, 28, 115);
 const SOLAR_LOOK = new THREE.Vector3(0, 0, 0);
 
 export default function CameraController() {
     const { viewMode, focusedCategoryId, planetPositions } = useStore();
 
-    const targetPos = useRef(new THREE.Vector3(0, 60, 90));
+    const targetPos = useRef(new THREE.Vector3(0, 28, 115));
     const targetLook = useRef(new THREE.Vector3(0, 0, 0));
 
     useFrame((state, delta) => {

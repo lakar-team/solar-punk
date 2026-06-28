@@ -15,7 +15,7 @@ export default function Scene() {
     return (
         <div className='absolute inset-0 z-0 h-screen w-full bg-[#02050a]'>
             <Canvas
-                camera={{ position: [0, 50, 100], fov: 45 }}
+                camera={{ position: [0, 28, 115], fov: 45 }}
                 dpr={[1, 2]}
                 gl={{
                     antialias: false, // Turn off antialias when using postprocessing for better performance, or use SMAA

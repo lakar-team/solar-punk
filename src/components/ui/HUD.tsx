@@ -13,7 +13,7 @@ const SunPreview = dynamic(() => import('./SunPreview'), { ssr: false });
 const AiboPanel = dynamic(() => import('./AiboPanel'), { ssr: false });
 
 export default function HUD() {
-    const { activePlanetId, setActivePlanet, setFocusedPlanet, viewMode, focusedCategoryId, returnToSolar } = useStore();
+    const { activePlanetId, setActivePlanet, setFocusedPlanet, viewMode, focusedCategoryId, setFocusedCategory, returnToSolar } = useStore();
     const [showNav, setShowNav] = useState(false);
     const [showGuide, setShowGuide] = useState(false);
 
@@ -29,19 +29,41 @@ export default function HUD() {
     // Unified Navigation List (Sun + Projects)
     const navItems = [{ id: 'cv-core', type: 'core' }, ...projects];
 
-    // Panel navigation — only cycles the open detail panel, doesn't change camera
+    // Panel navigation — category-aware in lunar view, global in solar view
     const handleNext = () => {
         if (!activePlanetId) return;
+        if (viewMode === 'lunar' && focusedCategoryId) {
+            const catProjects = projects.filter(p => p.category === focusedCategoryId);
+            const idx = catProjects.findIndex(p => p.id === activePlanetId);
+            if (idx !== -1) setActivePlanet(catProjects[(idx + 1) % catProjects.length].id);
+            return;
+        }
         const currentIndex = navItems.findIndex(item => item.id === activePlanetId);
-        if (currentIndex === -1) return;
-        setActivePlanet(navItems[(currentIndex + 1) % navItems.length].id);
+        if (currentIndex !== -1) setActivePlanet(navItems[(currentIndex + 1) % navItems.length].id);
     };
 
     const handlePrev = () => {
         if (!activePlanetId) return;
+        if (viewMode === 'lunar' && focusedCategoryId) {
+            const catProjects = projects.filter(p => p.category === focusedCategoryId);
+            const idx = catProjects.findIndex(p => p.id === activePlanetId);
+            if (idx !== -1) setActivePlanet(catProjects[(idx - 1 + catProjects.length) % catProjects.length].id);
+            return;
+        }
         const currentIndex = navItems.findIndex(item => item.id === activePlanetId);
-        if (currentIndex === -1) return;
-        setActivePlanet(navItems[(currentIndex - 1 + navItems.length) % navItems.length].id);
+        if (currentIndex !== -1) setActivePlanet(navItems[(currentIndex - 1 + navItems.length) % navItems.length].id);
+    };
+
+    const handleCatNext = () => {
+        const idx = categories.findIndex(c => c.id === focusedCategoryId);
+        if (idx === -1) return;
+        setFocusedCategory(categories[(idx + 1) % categories.length].id);
+    };
+
+    const handleCatPrev = () => {
+        const idx = categories.findIndex(c => c.id === focusedCategoryId);
+        if (idx === -1) return;
+        setFocusedCategory(categories[(idx - 1 + categories.length) % categories.length].id);
     };
 
     return (
@@ -188,6 +210,27 @@ export default function HUD() {
                                 ))}
                             </div>
 
+                            {/* Career Timeline */}
+                            <div className="pt-2">
+                                <div className="text-[10px] uppercase tracking-widest text-amber-500/50 mb-3">Career</div>
+                                <div className="space-y-2.5">
+                                    {[
+                                        { period: '2025–now', role: 'Building Energy Architect', org: 'Refil Japan' },
+                                        { period: '2012–2022', role: 'Founder & Design Lead', org: 'Lakar Design' },
+                                        { period: '2016–2019', role: 'Asst. Lecturer', org: 'UiTM Malaysia' },
+                                        { period: '2009–2011', role: 'Architect', org: 'S&A Architects' },
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex items-baseline gap-3 text-sm">
+                                            <span className="text-[10px] text-amber-400/40 font-mono shrink-0 w-[4.5rem] text-right leading-relaxed">{item.period}</span>
+                                            <div className="flex-1 flex flex-wrap gap-x-1.5">
+                                                <span className="text-white/70">{item.role}</span>
+                                                <span className="text-white/30">· {item.org}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
                             {/* Embedded PDF Viewer */}
                             <div className="mt-6 rounded-lg overflow-hidden border border-amber-500/20 bg-black/50">
                                 <div className="p-3 border-b border-amber-500/20 flex justify-between items-center">
@@ -248,6 +291,24 @@ export default function HUD() {
                             >
                                 ← Solar System
                             </button>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handleCatPrev}
+                                    className="w-8 h-8 flex items-center justify-center rounded-full border hover:bg-white/10 transition-colors"
+                                    style={{ borderColor: `${focusedCategory.color}30`, color: `${focusedCategory.color}cc` }}
+                                    aria-label="Previous Category"
+                                >
+                                    ‹
+                                </button>
+                                <button
+                                    onClick={handleCatNext}
+                                    className="w-8 h-8 flex items-center justify-center rounded-full border hover:bg-white/10 transition-colors"
+                                    style={{ borderColor: `${focusedCategory.color}30`, color: `${focusedCategory.color}cc` }}
+                                    aria-label="Next Category"
+                                >
+                                    ›
+                                </button>
+                            </div>
                         </div>
 
                         <div className="flex-1 flex flex-col p-8 pt-6 space-y-6">
@@ -287,16 +348,17 @@ export default function HUD() {
                                 <p className="text-[10px] text-white/30 uppercase tracking-widest mb-3">Projects in this cluster</p>
                                 <div className="flex flex-wrap gap-2">
                                     {focusedCategoryProjects.map(p => (
-                                        <span
+                                        <button
                                             key={p.id}
-                                            className="px-2.5 py-1 rounded-full text-xs border"
+                                            onClick={() => setActivePlanet(p.id)}
+                                            className="px-2.5 py-1 rounded-full text-xs border cursor-pointer transition-all hover:text-white"
                                             style={{ borderColor: `${focusedCategory.color}28`, color: 'rgba(255,255,255,0.55)' }}
                                         >
                                             {p.name}
                                             {p.status === 'in-progress' && (
                                                 <span className="ml-1 text-[9px] text-amber-400">WIP</span>
                                             )}
-                                        </span>
+                                        </button>
                                     ))}
                                 </div>
                             </div>
@@ -435,6 +497,8 @@ export default function HUD() {
                             {activeProject.detailPage && (
                                 <a
                                     href={activeProject.detailPage}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     className="flex items-center justify-center gap-2 w-full py-3 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-amber-500/40 text-white hover:text-amber-300 text-center font-bold uppercase tracking-wider transition-colors rounded"
                                 >
                                     Explore →
@@ -480,7 +544,8 @@ export default function HUD() {
                                             activeProject.link.includes('amazon.com') ||
                                             activeProject.link.includes('redbubble.com') ||
                                             activeProject.link.includes('youtube.com') ||
-                                            activeProject.link.includes('power-lunch.pages.dev') ||
+                                            activeProject.link.includes('pages.dev') ||
+                                            activeProject.link.includes('github.com') ||
                                             activeProject.link.includes('drive.google.com');
 
                                         if (isUnembeddable) {
@@ -493,7 +558,8 @@ export default function HUD() {
                                                 >
                                                     {activeProject.id.includes('book') ? 'View on Amazon' :
                                                         activeProject.type === 'merch' ? 'Visit Store' :
-                                                            activeProject.link.includes('youtube') ? 'Watch on YouTube' : 'Launch Experience'}
+                                                            activeProject.link.includes('youtube') ? 'Watch on YouTube' :
+                                                                activeProject.link.includes('github.com') ? 'View on GitHub' : 'Launch Experience'}
                                                 </a>
                                             );
                                         }

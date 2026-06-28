@@ -13,18 +13,17 @@ export interface Profile {
 }
 
 export const profile: Profile = {
-    name: 'Adam M. Raman',
-    title: 'Product Strategy Lead | Built Environment & PropTech Innovation',
-    tagline: 'Ex-Founder & R&D Specialist driving Digital Transformation',
+    name: "Adam M. Raman",
+    title: "Architect | Technologist | Innovation Specialist",
+    tagline: "Ex-Founder | Built Environment & AI-Integrated Design",
     skills: [
-        'Product Lifecycle Management', 'Agile Methodologies',
-        'Stakeholder Management', 'Go-to-Market Strategy',
-        'P&L Ownership', 'IoT & Smart Home Integration',
-        'Energy Data Analysis', 'AI-Assisted Workflow Design'
+        "Architectural Design", "Human-Centric Design", "BIM / CAD",
+        "Building Energy Science", "Climate Tech",
+        "AI Workflows", "Smart Home / IoT",
+        "Product Strategy", "P&L Ownership", "Process Automation",
     ],
-    bio: 'I solve problems by looking where others don’t—merging lessons from nature with deep technical engineering. After a decade of leadership and a successfully bootstrapped 100% YoY growth firm, I am currently on a Research Sabbatical focused on Climate Tech and AI-driven workflows. My expertise lies in making complex systems (Energy, Software, Physical Space) feel intuitive. I lead by understanding the "how" of the maker and the "why" of the user, pushing teams to generate creative solutions that are both sustainable and cutting-edge.',
+    bio: "Innovation strategist and former founder with 10+ years in the built environment. Built and scaled a design-build firm to 8 consecutive years of 100% YoY growth before pivoting to R&D - completing a PhD in climate-conscious building science at Tohoku University. Now at the intersection of architecture, AI, and software: making complex systems - energy, space, data - feel intuitive from the inside out. The self-taught coding journey that started during the PhD is documented in the Coding Journey PDF below.",
     socials: {
-        github: 'https://github.com/lakar-team',
-        // Add other links here
+        github: "https://github.com/lakar-team",
     },
 };
