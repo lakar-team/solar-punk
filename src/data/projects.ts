@@ -346,7 +346,7 @@ export const projects: Project[] = [
             'Motor Core for the AIBO AI avatar system',
         ],
         secondaryLinks: [
-            { label: 'View on GitHub →', url: 'https://github.com/lakar-team/vtube' },
+            { label: 'Launch App →', url: 'https://vtubemaker.pages.dev/' },
         ],
     },
     {
