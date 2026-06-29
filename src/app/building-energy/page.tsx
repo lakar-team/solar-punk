@@ -79,6 +79,35 @@ export default function BuildingEnergyPage() {
                 </p>
             </section>
 
+            {/* Image Gallery */}
+            <section className="max-w-5xl mx-auto px-6 pb-4">
+                <div className="grid grid-cols-3 gap-3 h-[320px]">
+                    <div className="col-span-2 rounded-2xl overflow-hidden border border-white/10 bg-black/40">
+                        <img
+                            src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=80"
+                            alt="Sustainable building exterior"
+                            className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity"
+                        />
+                    </div>
+                    <div className="flex flex-col gap-3">
+                        <div className="flex-1 rounded-2xl overflow-hidden border border-white/10 bg-black/40">
+                            <img
+                                src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80"
+                                alt="Modern tropical architecture"
+                                className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity"
+                            />
+                        </div>
+                        <div className="flex-1 rounded-2xl overflow-hidden border border-white/10 bg-black/40">
+                            <img
+                                src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=800&q=80"
+                                alt="Building energy systems"
+                                className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* Context strip */}
             <div className="border-y border-white/8 bg-white/[0.015]">
                 <div className="max-w-5xl mx-auto px-6 py-8 grid grid-cols-2 md:grid-cols-4 gap-8">

@@ -120,3 +120,20 @@ Design Sense
 Researcher
 
 
+
+
+---
+
+## About Page Summary (for AIBO context)
+
+Adam M. Raman - Architect, Technologist, Innovation Specialist.
+
+Career: 10+ years in the built environment. Founded Lakar Design in 2012 - scaled from design studio to 42M yen annual revenue over 8 years. Early smart home adopter, BIM pioneer in Malaysia, PAM Award winner (2017).
+
+Academic: Master of Architecture, University of Manchester. 4 years of PhD research at Tohoku University in Building Energy Science - solar-regenerated passive desiccant cooling for hot-humid climates. Ongoing research and development continuing with the university.
+
+IMPORTANT - PhD framing: Do NOT say Adam completed or finished his PhD, and do NOT say he dropped out. The correct framing is: "4 years of PhD research at Tohoku University, with ongoing research and development continuing with the university."
+
+Current work: Building Energy Consultant at Refil Japan - HVAC drawings and AC load calculations for new builds in Tohoku. Also building AI tools, VTuber mocap systems, and precision engineering software.
+
+Languages: English (C2, IELTS 8.0), Malay (C2, native), Japanese (N3-N2, living and working in Japan).

@@ -60,7 +60,7 @@ export default function PhDResearchPage() {
             <section className="relative max-w-5xl mx-auto px-6 pt-36 pb-20">
                 <div className="mb-6 flex items-center gap-3">
                     <div className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(165,243,252,0.9)]" />
-                    <span className="text-[11px] uppercase tracking-[0.35em] text-cyan-400/70">Research · Tohoku University · 2022–2025</span>
+                    <span className="text-[11px] uppercase tracking-[0.35em] text-cyan-400/70">Research · Tohoku University · 4 Years</span>
                 </div>
                 <h1 className="text-[clamp(3.5rem,10vw,8rem)] font-black leading-[0.9] text-transparent bg-clip-text bg-gradient-to-br from-white via-cyan-100/90 to-cyan-400/50 mb-8">
                     Climate<br />Tech R&D

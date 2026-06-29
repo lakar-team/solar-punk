@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
     title: 'About Adam M. Raman | Portfolio',
-    description: 'Architect, technologist, and former founder. A decade in the built environment, a PhD in climate science, and 5 years building precision AI and software tools.',
+    description: 'Architect, technologist, and former founder. A decade in the built environment, 4 years of PhD research in climate science, and 5 years building precision AI and software tools.',
 };
 
 export default function AboutPage() {
@@ -44,9 +44,10 @@ export default function AboutPage() {
                     <p className="text-xl text-amber-200/70 font-medium">Architect · Technologist · Innovation Specialist</p>
                     <p className="text-base text-gray-400 leading-relaxed">
                         I solve problems by looking where others don&apos;t — merging lessons from nature with deep technical engineering.
-                        After a decade of leadership and a successfully bootstrapped firm, I completed a PhD in climate-conscious building
-                        science at Tohoku University. Now at the intersection of architecture, AI, and software: making complex systems —
-                        energy, space, data — feel intuitive from the inside out.
+                        After a decade of leadership and a successfully bootstrapped firm, I dedicated 4 years to PhD research in
+                        climate-conscious building science at Tohoku University, with ongoing research and development continuing with
+                        the university. Now at the intersection of architecture, AI, and software: making complex systems — energy,
+                        space, data — feel intuitive from the inside out.
                     </p>
                 </div>
             </section>
@@ -83,10 +84,10 @@ export default function AboutPage() {
                             detail: 'Postgraduate architectural design with focus on sustainable urban systems and human-centric planning. Thesis work centred on social housing and green corridor master planning.',
                         },
                         {
-                            degree: 'PhD in Building Energy Science',
+                            degree: '4 Years PhD Research · Building Energy Science',
                             institution: 'Tohoku University',
-                            country: 'Japan · 2022–2025',
-                            detail: 'Research focus: solar-regenerated passive desiccant cooling for hot-humid climates. Engineered a charcoal desiccant system achieving a validated 50% reduction in cooling energy load. Presented at the Kyoto International Conference on Urban Climate.',
+                            country: 'Japan · 2022–Present',
+                            detail: 'Research focus: solar-regenerated passive desiccant cooling for hot-humid climates. Engineered a charcoal desiccant system achieving a validated 50% reduction in cooling energy load. Presented at the Kyoto International Conference on Urban Climate. Ongoing research and development continuing with the university.',
                         },
                     ].map((q, i) => (
                         <div key={i} className="p-6 bg-amber-500/5 border border-amber-500/15 rounded-2xl">
@@ -136,10 +137,10 @@ export default function AboutPage() {
                         <p>
                             I presented this research at the Kyoto International Conference and at the Japan
                             Institute of Architects international symposium, representing the Malaysian perspective
-                            on cross-cultural design thinking. Since completing the PhD in 2025, I have been
-                            working as a Building Energy Consultant at Refil Japan — designing energy systems
-                            for new builds and building internal automation tools that cut deliverable cycle
-                            times by 40%.
+                            on cross-cultural design thinking. 4 years of PhD research at Tohoku University, with
+                            ongoing research and development continuing with the university. Alongside this, I work
+                            as a Building Energy Consultant at Refil Japan — designing energy systems for new builds
+                            and building internal automation tools that cut deliverable cycle times by 40%.
                         </p>
                     </div>
                     <div className="space-y-4">
@@ -154,7 +155,7 @@ export default function AboutPage() {
                             { year: '2021', note: 'Incorporated Lakar (Malaysia) Sdn Bhd' },
                             { year: '2022', note: 'PhD begins at Tohoku University' },
                             { year: '2023', note: 'Kyoto Conference presentation' },
-                            { year: '2025', note: 'PhD complete · Building Energy Consultant, Refil Japan' },
+                            { year: '2025', note: 'Building Energy Consultant, Refil Japan (research ongoing)' },
                         ].map((m, i) => (
                             <div key={i} className="flex gap-3 text-sm">
                                 <span className="text-[10px] text-amber-400/40 font-mono shrink-0 w-10 mt-0.5">{m.year}</span>
@@ -179,10 +180,10 @@ export default function AboutPage() {
                             detail: 'Designing HVAC and AC load calculations for residential and commercial new builds across Tohoku. Built internal tools ensuring JIS standards compliance — cutting deliverable cycle times by 40%. Tools: Rebro (MEP/BIM), Stabro (building energy).',
                         },
                         {
-                            period: '2022 – 2025',
+                            period: '2022 – Present',
                             role: 'PhD Researcher',
                             org: 'Tohoku University, Japan',
-                            detail: 'Solar-regenerated passive desiccant cooling for hot-humid climates. Engineered a charcoal desiccant system achieving a validated 50% reduction in cooling energy load. Presented at Kyoto International Conference and Japan Institute of Architects symposium.',
+                            detail: '4 years of PhD research in solar-regenerated passive desiccant cooling for hot-humid climates. Engineered a charcoal desiccant system achieving a validated 50% reduction in cooling energy load. Presented at Kyoto International Conference and Japan Institute of Architects symposium. Ongoing research and development continuing with the university.',
                         },
                         {
                             period: '2012 – 2022',

@@ -13,7 +13,7 @@ const SunPreview = dynamic(() => import('./SunPreview'), { ssr: false });
 const AiboPanel = dynamic(() => import('./AiboPanel'), { ssr: false });
 
 export default function HUD() {
-    const { activePlanetId, setActivePlanet, setFocusedPlanet, viewMode, focusedCategoryId, setFocusedCategory, returnToSolar } = useStore();
+    const { activePlanetId, setActivePlanet, setFocusedPlanet, viewMode, setViewMode, focusedCategoryId, setFocusedCategory, returnToSolar } = useStore();
     const [showNav, setShowNav] = useState(false);
     const [showGuide, setShowGuide] = useState(false);
 
@@ -57,13 +57,37 @@ export default function HUD() {
     const handleCatNext = () => {
         const idx = categories.findIndex(c => c.id === focusedCategoryId);
         if (idx === -1) return;
-        setFocusedCategory(categories[(idx + 1) % categories.length].id);
+        if (idx === categories.length - 1) {
+            setViewMode('solar');
+            setFocusedCategory(null);
+            setActivePlanet('cv-core');
+        } else {
+            setFocusedCategory(categories[idx + 1].id);
+        }
     };
 
     const handleCatPrev = () => {
         const idx = categories.findIndex(c => c.id === focusedCategoryId);
         if (idx === -1) return;
-        setFocusedCategory(categories[(idx - 1 + categories.length) % categories.length].id);
+        if (idx === 0) {
+            setViewMode('solar');
+            setFocusedCategory(null);
+            setActivePlanet('cv-core');
+        } else {
+            setFocusedCategory(categories[idx - 1].id);
+        }
+    };
+
+    const handleSunNext = () => {
+        setActivePlanet(null);
+        setViewMode('lunar');
+        setFocusedCategory('architecture');
+    };
+
+    const handleSunPrev = () => {
+        setActivePlanet(null);
+        setViewMode('lunar');
+        setFocusedCategory('products');
     };
 
     return (
@@ -164,19 +188,21 @@ export default function HUD() {
                                 ← Return to Orbit
                             </button>
 
-                            {/* Panel Navigation for Sun View */}
+                            {/* Panel Navigation for Sun View — Sun ‹ Products | Architecture › */}
                             <div className="flex gap-2">
                                 <button
-                                    onClick={handlePrev}
+                                    onClick={handleSunPrev}
                                     className="w-8 h-8 flex items-center justify-center rounded-full border border-amber-500/20 hover:bg-amber-500/10 text-amber-500/80 hover:text-amber-400 transition-colors"
-                                    aria-label="Previous Planet"
+                                    aria-label="Products (previous)"
+                                    title="Products"
                                 >
                                     ‹
                                 </button>
                                 <button
-                                    onClick={handleNext}
+                                    onClick={handleSunNext}
                                     className="w-8 h-8 flex items-center justify-center rounded-full border border-amber-500/20 hover:bg-amber-500/10 text-amber-500/80 hover:text-amber-400 transition-colors"
-                                    aria-label="Next Planet"
+                                    aria-label="Architecture (next)"
+                                    title="Architecture"
                                 >
                                     ›
                                 </button>
@@ -515,10 +541,10 @@ export default function HUD() {
                                                     rel="noopener noreferrer"
                                                     className="mt-8 block w-full py-4 bg-amber-600 hover:bg-amber-500 text-black text-center font-bold uppercase tracking-wider transition-colors rounded"
                                                 >
-                                                    {activeProject.id.includes('book') ? 'View on Amazon' :
-                                                        activeProject.type === 'merch' ? 'Visit Store' :
-                                                            activeProject.link.includes('youtube') ? 'Watch on YouTube' :
-                                                                activeProject.link.includes('github.com') ? 'View on GitHub' : 'Launch Experience'}
+                                                    {activeProject.id.includes('book') ? 'View on Amazon →' :
+                                                        activeProject.type === 'merch' ? 'Visit Store →' :
+                                                            activeProject.link.includes('youtube') ? 'Watch on YouTube →' :
+                                                                activeProject.link.includes('github.com') ? 'View on GitHub →' : 'Launch Experience →'}
                                                 </a>
                                             );
                                         }

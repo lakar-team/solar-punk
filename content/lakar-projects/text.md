@@ -33,4 +33,20 @@ Condominium, Kuala Lumpur Furnishing of condominium and implementation of smart 
 Link House, Selangor Renovation and furnishing of link house unit and implementation of partial smart home unit.
 Office, Selangor Setup of office unit for capital investment company.
 
+---
+
+## What Made Lakar Different
+
+Smart Home as a Living Lab: Every protocol (Zigbee, IR, RF, WiFi, Bluetooth) was stress-tested across real client projects before being deployed in my own home. Field research that became a standard Lakar service.
+
+Japan-Inspired Small-Space Design: Studio apartments at Empire Damansara Soho were an early experiment in small-space design before compact living was mainstream in Malaysia. Japan's spatial efficiency approach became a permanent design influence.
+
+Material Experimentation: Water-resistant and fire-resistant kitchen surfaces, passive airflow strategies in tropical builds, innovative surface treatments evaluated against real SME budgets. Each experiment deployed in a paying project.
+
+Early BIM and Infrastructure Adoption: Provided 3D modelling services for MRT Station KL before BIM was standard in Malaysia. Also included BRT proposals and civic infrastructure visualisation.
+
+Affordable Design for SME Clients: Designer quality at 20-30% below boutique rates by treating the design system as a repeatable product. Made professional design accessible to SMEs, F&B operators, and young homeowners.
+
+Sustainable Cooling Design: Passive cooling as a recurring design consideration — cross-ventilation, thermal mass, solar heat gain material choices. Direct precursors to the deeper building energy research that followed.
+
 

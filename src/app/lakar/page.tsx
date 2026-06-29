@@ -254,37 +254,43 @@ export default function LakarPage() {
                 </div>
             </section>
 
-            {/* The Next Chapter */}
+            {/* What Made Lakar Different */}
             <section className="max-w-5xl mx-auto px-6 py-16 border-t border-white/8">
                 <div className="mb-10">
-                    <span className="text-[10px] uppercase tracking-[0.35em] text-white/25">What Came Next</span>
+                    <span className="text-[10px] uppercase tracking-[0.35em] text-white/25">What Made Lakar Different</span>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                    <div>
-                        <h2 className="text-3xl font-black text-white mb-6 leading-tight">From founder to researcher</h2>
-                        <p className="text-gray-400 leading-relaxed mb-4">
-                            Smart home experiments during the Lakar years raised a question that kept coming back: why did buildings still feel uncomfortable despite all the technology available? The gap wasn't in the hardware — it was in the building envelope itself.
-                        </p>
-                        <p className="text-gray-400 leading-relaxed mb-4">
-                            That question pulled toward Japan: prefabricated manufacturing, lightweight fireproof structures, passive cooling and dehumidification, thermal insulation — a construction culture built around energy-honest buildings from the ground up.
-                        </p>
-                        <p className="text-gray-400 leading-relaxed">
-                            The research at Tohoku University answered it with numbers — a 50% validated reduction in cooling loads via solar-regenerated passive desiccant. The longer vision remains the same: living buildings that feel their environment, interpret it, and respond.
-                        </p>
-                    </div>
-                    <div className="space-y-3">
-                        {[
-                            { label: 'Motivation', value: 'Smart home experiments surfaced a deeper question — the building shell was the bottleneck, not the tech' },
-                            { label: 'Research focus', value: 'Passive cooling, prefabricated construction, thermal insulation, lightweight fire-resistant structures' },
-                            { label: 'Outcome', value: 'PhD at Tohoku University — 50% cooling load reduction, validated in hot-humid climate conditions' },
-                            { label: 'Vision', value: 'Living buildings: comfortable, passive, and self-regulating from the envelope outward' },
-                        ].map((row, i) => (
-                            <div key={i} className="p-4 border border-white/8 rounded-xl">
-                                <div className="text-[10px] text-green-400/60 uppercase tracking-widest mb-1">{row.label}</div>
-                                <div className="text-sm text-gray-300 leading-relaxed">{row.value}</div>
-                            </div>
-                        ))}
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {[
+                        {
+                            title: 'Smart Home as a Living Lab',
+                            body: "Smart home integration wasn't a product add-on — it was field research. Every protocol (Zigbee, IR, RF, WiFi, Bluetooth) was stress-tested across real client projects before being deployed in my own home. The clients got a free upgrade; I got live data on what actually worked. By the time it became a standard Lakar service, every system decision had already been proven in use.",
+                        },
+                        {
+                            title: 'Japan-Inspired Small-Space Design',
+                            body: "Studio apartments at Empire Damansara Soho were an early experiment in designing for density and liveability — before compact living was mainstream in Malaysia. Japan's approach to spatial efficiency (every surface doing double duty, light shaping how a space feels) became a permanent influence on how I approached even large-format residential projects.",
+                        },
+                        {
+                            title: 'Material Experimentation',
+                            body: 'Sustainable design ran through the project portfolio as hands-on material research: water-resistant and fire-resistant kitchen surfaces, passive airflow strategies in tropical builds, innovative surface treatments evaluated against real SME budgets and lifespan constraints. Each experiment was deployed in a paying project, not a mock-up.',
+                        },
+                        {
+                            title: 'Early BIM & Infrastructure Adoption',
+                            body: 'Before BIM was standard practice in Malaysia, Lakar provided 3D modelling services for MRT Station KL — digitally modelling infrastructure before digital construction workflows were the norm. This included BRT proposals and civic infrastructure visualisation. Being ahead of industry tools meant building the expertise before the industry demanded it.',
+                        },
+                        {
+                            title: 'Affordable Design for SME Clients',
+                            body: 'The founding premise was that designer quality and boutique prices were falsely linked. By treating the design system as a repeatable product — not a bespoke service — Lakar could deliver high-quality interiors at 20–30% below boutique rates. This made professional design accessible to a client base (SMEs, small F&B operators, young homeowners) that boutique firms systematically ignored.',
+                        },
+                        {
+                            title: 'Sustainable Cooling Design',
+                            body: 'Tropical Malaysian climate made passive cooling a recurring design consideration from day one. Early experiments with cross-ventilation strategies, thermal mass in affordable builds, and material choices that reduced solar heat gain were direct precursors to the deeper research that followed. The gap between what buildings could do passively and what they actually did was always visible.',
+                        },
+                    ].map((item, i) => (
+                        <div key={i} className="p-6 bg-green-500/5 border border-green-500/12 rounded-2xl hover:bg-green-500/8 transition-colors">
+                            <h3 className="text-base font-bold text-white mb-3">{item.title}</h3>
+                            <p className="text-sm text-gray-400 leading-relaxed">{item.body}</p>
+                        </div>
+                    ))}
                 </div>
             </section>
 

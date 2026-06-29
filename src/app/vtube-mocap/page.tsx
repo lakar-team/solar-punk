@@ -148,7 +148,7 @@ export default function VTubeMocapPage() {
                         <p className="text-sm text-gray-400">Active development — commits, architecture notes, and build logs are public.</p>
                     </div>
                     <a
-                        href={project.link}
+                        href="https://github.com/lakar-team/vtube"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="shrink-0 px-8 py-4 bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-center font-bold uppercase tracking-wider transition-colors rounded-xl"

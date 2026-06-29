@@ -53,7 +53,7 @@ Successfully revived an abandoned 17-story high-rise housing project, scaling th
 
 Architect | Technologist | Innovation Specialist
 Education
- PhD (Climate Tech R&D) � Tohoku University, Japan (2025)
+ PhD (Climate Tech R&D) — Tohoku University, Japan (4 Years, ongoing R&D)
 Thesis: Engineered a solar-regenerated passive desiccant hardware solution, achieving up to
 50% reduction in cooling energy loads for hot/humid climate nights.
 Transformed multi-source raw environmental data into interoperable formats for AI-assisted simulation workflows.
