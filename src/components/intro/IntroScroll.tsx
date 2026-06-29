@@ -36,16 +36,15 @@ const BEATS: BeatDef[] = [
   { text: 'Builder.',   cls: 'text-6xl md:text-8xl font-bold text-white tracking-tight' },
   // Roles
   { text: 'Creator of New Possibilities.', cls: 'text-3xl md:text-5xl font-semibold text-white tracking-tight' },
-  { text: 'Designer of Digital Systems.',  cls: 'text-3xl md:text-5xl font-semibold text-white tracking-tight' },
   { text: 'Shaper of Built Environments.', cls: 'text-3xl md:text-5xl font-semibold text-white tracking-tight' },
   // Proof
-  { text: 'Master of Architecture, UK. PhD in Building Energy Science, Japan.', cls: 'text-xl md:text-3xl font-bold text-white tracking-tight leading-snug max-w-2xl' },
+  { text: 'Master of Architecture, UK.\nPhD in Building Energy Science, Japan.', cls: 'text-xl md:text-3xl font-bold text-white tracking-tight leading-snug max-w-2xl whitespace-pre-line' },
   { text: '10 years of business development and construction management.',      cls: 'text-lg md:text-2xl font-semibold text-white/85 tracking-tight leading-snug max-w-xl' },
-  { text: '10 years in applied AI and IoT.',                                    cls: 'text-lg md:text-2xl font-semibold text-white/85 tracking-tight' },
+  { text: '5 years in applied AI and IoT.',                                     cls: 'text-lg md:text-2xl font-semibold text-white/85 tracking-tight' },
   { text: 'Award winning architectural designer.',                              cls: 'text-lg md:text-2xl font-semibold text-white/85 tracking-tight' },
   // AIBO handoff
-  { text: `“AIBO will be your AI guide through Adams portfolio.”`, cls: `text-xl md:text-3xl font-semibold text-white/90 leading-relaxed max-w-2xl` },
-  { text: `“Explore freely, or Ask AIBO for help.”`, cls: `text-3xl md:text-5xl font-semibold text-white/80` },
+  { text: `”AIBO will be your AI guide through Adams portfolio.”`, cls: `text-xl md:text-3xl font-semibold text-white/90 leading-relaxed max-w-2xl` },
+  { text: `”Explore freely, or Ask AIBO for help.”`, cls: `text-3xl md:text-5xl font-semibold text-white/80` },
 ];
 
 const SCENE_COUNT     = BEATS.length; // 13
@@ -153,7 +152,7 @@ function star5(cx: number, cy: number, r: number) {
 // Maps scene (-1…12) to the art case index.
 // scene -1 (name card) → case 0 (hyperspace), scene 0 (Visionary) → case 1, …
 // scene 10 (Award winning) → case 12, scenes 11 & 12 both → case 11 (sustain).
-const ART_CASE = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 11, 11];
+const ART_CASE = [0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 12, 11, 11];
 
 // — Per-beat art —
 function renderArt(i: number): React.ReactNode {
@@ -256,28 +255,13 @@ function renderArt(i: number): React.ReactNode {
       return (
         <>
           <DrawPath
-            d="M 254 466 L 252 456 L 250 447 L 250 437 L 252 426 L 253 413 L 255 402 L 256 392 L 256 382 L 255 372 L 252 362 L 248 354 L 243 347 L 238 335 L 238 324 L 241 315 L 242 306 L 240 298 L 232 290 L 223 286 L 213 282 L 202 281 L 190 281 L 180 280 L 170 280 L 162 280 L 154 279 L 146 278 L 136 274 L 129 269 L 124 261 L 126 252 L 130 245 L 138 240 L 147 237 L 159 233 L 170 231 L 177 226 L 183 218 L 184 209 L 184 200 L 186 191 L 189 182 L 193 174 L 196 164 L 202 155 L 206 147 L 207 137 L 207 126 L 208 116 L 213 106 L 220 99 L 229 93 L 237 89 L 249 86 L 258 86 L 266 90 L 272 100 L 276 107 L 278 117 L 276 128 L 272 136 L 266 146 L 262 155 L 260 165 L 261 173 L 266 184 L 274 191 L 282 197 L 290 202 L 295 209 L 296 218 L 294 228 L 295 236 L 300 244 L 306 250 L 306 258 L 296 261 L 285 262 L 276 263 L 267 264 L 258 267 L 254 275 L 250 282 L 243 286"
-            dur={1.6}
+            d="M 331 560 L 331 552 L 331 540 L 331 531 L 331 522 L 332 512 L 332 500 L 334 489 L 335 479 L 337 470 L 338 459 L 338 450 L 338 441 L 340 432 L 341 423 L 341 414 L 338 405 L 329 404 L 320 404 L 314 398 L 313 390 L 317 383 L 322 374 L 323 366 L 323 357 L 323 347 L 323 339 L 323 330 L 325 320 L 326 312 L 332 305 L 338 297 L 346 293 L 355 288 L 358 296 L 358 305 L 356 314 L 359 323 L 353 330 L 347 336 L 344 344 L 344 353 L 352 354 L 361 354 L 358 363 L 349 371 L 343 377 L 350 386 L 359 393 L 361 401 L 370 402 L 373 393 L 382 390 L 391 390 L 398 386 L 398 378 L 398 368 L 404 362 L 412 357 L 422 357 L 430 357 L 440 354 L 448 351 L 458 351 L 466 351 L 466 342 L 460 333 L 454 326 L 448 318 L 445 308 L 445 300 L 449 288 L 458 288 L 466 288 L 475 290 L 484 287 L 490 279 L 494 272 L 496 264 L 491 257 L 484 252 L 476 243 L 470 237 L 461 234 L 451 234 L 443 234 L 434 234 L 424 228 L 416 222 L 412 215 L 407 207 L 400 201 L 398 191 L 398 183 L 403 173 L 407 165 L 403 158 L 394 155 L 382 155 L 370 156 L 362 158 L 353 156 L 347 150 L 337 141 L 331 135 L 325 128 L 317 126 L 305 126 L 296 126 L 286 126 L 278 126 L 269 129 L 265 137 L 265 146 L 268 156 L 272 164 L 274 173 L 268 179 L 260 180 L 253 186 L 241 197 L 238 206 L 236 215 L 236 224 L 236 233 L 230 239 L 221 242 L 212 245 L 203 248 L 191 254 L 185 260 L 179 267 L 178 275 L 178 284 L 178 293 L 170 302 L 161 311 L 152 318 L 148 329 L 148 339 L 148 350 L 143 359 L 136 366 L 130 377 L 125 387 L 125 395 L 140 401 L 148 402 L 160 405 L 172 407 L 181 408 L 191 408 L 200 407 L 208 401 L 217 399 L 232 396 L 244 396 L 253 396 L 262 401 L 272 404 L 280 404 L 290 407 L 296 413 L 302 419 L 308 425 L 316 429 L 325 429 L 334 428 L 343 426"
+            dur={2.8}
           />
           <DrawPath
-            d="M 465 484 L 464 474 L 465 466 L 466 454 L 466 441 L 466 431 L 464 423 L 459 416 L 454 408 L 452 399 L 454 388 L 456 378 L 454 370 L 448 363 L 439 359 L 430 358 L 421 356 L 410 354 L 400 352 L 392 348 L 385 341 L 380 334 L 376 327 L 375 318 L 380 309 L 387 302 L 398 298 L 406 294 L 414 292 L 421 287 L 426 279 L 426 270 L 422 261 L 418 254 L 414 245 L 411 234 L 414 226 L 417 216 L 417 204 L 414 194 L 412 184 L 417 172 L 424 166 L 433 161 L 441 160 L 450 160 L 456 167 L 459 177 L 465 188 L 471 194 L 481 200 L 490 208 L 498 218 L 502 226 L 504 234 L 500 243 L 495 251 L 490 258 L 488 269 L 490 279 L 498 286 L 507 291 L 518 296 L 526 299 L 534 304 L 537 314 L 532 323 L 524 324 L 514 323 L 505 322 L 496 323 L 488 326 L 484 334 L 482 344 L 472 352 L 464 356"
-            delay={0.3}
-            dur={1.6}
-          />
-          <DrawPath
-            d="M 664 479 L 662 470 L 662 461 L 662 453 L 662 444 L 663 432 L 663 423 L 662 412 L 662 398 L 661 390 L 656 375 L 650 359 L 645 347 L 645 334 L 645 322 L 645 312 L 646 303 L 646 294 L 643 284 L 636 278 L 628 273 L 620 269 L 612 268 L 604 264 L 595 260 L 589 254 L 583 248 L 578 240 L 574 232 L 578 224 L 585 219 L 594 215 L 602 209 L 608 203 L 612 196 L 615 186 L 622 180 L 624 172 L 622 161 L 619 152 L 615 144 L 614 135 L 615 126 L 616 118 L 618 110 L 620 101 L 622 93 L 628 83 L 637 77 L 646 72 L 655 72 L 664 77 L 670 83 L 673 94 L 673 102 L 674 110 L 674 119 L 675 128 L 675 138 L 675 147 L 675 156 L 678 165 L 682 172 L 692 178 L 699 183 L 706 188 L 705 200 L 699 212 L 696 221 L 696 231 L 702 242 L 709 249 L 715 255 L 721 261 L 723 269 L 716 278 L 709 282 L 706 290 L 712 298 L 720 303 L 726 310 L 717 315 L 708 311 L 698 308 L 690 305 L 682 303 L 673 305 L 668 312"
-            delay={0.6}
-            dur={1.6}
-          />
-          <DrawPath
-            d="M 818 452 L 811 448 L 808 435 L 807 425 L 807 414 L 807 396 L 808 388 L 810 378 L 811 364 L 812 350 L 812 341 L 811 327 L 810 312 L 807 300 L 802 290 L 796 282 L 788 275 L 778 269 L 769 263 L 762 257 L 757 249 L 752 242 L 753 234 L 762 228 L 771 227 L 781 225 L 783 215 L 783 203 L 783 194 L 784 185 L 783 174 L 781 162 L 777 153 L 775 143 L 776 135 L 780 125 L 783 117 L 788 107 L 790 96 L 789 88 L 789 80 L 798 76 L 807 83 L 811 90 L 814 102 L 816 113 L 817 123 L 817 134 L 816 143 L 816 153 L 817 166 L 819 176 L 823 185 L 828 195 L 834 202 L 841 209 L 848 214 L 855 221 L 854 230 L 853 239 L 860 246 L 871 250 L 879 255 L 883 262 L 878 270 L 868 270 L 849 269 L 838 272"
-            delay={0.9}
-            dur={1.6}
-          />
-          <DrawPath
-            d="M 150 461 L 151 450 L 152 440 L 152 432 L 153 423 L 152 413 L 148 404 L 142 396 L 135 390 L 129 384 L 123 378 L 117 372 L 114 363 L 116 352 L 122 344 L 129 339 L 138 336 L 145 330 L 150 322 L 154 315 L 162 318 L 168 327 L 170 335 L 172 344 L 180 351 L 189 356 L 190 365 L 183 370 L 177 376 L 172 384 L 162 390"
-            delay={1.2}
-            dur={1.0}
+            d="M 722 519 L 722 510 L 722 497 L 722 489 L 724 477 L 725 467 L 728 458 L 731 450 L 733 441 L 728 431 L 724 423 L 722 413 L 722 405 L 722 395 L 731 395 L 739 395 L 746 390 L 752 377 L 757 369 L 766 366 L 776 369 L 784 372 L 793 377 L 802 381 L 811 381 L 812 372 L 812 363 L 812 354 L 802 351 L 794 350 L 785 350 L 782 339 L 782 330 L 790 329 L 799 329 L 808 329 L 817 329 L 827 329 L 835 329 L 841 321 L 850 321 L 857 326 L 865 329 L 872 317 L 875 309 L 875 300 L 875 290 L 872 282 L 866 276 L 857 272 L 848 269 L 841 264 L 833 257 L 827 251 L 823 243 L 818 236 L 817 225 L 817 215 L 818 206 L 829 194 L 835 188 L 838 180 L 830 173 L 823 168 L 817 161 L 802 153 L 794 150 L 785 147 L 776 143 L 766 138 L 757 132 L 751 126 L 746 119 L 743 111 L 742 101 L 742 93 L 745 84 L 748 75 L 740 66 L 731 65 L 721 65 L 713 65 L 704 69 L 698 75 L 694 83 L 689 90 L 685 98 L 682 107 L 670 111 L 659 114 L 647 114 L 638 116 L 629 116 L 623 122 L 622 131 L 620 140 L 620 149 L 619 158 L 614 165 L 610 174 L 604 180 L 598 189 L 598 204 L 598 212 L 598 221 L 607 222 L 619 224 L 632 224 L 641 224 L 653 222 L 662 221 L 670 221 L 665 230 L 656 230 L 646 230 L 638 230 L 628 230 L 620 233 L 613 245 L 611 257 L 611 270 L 611 279 L 610 287 L 602 287 L 595 291 L 593 299 L 593 308 L 608 314 L 617 314 L 628 314 L 637 309 L 643 303 L 650 297 L 658 294 L 668 294 L 676 299 L 685 302 L 697 302 L 706 299 L 716 305 L 722 311 L 727 320 L 718 321 L 709 321 L 701 321 L 694 317 L 686 318 L 674 323 L 665 323 L 658 318 L 650 315 L 638 315 L 629 318 L 619 318 L 608 317 L 598 317 L 587 317 L 578 317 L 571 324 L 566 332 L 566 342 L 566 350 L 571 359 L 580 360 L 596 360 L 608 363 L 619 365 L 628 369 L 638 374 L 647 380 L 653 386 L 661 389 L 673 392 L 683 393 L 694 395 L 704 396 L 712 399 L 722 399 L 730 405"
+            delay={0.4}
+            dur={2.8}
           />
         </>
       );
@@ -355,12 +339,13 @@ function renderArt(i: number): React.ReactNode {
 
 function LineArtLayer({ scene }: { scene: number }) {
   const artKey = ART_CASE[scene + 1] ?? 0;
+  const viewBox = artKey === 7 ? "100 60 800 520" : "0 0 1000 600";
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.svg
           key={artKey}
-          viewBox="0 0 1000 600"
+          viewBox={viewBox}
           preserveAspectRatio="xMidYMid meet"
           className="absolute inset-0 h-full w-full"
           initial={{ opacity: 0 }}
@@ -613,7 +598,7 @@ export default function IntroScroll() {
   if (!visible) return null;
 
   const currentBeat = scene >= 0 && scene < SCENE_COUNT ? BEATS[scene] : undefined;
-  const showAibo    = scene === 11 || scene === 12;
+  const showAibo    = scene === 10 || scene === 11;
 
   return (
     <div ref={wrapperRef} className="fixed inset-0 z-50 bg-[#02050a]">

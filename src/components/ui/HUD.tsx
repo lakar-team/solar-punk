@@ -198,74 +198,30 @@ export default function HUD() {
 
                             <div className="h-px w-full bg-gradient-to-r from-amber-500/30 to-transparent" />
 
-                            <p className="text-base text-gray-300 leading-relaxed">
-                                {profile.bio}
-                            </p>
-
-                            <div className="flex flex-wrap gap-2 mt-4">
-                                {profile.skills.map((skill, i) => (
-                                    <span key={i} className="px-2 py-1 bg-amber-500/10 border border-amber-500/20 rounded text-xs text-amber-300">
-                                        {skill}
-                                    </span>
-                                ))}
-                            </div>
-
-                            {/* Career Timeline */}
-                            <div className="pt-2">
-                                <div className="text-[10px] uppercase tracking-widest text-amber-500/50 mb-3">Career</div>
-                                <div className="space-y-2.5">
-                                    {[
-                                        { period: '2025–now', role: 'Building Energy Architect', org: 'Refil Japan' },
-                                        { period: '2012–2022', role: 'Founder & Design Lead', org: 'Lakar Design' },
-                                        { period: '2016–2019', role: 'Asst. Lecturer', org: 'UiTM Malaysia' },
-                                        { period: '2009–2011', role: 'Architect', org: 'S&A Architects' },
-                                    ].map((item, i) => (
-                                        <div key={i} className="flex items-baseline gap-3 text-sm">
-                                            <span className="text-[10px] text-amber-400/40 font-mono shrink-0 w-[4.5rem] text-right leading-relaxed">{item.period}</span>
-                                            <div className="flex-1 flex flex-wrap gap-x-1.5">
-                                                <span className="text-white/70">{item.role}</span>
-                                                <span className="text-white/30">· {item.org}</span>
-                                            </div>
-                                        </div>
-                                    ))}
+                            {/* Two-track career summary */}
+                            <div className="space-y-3">
+                                <div className="p-4 bg-amber-500/8 border border-amber-500/20 rounded-lg">
+                                    <div className="text-[10px] uppercase tracking-widest text-amber-500/60 mb-1">Built Environment</div>
+                                    <p className="text-sm text-white/70 leading-relaxed">
+                                        Architect & founder — 10+ years spanning award-winning master plans, a design-build firm scaled to ¥42M, and a PhD in climate-conscious building science at Tohoku University.
+                                    </p>
+                                </div>
+                                <div className="p-4 bg-amber-500/8 border border-amber-500/20 rounded-lg">
+                                    <div className="text-[10px] uppercase tracking-widest text-amber-500/60 mb-1">Digital & AI</div>
+                                    <p className="text-sm text-white/70 leading-relaxed">
+                                        5 years building precision tools — hydraulic engineering suites, RAG-based AI, VTuber mocap rigs, and IoT-integrated smart environments.
+                                    </p>
                                 </div>
                             </div>
 
-                            {/* Embedded PDF Viewer */}
-                            <div className="mt-6 rounded-lg overflow-hidden border border-amber-500/20 bg-black/50">
-                                <div className="p-3 border-b border-amber-500/20 flex justify-between items-center">
-                                    <span className="text-xs text-amber-400 uppercase tracking-wider">Tech CV Preview</span>
-                                    <a
-                                        href="/Adam_Tech_CV.pdf"
-                                        target="_blank"
-                                        className="text-xs text-amber-500 hover:text-amber-400 underline"
-                                    >
-                                        Open Full Screen
-                                    </a>
-                                </div>
-                                <iframe
-                                    src="/Adam_Tech_CV.pdf#navpanes=0&toolbar=0&view=FitH"
-                                    className="w-full h-[600px]"
-                                    title="Adam M. Raman Tech CV"
-                                />
-                            </div>
-
-                            <div className="flex gap-3 mt-6">
-                                <a
-                                    href="/docs/coding-journey.pdf"
-                                    target="_blank"
-                                    className="flex-1 py-4 bg-amber-600 hover:bg-amber-500 text-black text-center font-bold uppercase tracking-wider transition-colors rounded"
-                                >
-                                    Coding Journey
-                                </a>
-                                <a
-                                    href="/docs/personal-background.pdf"
-                                    target="_blank"
-                                    className="flex-1 py-4 bg-white/10 hover:bg-white/20 text-white text-center font-bold uppercase tracking-wider transition-colors rounded border border-white/10"
-                                >
-                                    Personal Background
-                                </a>
-                            </div>
+                            <a
+                                href="/about"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-center gap-2 w-full py-4 bg-amber-600 hover:bg-amber-500 text-black text-center font-bold uppercase tracking-wider transition-colors rounded"
+                            >
+                                Explore My Background →
+                            </a>
                         </div>
                     </motion.div>
                 )}
@@ -447,6 +403,7 @@ export default function HUD() {
                                                 src={src}
                                                 alt={`${activeProject.name} — ${i + 1}`}
                                                 className="w-full h-40 object-cover"
+                                                loading="lazy"
                                             />
                                         </div>
                                     ))}
@@ -460,6 +417,7 @@ export default function HUD() {
                                         src={activeProject.image}
                                         alt={activeProject.name}
                                         className="max-w-full max-h-[500px] object-contain"
+                                        loading="lazy"
                                     />
                                 </div>
                             )}
@@ -519,6 +477,7 @@ export default function HUD() {
                                             src={activeProject.sidebarScreenshot}
                                             alt={`${activeProject.name} Interface`}
                                             className="w-full h-auto object-contain max-h-[600px]"
+                                            loading="lazy"
                                         />
                                     </div>
                                 </div>
