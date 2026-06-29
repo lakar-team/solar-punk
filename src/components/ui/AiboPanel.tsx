@@ -88,7 +88,6 @@ interface AiboPanelProps { isOpen: boolean; }
 export default function AiboPanel({ isOpen }: AiboPanelProps) {
     const activePlanetId = useStore(s => s.activePlanetId);
     const setFocusedPlanet = useStore(s => s.setFocusedPlanet);
-    const introComplete = useStore(s => s.introComplete);
     const activePlanet = activePlanetId ? projects.find(p => p.id === activePlanetId) : null;
 
     const [messages, setMessages] = useState<Message[]>([]);
@@ -107,17 +106,13 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
         messagesRef.current = messages;
     }, [messages]);
 
-    // FIX 5: Start Kokoro model download right after the intro animation ends
-    // (user has already scrolled through the intro = interaction has occurred).
-    // This races the model load with the user navigating to "Ask Aibo".
+    // FIX 5: Start Kokoro model download 4 seconds after mount — enough time for
+    // Three.js and the intro to settle. Races the download against the user
+    // navigating to "Ask Aibo" rather than waiting for the first panel open.
     useEffect(() => {
-        if (!introComplete) return;
-        if (typeof requestIdleCallback !== 'undefined') {
-            requestIdleCallback(() => warmup());
-        } else {
-            setTimeout(() => warmup(), 100);
-        }
-    }, [introComplete, warmup]);
+        const id = setTimeout(() => warmup(), 4000);
+        return () => clearTimeout(id);
+    }, [warmup]);
 
     // FIX 2: Streaming fetch — buffer `t` tokens for progressive display and
     // sentence-boundary TTS dispatch. `done` event carries the fully-parsed reply.
