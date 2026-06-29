@@ -106,12 +106,23 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
         messagesRef.current = messages;
     }, [messages]);
 
-    // FIX 5: Start Kokoro model download 4 seconds after mount — enough time for
-    // Three.js and the intro to settle. Races the download against the user
-    // navigating to "Ask Aibo" rather than waiting for the first panel open.
+    // FIX 5: Start Kokoro warmup as soon as the page finishes loading, using
+    // requestIdleCallback so it doesn't compete with anything else rendering.
     useEffect(() => {
-        const id = setTimeout(() => warmup(), 4000);
-        return () => clearTimeout(id);
+        if (typeof window === 'undefined') return;
+        const trigger = () => {
+            if ('requestIdleCallback' in window) {
+                (window as Window & { requestIdleCallback: (cb: () => void) => number }).requestIdleCallback(() => warmup());
+            } else {
+                setTimeout(() => warmup(), 200);
+            }
+        };
+        if (document.readyState === 'complete') {
+            trigger();
+        } else {
+            window.addEventListener('load', trigger, { once: true });
+            return () => window.removeEventListener('load', trigger);
+        }
     }, [warmup]);
 
     // FIX 2: Streaming fetch — buffer `t` tokens for progressive display and
