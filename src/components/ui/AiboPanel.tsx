@@ -95,7 +95,7 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
     const [input, setInput] = useState('');
     const [isThinking, setIsThinking] = useState(false);
 
-    const { speak, stop, warmup, loading: ttsLoading, progress: ttsProgress, isSpeaking, error: ttsError } = useKokoroTTS();
+    const { speak, speakQueue, stop, warmup, loading: ttsLoading, progress: ttsProgress, isSpeaking, error: ttsError } = useKokoroTTS();
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const hasOpenedOnce = useRef(false);
@@ -106,23 +106,11 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
         messagesRef.current = messages;
     }, [messages]);
 
-    // FIX 5: Start Kokoro warmup as soon as the page finishes loading, using
-    // requestIdleCallback so it doesn't compete with anything else rendering.
+    // FIX 5: Defer Kokoro preload by 4 seconds so the Three.js scene and landing
+    // page render first, then the model download races any eventual panel open.
     useEffect(() => {
-        if (typeof window === 'undefined') return;
-        const trigger = () => {
-            if ('requestIdleCallback' in window) {
-                (window as Window & { requestIdleCallback: (cb: () => void) => number }).requestIdleCallback(() => warmup());
-            } else {
-                setTimeout(() => warmup(), 200);
-            }
-        };
-        if (document.readyState === 'complete') {
-            trigger();
-        } else {
-            window.addEventListener('load', trigger, { once: true });
-            return () => window.removeEventListener('load', trigger);
-        }
+        const timer = setTimeout(() => { warmup(); }, 4000);
+        return () => clearTimeout(timer);
     }, [warmup]);
 
     // FIX 2: Streaming fetch — buffer `t` tokens for progressive display and
@@ -184,7 +172,7 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
                                     const next = pendingText[i + 1];
                                     if (next === ' ' || next === '\n' || next === undefined) {
                                         const sentence = pendingText.slice(lastBoundary, i + 1).trim();
-                                        if (sentence.length > 3) speak(sentence);
+                                        if (sentence.length > 3) speakQueue(sentence);
                                         lastBoundary = i + 2;
                                     }
                                 }
@@ -196,7 +184,7 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
                             if (event.planet) setFocusedPlanet(event.planet);
                             // Speak any trailing text (last sentence without final punctuation).
                             const tail = pendingText.trim();
-                            if (tail.length > 2) speak(tail);
+                            if (tail.length > 2) speakQueue(tail);
                             setStreamingContent(null);
                             settled = true;
 
@@ -220,7 +208,7 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
         } finally {
             setIsThinking(false);
         }
-    }, [activePlanetId, speak, stop, setFocusedPlanet]);
+    }, [activePlanetId, speak, speakQueue, stop, setFocusedPlanet]);
 
     // Greeting fires when panel first opens; warmup() moved to introComplete effect (FIX 5).
     useEffect(() => {

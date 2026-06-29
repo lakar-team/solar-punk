@@ -43,6 +43,7 @@ import { createNaturalizer, type Naturalizer } from '@/utils/audioNaturalizer';
 
 export interface KokoroTTSState {
     speak: (text: string) => Promise<void>;
+    speakQueue: (text: string) => void;
     stop: () => void;
     warmup: () => void;
     loading: boolean;
@@ -114,6 +115,9 @@ export function useKokoroTTS(): KokoroTTSState {
     const loadingPromiseRef = useRef<Promise<any> | null>(null);
     const naturalizerRef = useRef<Naturalizer | null>(null);
     const speakAbortRef = useRef<AbortController | null>(null);
+    // Generation counter: incremented on stop() to cancel in-flight speakQueue calls.
+    const responseGenRef = useRef(0);
+    const genQueueRef = useRef<Promise<void>>(Promise.resolve());
 
     useEffect(() => {
         if (!naturalizerRef.current) {
@@ -204,10 +208,31 @@ export function useKokoroTTS(): KokoroTTSState {
         }
     }, [loadModel]);
 
+    // speakQueue: enqueue a single sentence for generation without aborting
+    // any in-flight generation from the same response. Calls chain sequentially
+    // so WASM inference is never concurrent. stop() increments responseGenRef to
+    // cancel all pending speakQueue calls for the current response.
+    const speakQueue = useCallback((text: string): void => {
+        if (!text.trim()) return;
+        const myGen = responseGenRef.current;
+        genQueueRef.current = genQueueRef.current.then(async () => {
+            if (responseGenRef.current !== myGen) return;
+            try {
+                const tts = await loadModel();
+                if (responseGenRef.current !== myGen) return;
+                const result = await tts.generate(text, { voice: VOICE });
+                if (responseGenRef.current === myGen) {
+                    naturalizerRef.current?.enqueue(result.audio, result.sampling_rate);
+                }
+            } catch { /* ignore single-sentence generation failures */ }
+        });
+    }, [loadModel]);
+
     const stop = useCallback(() => {
+        responseGenRef.current++;       // cancel all pending speakQueue calls
         speakAbortRef.current?.abort();
         naturalizerRef.current?.stop();
     }, []);
 
-    return { speak, stop, warmup, loading, progress, isSpeaking, error };
+    return { speak, speakQueue, stop, warmup, loading, progress, isSpeaking, error };
 }
