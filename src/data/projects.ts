@@ -1,30 +1,84 @@
 export type ProjectType = 'work' | 'hobby' | 'research' | 'merch' | 'core';
 export type ProjectStatus = 'complete' | 'in-progress';
+export type ProjectCategory = 'architecture' | 'digital' | 'products';
 
 export interface Project {
     id: string;
     name: string;
     type: ProjectType;
+    category: ProjectCategory;
     size: number; // 1-10 scale
     texture: string; // Style ID
     texturePath?: string; // Path to generated abstract texture
     emissiveColor?: string; // Bright color for visibility
     status: ProjectStatus;
     description: string;
-    orbitRadius: number; // Distance from sun
-    orbitSpeed: number; // Multiplier for orbit speed
-    link?: string; // External or internal link
+    orbitRadius: number; // Distance from sun (legacy — not used in two-tier system)
+    orbitSpeed: number; // Multiplier for orbit speed (legacy)
+    link?: string; // External or internal link (never a PDF — PDFs go in detail pages)
     image?: string; // Path to thumbnail/texture image
+    images?: string[]; // Multiple inline images shown in HUD panel (from public/)
+    keyFacts?: string[]; // 2–4 punchy stats/highlights shown as chips in HUD
+    detailPage?: string; // Route to dedicated detail page (e.g. '/lakar')
     sidebarScreenshot?: string; // A dedicated screenshot for the sidebar preview only
     hideEmbed?: boolean; // When true, don't show the live site preview (iframe/PDF)
-    secondaryLinks?: { label: string; url: string }[]; // Additional resource links
+    secondaryLinks?: { label: string; url: string }[]; // Additional non-PDF resource links
 }
+
+export interface Category {
+    id: ProjectCategory;
+    name: string;
+    description: string;
+    size: number;
+    color: string;
+    emissiveColor: string;
+    orbitRadius: number;
+    orbitSpeed: number;
+    texturePath: string;
+}
+
+export const categories: Category[] = [
+    {
+        id: 'architecture',
+        name: 'Architecture',
+        description: 'A decade of built environment work — from award-winning residential master plans to PhD-level thermal comfort research and smart building systems. Each project bridges design intent with technical rigour.',
+        size: 9,
+        color: '#f59e0b',
+        emissiveColor: '#fb923c',
+        orbitRadius: 22,
+        orbitSpeed: 0.35,
+        texturePath: '/textures/planet-desert.png',
+    },
+    {
+        id: 'digital',
+        name: 'Digital',
+        description: 'Software tools, AI applications, and interactive experiences built from scratch — each one solving a real problem. From hydraulic engineering suites to generative AI avatars, the through-line is precision over noise.',
+        size: 7,
+        color: '#3b82f6',
+        emissiveColor: '#60a5fa',
+        orbitRadius: 38,
+        orbitSpeed: 0.22,
+        texturePath: '/textures/planet-tech.png',
+    },
+    {
+        id: 'products',
+        name: 'Products',
+        description: 'Creative and commercial projects with a global footprint — books, merchandise, and media. These are experiments in distribution, consistency, and what it means to put something into the world at scale.',
+        size: 5,
+        color: '#22c55e',
+        emissiveColor: '#4ade80',
+        orbitRadius: 54,
+        orbitSpeed: 0.15,
+        texturePath: '/textures/planet-forest.png',
+    },
+];
 
 export const projects: Project[] = [
     {
         id: 'hydrocalc',
         name: 'HydroCalc v2',
         type: 'work',
+        category: 'digital',
         size: 8,
         texture: 'planet-tech',
         texturePath: '/textures/planet-tech.png',
@@ -34,15 +88,42 @@ export const projects: Project[] = [
         orbitRadius: 15,
         orbitSpeed: 0.5,
         link: '/apps/hydrocalc/index.html',
+        keyFacts: [
+            'Digitizes JIS B 8364 pipe flow standards',
+            'Real-time sizing: fixture units → exact pipe diameters',
+            'Maps full building water supply networks',
+        ],
         secondaryLinks: [
             { label: 'JIS Hydraulic Engine', url: 'https://github.com/lakar-team/hydrocalc' },
             { label: 'Documentation', url: 'https://github.com/lakar-team/hydrocalc#readme' },
         ],
     },
     {
+        id: 'building-energy',
+        name: 'Building Energy',
+        type: 'work',
+        category: 'architecture',
+        size: 7,
+        texture: 'planet-scaffold',
+        texturePath: '/textures/planet-desert.png',
+        emissiveColor: '#fb923c',
+        status: 'in-progress',
+        description: 'Translating a decade of architectural practice into the precision language of building systems engineering. I produce HVAC drawings and AC load calculations for new residential and commercial builds across Tohoku — working directly with local municipalities and architecture firms to navigate Japanese building standards. The tools are Rebro and Stabro: Japan\'s specialist MEP and building energy platforms, which sit at the intersection of traditional engineering rigour and modern BIM workflow. The goal is always the same: buildings that are thermally honest from day one.',
+        orbitRadius: 20,
+        orbitSpeed: 0.45,
+        keyFacts: [
+            'HVAC drawings & AC load calculations for new builds in Tohoku',
+            'Software: Rebro (MEP/BIM) and Stabro (building energy)',
+            'Clients: local municipalities and architecture firms',
+            'Bridges research (PhD thermal comfort) with engineering practice',
+        ],
+        detailPage: '/building-energy',
+    },
+    {
         id: 'phd-research',
         name: 'Climate Tech R&D',
         type: 'research',
+        category: 'architecture',
         size: 7,
         texture: 'planet-ice',
         texturePath: '/textures/planet-arctic.png',
@@ -51,15 +132,19 @@ export const projects: Project[] = [
         description: 'The central question: how much can a small amount of context awareness amplify what a passive building system can already do? I engineered a solar-regenerated desiccant cooling system that achieved a validated 50% reduction in cooling loads — not through brute force, but by making it responsive to real-world environmental data. The bigger vision is buildings that are alive and self-regulating: structures that feel their environment, interpret that data, and adapt. This research is the first step toward that goal.',
         orbitRadius: 25,
         orbitSpeed: 0.35,
-        link: '/docs/phd-research.pdf',
-        secondaryLinks: [
-            { label: '2024 Kyoto Conference Paper', url: '/docs/kyoto-conference.pdf' },
+        keyFacts: [
+            '50% cooling load reduction — validated',
+            'Tohoku University PhD, 2022–2025',
+            'Key finding: opening windows at night fights cooling — building design must account for this',
+            'Focus: hot-humid climates (SE Asia context)',
         ],
+        detailPage: '/phd-research',
     },
     {
         id: 'sa-architects',
         name: 'S&A Architects',
         type: 'work',
+        category: 'architecture',
         size: 5,
         texture: 'planet-scaffold',
         texturePath: '/textures/planet-desert.png',
@@ -68,12 +153,19 @@ export const projects: Project[] = [
         description: 'Within my first year as a Graduate Architect, I designed a sustainable low-rise master plan that secured a PAM Award 2017 for Denai Alam Phase J15. By anchoring housing nodes around connected green ribbons leading to a central social hub, the design prioritized human interaction and ecological flow. This concept was so successful it was adopted as a prototypical standard for one of Malaysia’s largest property developers, proving that human-centric urban design is as commercially viable as it is sustainable.',
         orbitRadius: 30,
         orbitSpeed: 0.3,
-        link: '/docs/sa-architects-award.pdf',
+        keyFacts: [
+            'PAM Award 2017 — Multiple Residential (Low Rise), Silver',
+            'Denai Alam Phase J15, Shah Alam, Malaysia',
+            'Adopted as prototypical standard by major Malaysian developer',
+            'Design anchors housing nodes around connected green ribbons',
+        ],
+        detailPage: '/sa-architects',
     },
     {
         id: 'lakar-design',
         name: 'Lakar Design',
         type: 'work',
+        category: 'architecture',
         size: 9,
         texture: 'planet-forest',
         texturePath: '/textures/planet-forest.png',
@@ -82,12 +174,24 @@ export const projects: Project[] = [
         description: 'I spotted a gap most firms ignored: people wanted designer interiors but couldn\'t justify boutique prices. I founded Lakar Design to close that gap — building a repeatable, high-quality design system I could scale without sacrificing craft. The company grew with 100% YoY growth for eight straight years, while pioneering what I called "affordable designer renovations" as a standard product offering.',
         orbitRadius: 35,
         orbitSpeed: 0.25,
-        link: '/docs/lakar-projects.pdf',
+        images: [
+            '/textures/lakar-1.jpg',
+            '/textures/lakar-2.jpg',
+            '/textures/lakar-3.jpg',
+        ],
+        keyFacts: [
+            '100% YoY revenue growth for 8 consecutive years',
+            '¥1.8M → ¥42M annual revenue (2016–2021)',
+            '3 entities: design studio, design+build firm, Sdn Bhd',
+            'Pioneered “affordable designer renovations” as a market category',
+        ],
+        detailPage: '/lakar',
     },
     {
         id: 'smart-home',
         name: 'Smart Home Lab',
         type: 'hobby',
+        category: 'architecture',
         size: 6,
         texture: 'planet-tech',
         texturePath: '/textures/planet-tech.png',
@@ -95,16 +199,22 @@ export const projects: Project[] = [
         status: 'complete',
         description: 'It started as a free add-on for architecture clients — a way to test smart home systems in real environments while I figured out what actually worked. Each client project was a live experiment: sensors, automations, dashboards, all field-tested against real usage. As my understanding deepened, I integrated a more comprehensive and personal version into my own home, treating the space as a living UX platform I could refine from the inside out.',
         orbitRadius: 40,
-        orbitSpeed: 0.18, // Adjusted speed slightly
-        link: '/docs/smart-home.pdf',
+        orbitSpeed: 0.18,
+        keyFacts: [
+            'Field-tested across client projects before personal install',
+            'Multi-protocol: Zigbee, IR, RF, WiFi, Bluetooth',
+            'Controls: AC, lighting, curtains, door lock — unified app',
+        ],
+        detailPage: '/smart-home',
         secondaryLinks: [
-            { label: '🎬 Watch Video Tour', url: 'https://drive.google.com/file/d/13btXTHvz0uGBelzHlF5YX623mW48Un44/view?usp=sharing' },
+            { label: '🎦 Watch Video Tour', url: 'https://drive.google.com/file/d/13btXTHvz0uGBelzHlF5YX623mW48Un44/view?usp=sharing' },
         ],
     },
     {
         id: 'cultural-engagement',
         name: 'Cultural Engagement',
         type: 'research',
+        category: 'architecture',
         size: 5,
         texture: 'planet-forest',
         texturePath: '/textures/planet-forest.png',
@@ -113,12 +223,17 @@ export const projects: Project[] = [
         description: 'I was invited to present at the Japan Institute of Architects international symposium, representing the Malaysian architectural perspective on cross-cultural design thinking. The experience forced me to distil years of professional practice into a framework that could translate across cultural and technical borders. It deepened my belief that the most durable innovations emerge when different design philosophies are allowed to genuinely intersect.',
         orbitRadius: 42,
         orbitSpeed: 0.16,
-        link: '/docs/malaysia-presentation.pdf',
+        keyFacts: [
+            'Invited speaker at Japan Institute of Architects symposium',
+            'Represented the Malaysian architectural perspective on cross-cultural design',
+        ],
+        detailPage: '/cultural-engagement',
     },
     {
         id: 'project-aibo',
         name: 'Project Aibo',
         type: 'work',
+        category: 'digital',
         size: 4,
         texture: 'planet-scaffold',
         texturePath: '/textures/planet-tech.png',
@@ -135,6 +250,7 @@ export const projects: Project[] = [
         id: 'adamtool',
         name: 'Adamtool',
         type: 'hobby',
+        category: 'digital',
         size: 6,
         texture: 'planet-lava',
         texturePath: '/textures/planet-desert.png',
@@ -149,6 +265,7 @@ export const projects: Project[] = [
         id: 'demon-hunter',
         name: 'Demon Hunter',
         type: 'hobby',
+        category: 'digital',
         size: 5,
         texture: 'planet-ice',
         texturePath: '/textures/planet-arctic.png',
@@ -164,6 +281,7 @@ export const projects: Project[] = [
         id: 'momotaro-book',
         name: 'Momotaro Kids Book',
         type: 'hobby',
+        category: 'products',
         size: 6,
         texture: 'planet-desert',
         texturePath: '/textures/planet-desert.png',
@@ -179,6 +297,7 @@ export const projects: Project[] = [
         id: 'redbubble-shop',
         name: 'Merchandising',
         type: 'merch',
+        category: 'products',
         size: 6,
         texture: 'planet-tech',
         texturePath: '/textures/planet-tech.png',
@@ -187,13 +306,14 @@ export const projects: Project[] = [
         description: 'My first deliberate step from the physical construction industry into internet-based services. I wanted to understand what it meant to make something available to a global audience without a physical footprint. Redbubble was that experiment — a zero-overhead platform to learn the mechanics of digital storefronts, global distribution, and how the internet economy works from the inside.',
         orbitRadius: 58,
         orbitSpeed: 0.06,
-        image: '/textures/merch-stellar.png',
+        image: '/textures/merch-gemini.png',
         link: 'https://www.redbubble.com/people/lakardesign/shop',
     },
     {
         id: 'nature-vibe-channel',
         name: 'Nature Vibe YouTube',
         type: 'hobby',
+        category: 'products',
         size: 5,
         texture: 'planet-gas',
         texturePath: '/textures/planet-arctic.png',
@@ -206,9 +326,32 @@ export const projects: Project[] = [
         link: 'https://www.youtube.com/@naturevibechannel',
     },
     {
+        id: 'vtube-mocap',
+        name: 'VTube Mocap',
+        type: 'hobby',
+        category: 'digital',
+        size: 5,
+        texture: 'planet-tech',
+        texturePath: '/textures/planet-tech.png',
+        emissiveColor: '#e879f9',
+        status: 'in-progress',
+        description: 'A real-time VTuber mocap rig connecting face and body tracking to a Live2D / VRM character model. The system drives procedural bone animation — mapping ARKit face blend shapes and full-body pose landmarks to a rigged digital avatar at runtime. Built as the Motor Core for the AIBO AI avatar system, and as a standalone tool for VTuber streaming workflows.',
+        orbitRadius: 68,
+        orbitSpeed: 0.035,
+        link: 'https://github.com/lakar-team/vtube',
+        detailPage: '/vtube-mocap',
+        keyFacts: [
+            'ARKit blend shapes → live real-time facial animation',
+            'Full-body pose tracking via MediaPipe',
+            'Drives VRM and Live2D avatar rigs',
+            'Motor Core for the AIBO AI avatar system',
+        ],
+    },
+    {
         id: 'islamic-advisor',
         name: 'Online Sheikh AI',
         type: 'work',
+        category: 'digital',
         size: 5,
         texture: 'planet-forest',
         texturePath: '/textures/planet-forest.png',

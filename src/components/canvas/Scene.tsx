@@ -9,12 +9,13 @@ import * as THREE from 'three';
 import Universe from './Universe';
 import CentralStar from './CentralStar';
 import PlanetSystem from './PlanetSystem';
+import CameraController from './CameraController';
 
 export default function Scene() {
     return (
         <div className='absolute inset-0 z-0 h-screen w-full bg-[#02050a]'>
             <Canvas
-                camera={{ position: [0, 50, 100], fov: 45 }}
+                camera={{ position: [0, 28, 115], fov: 45 }}
                 dpr={[1, 2]}
                 gl={{
                     antialias: false, // Turn off antialias when using postprocessing for better performance, or use SMAA
@@ -28,6 +29,7 @@ export default function Scene() {
                     {/* The Sun's core light - made slightly harsher for space realism */}
                     <pointLight position={[0, 0, 0]} intensity={3} color="#ffedd5" distance={150} decay={2} />
 
+                    <CameraController />
                     <CentralStar />
                     <PlanetSystem />
 
@@ -41,6 +43,7 @@ export default function Scene() {
                     </EffectComposer>
 
                     <OrbitControls
+                        makeDefault
                         enablePan={true}
                         enableZoom={true}
                         maxDistance={250}

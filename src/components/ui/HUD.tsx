@@ -1,7 +1,7 @@
 'use client';
 
 import { useStore } from '@/store/useStore';
-import { projects } from '@/data/projects';
+import { projects, categories } from '@/data/projects';
 import { profile } from '@/data/profile';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
@@ -13,39 +13,57 @@ const SunPreview = dynamic(() => import('./SunPreview'), { ssr: false });
 const AiboPanel = dynamic(() => import('./AiboPanel'), { ssr: false });
 
 export default function HUD() {
-    const { activePlanetId, setActivePlanet, setFocusedPlanet, focusedPlanetId } = useStore();
+    const { activePlanetId, setActivePlanet, setFocusedPlanet, viewMode, focusedCategoryId, setFocusedCategory, returnToSolar } = useStore();
     const [showNav, setShowNav] = useState(false);
     const [showGuide, setShowGuide] = useState(false);
 
     const activeProject = projects.find(p => p.id === activePlanetId);
     const isCVView = activePlanetId === 'cv-core';
 
+    const focusedCategory = categories.find(c => c.id === focusedCategoryId) ?? null;
+    const focusedCategoryProjects = focusedCategory
+        ? projects.filter(p => p.category === focusedCategoryId)
+        : [];
+    const showCategoryCard = viewMode === 'lunar' && focusedCategory && !activePlanetId;
+
     // Unified Navigation List (Sun + Projects)
     const navItems = [{ id: 'cv-core', type: 'core' }, ...projects];
 
-    // Navigation handlers
+    // Panel navigation — category-aware in lunar view, global in solar view
     const handleNext = () => {
         if (!activePlanetId) return;
+        if (viewMode === 'lunar' && focusedCategoryId) {
+            const catProjects = projects.filter(p => p.category === focusedCategoryId);
+            const idx = catProjects.findIndex(p => p.id === activePlanetId);
+            if (idx !== -1) setActivePlanet(catProjects[(idx + 1) % catProjects.length].id);
+            return;
+        }
         const currentIndex = navItems.findIndex(item => item.id === activePlanetId);
-        if (currentIndex === -1) return;
-
-        const nextIndex = (currentIndex + 1) % navItems.length;
-        const nextItem = navItems[nextIndex];
-
-        setActivePlanet(nextItem.id);
-        setFocusedPlanet(nextItem.id === 'cv-core' ? null : nextItem.id);
+        if (currentIndex !== -1) setActivePlanet(navItems[(currentIndex + 1) % navItems.length].id);
     };
 
     const handlePrev = () => {
         if (!activePlanetId) return;
+        if (viewMode === 'lunar' && focusedCategoryId) {
+            const catProjects = projects.filter(p => p.category === focusedCategoryId);
+            const idx = catProjects.findIndex(p => p.id === activePlanetId);
+            if (idx !== -1) setActivePlanet(catProjects[(idx - 1 + catProjects.length) % catProjects.length].id);
+            return;
+        }
         const currentIndex = navItems.findIndex(item => item.id === activePlanetId);
-        if (currentIndex === -1) return;
+        if (currentIndex !== -1) setActivePlanet(navItems[(currentIndex - 1 + navItems.length) % navItems.length].id);
+    };
 
-        const prevIndex = (currentIndex - 1 + navItems.length) % navItems.length;
-        const prevItem = navItems[prevIndex];
+    const handleCatNext = () => {
+        const idx = categories.findIndex(c => c.id === focusedCategoryId);
+        if (idx === -1) return;
+        setFocusedCategory(categories[(idx + 1) % categories.length].id);
+    };
 
-        setActivePlanet(prevItem.id);
-        setFocusedPlanet(prevItem.id === 'cv-core' ? null : prevItem.id);
+    const handleCatPrev = () => {
+        const idx = categories.findIndex(c => c.id === focusedCategoryId);
+        if (idx === -1) return;
+        setFocusedCategory(categories[(idx - 1 + categories.length) % categories.length].id);
     };
 
     return (
@@ -102,6 +120,32 @@ export default function HUD() {
                 </div>
             </header>
 
+            {/* Lunar view breadcrumb — floats below header */}
+            <AnimatePresence>
+                {viewMode === 'lunar' && (
+                    <motion.div
+                        key="lunar-breadcrumb"
+                        initial={{ y: -16, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -16, opacity: 0 }}
+                        transition={{ type: 'spring', damping: 22, stiffness: 180 }}
+                        className="pointer-events-auto absolute top-20 md:top-24 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3"
+                    >
+                        <button
+                            onClick={returnToSolar}
+                            className="flex items-center gap-2 px-4 py-1.5 bg-black/80 backdrop-blur-md border border-white/20 rounded-full text-xs uppercase tracking-widest text-white/60 hover:text-white hover:border-amber-500/40 transition-all"
+                        >
+                            ← Solar System
+                        </button>
+                        {focusedCategoryId && (
+                            <span className="text-xs text-white/30 uppercase tracking-widest">
+                                / {categories.find(c => c.id === focusedCategoryId)?.name}
+                            </span>
+                        )}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* CV Core View (Sun clicked) */}
             <AnimatePresence>
                 {isCVView && (
@@ -114,7 +158,7 @@ export default function HUD() {
                     >
                         <div className="flex justify-between items-center mb-6">
                             <button
-                                onClick={() => { setActivePlanet(null); setFocusedPlanet(null); }}
+                                onClick={() => { setActivePlanet(null); if (viewMode === 'solar') setFocusedPlanet(null); }}
                                 className="rounded-full border border-amber-500/30 px-4 py-1.5 text-xs uppercase tracking-widest hover:bg-amber-500/10 transition-colors text-amber-400"
                             >
                                 ← Return to Orbit
@@ -166,6 +210,27 @@ export default function HUD() {
                                 ))}
                             </div>
 
+                            {/* Career Timeline */}
+                            <div className="pt-2">
+                                <div className="text-[10px] uppercase tracking-widest text-amber-500/50 mb-3">Career</div>
+                                <div className="space-y-2.5">
+                                    {[
+                                        { period: '2025–now', role: 'Building Energy Architect', org: 'Refil Japan' },
+                                        { period: '2012–2022', role: 'Founder & Design Lead', org: 'Lakar Design' },
+                                        { period: '2016–2019', role: 'Asst. Lecturer', org: 'UiTM Malaysia' },
+                                        { period: '2009–2011', role: 'Architect', org: 'S&A Architects' },
+                                    ].map((item, i) => (
+                                        <div key={i} className="flex items-baseline gap-3 text-sm">
+                                            <span className="text-[10px] text-amber-400/40 font-mono shrink-0 w-[4.5rem] text-right leading-relaxed">{item.period}</span>
+                                            <div className="flex-1 flex flex-wrap gap-x-1.5">
+                                                <span className="text-white/70">{item.role}</span>
+                                                <span className="text-white/30">· {item.org}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
                             {/* Embedded PDF Viewer */}
                             <div className="mt-6 rounded-lg overflow-hidden border border-amber-500/20 bg-black/50">
                                 <div className="p-3 border-b border-amber-500/20 flex justify-between items-center">
@@ -206,6 +271,117 @@ export default function HUD() {
                 )}
             </AnimatePresence>
 
+            {/* Category Intro Card — shown when a category planet is entered but no moon selected */}
+            <AnimatePresence>
+                {showCategoryCard && focusedCategory && (
+                    <motion.div
+                        key={`cat-${focusedCategory.id}`}
+                        initial={{ x: '100%', opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: '100%', opacity: 0 }}
+                        transition={{ type: 'spring', damping: 20, stiffness: 100 }}
+                        className="pointer-events-auto absolute right-0 top-0 bottom-0 w-full md:w-[480px] bg-black/60 backdrop-blur-md shadow-2xl flex flex-col overflow-y-auto"
+                        style={{ borderLeft: `1px solid ${focusedCategory.color}28` }}
+                    >
+                        <div className="flex justify-between items-center p-8 pb-0">
+                            <button
+                                onClick={returnToSolar}
+                                className="rounded-full px-4 py-1.5 text-xs uppercase tracking-widest hover:bg-white/10 transition-colors border"
+                                style={{ borderColor: `${focusedCategory.color}40`, color: focusedCategory.color }}
+                            >
+                                ← Solar System
+                            </button>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handleCatPrev}
+                                    className="w-8 h-8 flex items-center justify-center rounded-full border hover:bg-white/10 transition-colors"
+                                    style={{ borderColor: `${focusedCategory.color}30`, color: `${focusedCategory.color}cc` }}
+                                    aria-label="Previous Category"
+                                >
+                                    ‹
+                                </button>
+                                <button
+                                    onClick={handleCatNext}
+                                    className="w-8 h-8 flex items-center justify-center rounded-full border hover:bg-white/10 transition-colors"
+                                    style={{ borderColor: `${focusedCategory.color}30`, color: `${focusedCategory.color}cc` }}
+                                    aria-label="Next Category"
+                                >
+                                    ›
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="flex-1 flex flex-col p-8 pt-6 space-y-6">
+                            {/* Badge + title */}
+                            <div>
+                                <span
+                                    className="inline-block px-2 py-1 rounded text-[10px] uppercase tracking-wider mb-3 border"
+                                    style={{
+                                        background: `${focusedCategory.color}18`,
+                                        borderColor: `${focusedCategory.color}40`,
+                                        color: focusedCategory.color,
+                                    }}
+                                >
+                                    {focusedCategory.name} · {focusedCategoryProjects.length} Projects
+                                </span>
+                                <h2
+                                    className="text-4xl md:text-5xl font-bold mb-2"
+                                    style={{
+                                        backgroundImage: `linear-gradient(to right, #ffffff, ${focusedCategory.color}bb)`,
+                                        WebkitBackgroundClip: 'text',
+                                        WebkitTextFillColor: 'transparent',
+                                        backgroundClip: 'text',
+                                    }}
+                                >
+                                    {focusedCategory.name}
+                                </h2>
+                            </div>
+
+                            <div className="h-px" style={{ background: `linear-gradient(to right, ${focusedCategory.color}50, transparent)` }} />
+
+                            <p className="text-base text-gray-300 leading-relaxed">
+                                {focusedCategory.description}
+                            </p>
+
+                            {/* Project name chips */}
+                            <div>
+                                <p className="text-[10px] text-white/30 uppercase tracking-widest mb-3">Projects in this cluster</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {focusedCategoryProjects.map(p => (
+                                        <button
+                                            key={p.id}
+                                            onClick={() => setActivePlanet(p.id)}
+                                            className="px-2.5 py-1 rounded-full text-xs border cursor-pointer transition-all hover:text-white"
+                                            style={{ borderColor: `${focusedCategory.color}28`, color: 'rgba(255,255,255,0.55)' }}
+                                        >
+                                            {p.name}
+                                            {p.status === 'in-progress' && (
+                                                <span className="ml-1 text-[9px] text-amber-400">WIP</span>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Spacer */}
+                            <div className="flex-1" />
+
+                            {/* Hint */}
+                            <div
+                                className="flex items-center gap-3 text-sm pb-4"
+                                style={{ color: `${focusedCategory.color}90` }}
+                            >
+                                <span
+                                    className="w-2 h-2 rounded-full animate-pulse shrink-0"
+                                    style={{ background: focusedCategory.color }}
+                                />
+                                Select a moon to explore a project
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             {/* Project Detail Overlay */}
             <AnimatePresence>
                 {activeProject && (
@@ -218,10 +394,10 @@ export default function HUD() {
                     >
                         <div className="flex justify-between items-center mb-4">
                             <button
-                                onClick={() => { setActivePlanet(null); setFocusedPlanet(null); }}
+                                onClick={() => setActivePlanet(null)}
                                 className="rounded-full border border-white/20 px-4 py-1.5 text-xs uppercase tracking-widest hover:bg-white/10 transition-colors"
                             >
-                                ← Return to Orbit
+                                ← Close
                             </button>
 
                             {/* Panel Navigation */}
@@ -262,7 +438,23 @@ export default function HUD() {
                                 {activeProject.description}
                             </p>
 
-                            {activeProject.image && (
+                            {/* Inline image gallery */}
+                            {activeProject.images && activeProject.images.length > 0 && (
+                                <div className={`mt-4 grid gap-2 ${activeProject.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                                    {activeProject.images.map((src, i) => (
+                                        <div key={i} className="rounded-lg overflow-hidden border border-white/10 bg-black/30">
+                                            <img
+                                                src={src}
+                                                alt={`${activeProject.name} — ${i + 1}`}
+                                                className="w-full h-40 object-cover"
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Single thumbnail (only when no images array) */}
+                            {activeProject.image && !activeProject.images && (
                                 <div className="mt-4 rounded-lg overflow-hidden border border-white/10 bg-white/5 flex justify-center items-center">
                                     <img
                                         src={activeProject.image}
@@ -272,7 +464,19 @@ export default function HUD() {
                                 </div>
                             )}
 
-                            {/* Secondary Links */}
+                            {/* Key Facts */}
+                            {activeProject.keyFacts && activeProject.keyFacts.length > 0 && (
+                                <div className="space-y-2">
+                                    {activeProject.keyFacts.map((fact, i) => (
+                                        <div key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                                            <span className="mt-0.5 text-amber-500 shrink-0">▸</span>
+                                            <span>{fact}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Secondary Links (non-PDF) */}
                             {activeProject.secondaryLinks && activeProject.secondaryLinks.length > 0 && (
                                 <div className="flex flex-wrap gap-2 mt-4">
                                     {activeProject.secondaryLinks.map((secLink, i) => (
@@ -287,6 +491,18 @@ export default function HUD() {
                                         </a>
                                     ))}
                                 </div>
+                            )}
+
+                            {/* Explore button for projects with dedicated detail pages */}
+                            {activeProject.detailPage && (
+                                <a
+                                    href={activeProject.detailPage}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center justify-center gap-2 w-full py-3 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-amber-500/40 text-white hover:text-amber-300 text-center font-bold uppercase tracking-wider transition-colors rounded"
+                                >
+                                    Explore →
+                                </a>
                             )}
 
                             {/* Sidebar Screenshot Preview (Overrides Live Preview) */}
@@ -328,7 +544,8 @@ export default function HUD() {
                                             activeProject.link.includes('amazon.com') ||
                                             activeProject.link.includes('redbubble.com') ||
                                             activeProject.link.includes('youtube.com') ||
-                                            activeProject.link.includes('power-lunch.pages.dev') ||
+                                            activeProject.link.includes('pages.dev') ||
+                                            activeProject.link.includes('github.com') ||
                                             activeProject.link.includes('drive.google.com');
 
                                         if (isUnembeddable) {
@@ -341,7 +558,8 @@ export default function HUD() {
                                                 >
                                                     {activeProject.id.includes('book') ? 'View on Amazon' :
                                                         activeProject.type === 'merch' ? 'Visit Store' :
-                                                            activeProject.link.includes('youtube') ? 'Watch on YouTube' : 'Launch Experience'}
+                                                            activeProject.link.includes('youtube') ? 'Watch on YouTube' :
+                                                                activeProject.link.includes('github.com') ? 'View on GitHub' : 'Launch Experience'}
                                                 </a>
                                             );
                                         }
@@ -381,7 +599,7 @@ export default function HUD() {
 
                         {/* Sun/CV */}
                         <button
-                            onClick={() => { setActivePlanet('cv-core'); setFocusedPlanet(null); setShowNav(false); }}
+                            onClick={() => { setActivePlanet('cv-core'); setShowNav(false); }}
                             className={`w-full text-left px-3 py-3 rounded transition-all flex items-center justify-between group ${activePlanetId === 'cv-core' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/50' : 'text-amber-500/80 hover:bg-amber-500/10 border border-amber-500/10'}`}
                         >
                             <div className="flex items-center gap-3">
@@ -396,7 +614,6 @@ export default function HUD() {
                                 <button
                                     key={project.id}
                                     onClick={() => {
-                                        setFocusedPlanet(project.id);
                                         setActivePlanet(project.id);
                                         setShowNav(false);
                                     }}
