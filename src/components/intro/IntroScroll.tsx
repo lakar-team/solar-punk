@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, type Variants } from 'framer-motion';
 import { gsap } from 'gsap';
+import { useStore } from '@/store/useStore';
 
 /* ──────────────────────────────────────────────────────────────────────────
    Star field — calm, pure DOM (no canvas / no extra WebGL context).
@@ -469,6 +470,7 @@ function StarField({ containerRef }: { containerRef: React.RefObject<HTMLDivElem
 export default function IntroScroll() {
   const [scene, setScene]     = useState(-1); // -1 = name card
   const [visible, setVisible] = useState(true);
+  const setIntroComplete = useStore(s => s.setIntroComplete);
 
   const wrapperRef    = useRef<HTMLDivElement>(null);
   const starsRef      = useRef<HTMLDivElement>(null);
@@ -519,7 +521,7 @@ export default function IntroScroll() {
     setScene(SCENE_COUNT);
     gsap.to(wrapperRef.current, {
       opacity: 0, duration: 1.0, delay: 0.5, ease: 'power2.inOut',
-      onComplete: () => setVisible(false),
+      onComplete: () => { setVisible(false); setIntroComplete(); },
     });
   }, [visible, runWarpExit]);
 

@@ -88,9 +88,11 @@ interface AiboPanelProps { isOpen: boolean; }
 export default function AiboPanel({ isOpen }: AiboPanelProps) {
     const activePlanetId = useStore(s => s.activePlanetId);
     const setFocusedPlanet = useStore(s => s.setFocusedPlanet);
+    const introComplete = useStore(s => s.introComplete);
     const activePlanet = activePlanetId ? projects.find(p => p.id === activePlanetId) : null;
 
     const [messages, setMessages] = useState<Message[]>([]);
+    const [streamingContent, setStreamingContent] = useState<string | null>(null);
     const [input, setInput] = useState('');
     const [isThinking, setIsThinking] = useState(false);
 
@@ -105,41 +107,122 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
         messagesRef.current = messages;
     }, [messages]);
 
+    // FIX 5: Start Kokoro model download right after the intro animation ends
+    // (user has already scrolled through the intro = interaction has occurred).
+    // This races the model load with the user navigating to "Ask Aibo".
+    useEffect(() => {
+        if (!introComplete) return;
+        if (typeof requestIdleCallback !== 'undefined') {
+            requestIdleCallback(() => warmup());
+        } else {
+            setTimeout(() => warmup(), 100);
+        }
+    }, [introComplete, warmup]);
+
+    // FIX 2: Streaming fetch — buffer `t` tokens for progressive display and
+    // sentence-boundary TTS dispatch. `done` event carries the fully-parsed reply.
     const sendMessage = useCallback(async (text: string, isSystem = false) => {
         if (!text.trim()) return;
         if (!isSystem) setMessages(prev => [...prev, { role: 'user', content: text }]);
         setInput('');
         setIsThinking(true);
         stop();
+        setStreamingContent('');
+
+        let fullStreamed = '';  // all `t` tokens (for display)
+        let pendingText  = '';  // tokens awaiting sentence-boundary TTS
+
         try {
             const res = await fetch('/api/brain', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ message: text, activePlanetId, history: messagesRef.current.slice(-8) }),
             });
-            const data = await res.json() as { reply?: string; planet?: string | null };
-            const reply = data.reply ?? "I seem to have lost my crystal ball. Try again?";
-            setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
-            if (data.planet) setFocusedPlanet(data.planet);
-            speak(reply);
+
+            if (!res.body) throw new Error('No response body');
+
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let buf = '';
+            let settled = false;
+
+            while (!settled) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                buf += decoder.decode(value, { stream: true });
+                const lines = buf.split('\n');
+                buf = lines.pop() ?? '';
+
+                for (const line of lines) {
+                    if (!line.trim()) continue;
+                    try {
+                        const event = JSON.parse(line) as {
+                            t?: string;
+                            done?: boolean;
+                            reply?: string;
+                            planet?: string | null;
+                            error?: string;
+                        };
+
+                        if (event.t) {
+                            fullStreamed += event.t;
+                            pendingText  += event.t;
+                            setStreamingContent(fullStreamed);
+
+                            // Dispatch complete sentences to TTS as they arrive.
+                            // .!?… followed by whitespace marks a sentence boundary.
+                            let lastBoundary = 0;
+                            for (let i = 0; i < pendingText.length; i++) {
+                                const c = pendingText[i];
+                                if (c === '.' || c === '!' || c === '?' || c === '…') {
+                                    const next = pendingText[i + 1];
+                                    if (next === ' ' || next === '\n' || next === undefined) {
+                                        const sentence = pendingText.slice(lastBoundary, i + 1).trim();
+                                        if (sentence.length > 3) speak(sentence);
+                                        lastBoundary = i + 2;
+                                    }
+                                }
+                            }
+                            pendingText = pendingText.slice(lastBoundary);
+
+                        } else if (event.done && event.reply) {
+                            setMessages(prev => [...prev, { role: 'assistant', content: event.reply! }]);
+                            if (event.planet) setFocusedPlanet(event.planet);
+                            // Speak any trailing text (last sentence without final punctuation).
+                            const tail = pendingText.trim();
+                            if (tail.length > 2) speak(tail);
+                            setStreamingContent(null);
+                            settled = true;
+
+                        } else if (event.error) {
+                            setMessages(prev => [...prev, { role: 'assistant', content: "I seem to have lost my crystal ball. Try again?" }]);
+                            setStreamingContent(null);
+                            settled = true;
+                        }
+                    } catch { /* skip malformed line */ }
+                }
+            }
+
+            if (!settled && fullStreamed.trim()) {
+                // Stream closed without a done event — use what arrived.
+                setMessages(prev => [...prev, { role: 'assistant', content: fullStreamed.trim() }]);
+                setStreamingContent(null);
+            }
         } catch {
             setMessages(prev => [...prev, { role: 'assistant', content: "Connection lost. Try again shortly." }]);
+            setStreamingContent(null);
         } finally {
             setIsThinking(false);
         }
     }, [activePlanetId, speak, stop, setFocusedPlanet]);
 
-    // Greeting + model pre-warm fire only when the panel first opens.
-    // AudioContext is created after the user gesture (clicking "Ask Aibo"),
-    // satisfying Chrome autoplay policy. WebGPU model loading is deferred
-    // until after the 3D scene is stable, preventing WebGL context loss.
+    // Greeting fires when panel first opens; warmup() moved to introComplete effect (FIX 5).
     useEffect(() => {
         if (isOpen && !hasOpenedOnce.current) {
             hasOpenedOnce.current = true;
-            warmup();
             sendMessage('Greet the visitor warmly and briefly. Offer to guide them.', true);
         }
-    }, [isOpen, warmup, sendMessage]);
+    }, [isOpen, sendMessage]);
 
     return (
         <div className="flex flex-col h-full w-full">
@@ -197,7 +280,14 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
                         }`}>{msg.content}</div>
                     </div>
                 ))}
-                {isThinking && (
+                {streamingContent !== null && (
+                    <div className="flex justify-start">
+                        <div className="max-w-[85%] text-xs leading-relaxed px-3 py-2 rounded-lg bg-white/5 text-zinc-300 rounded-bl-none">
+                            {streamingContent || <span className="text-amber-400/60 animate-pulse">✦ ✦ ✦</span>}
+                        </div>
+                    </div>
+                )}
+                {isThinking && streamingContent === null && (
                     <div className="flex justify-start">
                         <div className="bg-white/5 rounded-lg rounded-bl-none px-3 py-2">
                             <span className="text-amber-400/60 text-xs animate-pulse">✦ ✦ ✦</span>

@@ -10,6 +10,7 @@ interface AppState {
     focusedCategoryId: string | null; // Which category planet is drilled into
     cameraMode: 'orbit' | 'travel' | 'focus';
     planetPositions: Record<string, THREE.Vector3>;
+    introComplete: boolean;           // True after intro animation finishes
 
     setViewMode: (mode: ViewMode) => void;
     setActivePlanet: (id: string | null) => void;
@@ -18,6 +19,7 @@ interface AppState {
     setCameraMode: (mode: 'orbit' | 'travel' | 'focus') => void;
     setPlanetPosition: (id: string, position: THREE.Vector3) => void;
     returnToSolar: () => void;
+    setIntroComplete: () => void;
 }
 
 export const useStore = create<AppState>((set) => ({
@@ -27,6 +29,7 @@ export const useStore = create<AppState>((set) => ({
     focusedCategoryId: null,
     cameraMode: 'orbit',
     planetPositions: {},
+    introComplete: false,
 
     setViewMode: (mode) => set({ viewMode: mode }),
     setActivePlanet: (id) => set({ activePlanetId: id }),
@@ -43,4 +46,5 @@ export const useStore = create<AppState>((set) => ({
         activePlanetId: null,
         cameraMode: 'orbit',
     }),
+    setIntroComplete: () => set({ introComplete: true }),
 }));
