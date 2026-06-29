@@ -140,15 +140,18 @@ export default function LakarPage() {
 
             {/* Photo gallery */}
             <section className="max-w-5xl mx-auto px-6 py-16">
-                <div className="grid grid-cols-3 grid-rows-2 gap-3 h-[440px]">
-                    <div className="col-span-2 row-span-2 rounded-2xl overflow-hidden border border-white/10 bg-black/40">
-                        <img src="/textures/lakar-1.jpg" alt="Lakar Design project" className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />
+                <div className="grid grid-cols-2 grid-rows-2 gap-3 h-[440px]">
+                    <div className="rounded-2xl overflow-hidden border border-white/10 bg-black/40">
+                        <img src="/images/lakar/img_0003_p002_485x323.jpeg" alt="Lakar Design project" className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />
                     </div>
                     <div className="rounded-2xl overflow-hidden border border-white/10 bg-black/40">
-                        <img src="/textures/lakar-2.jpg" alt="Lakar Design project" className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />
+                        <img src="/images/lakar/img_0047_p005_269x294.jpeg" alt="Lakar Design project" className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />
                     </div>
                     <div className="rounded-2xl overflow-hidden border border-white/10 bg-black/40">
-                        <img src="/textures/lakar-3.jpg" alt="Lakar Design project" className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />
+                        <img src="/images/lakar/img_0084_p007_373x280.jpeg" alt="Lakar Design project" className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />
+                    </div>
+                    <div className="rounded-2xl overflow-hidden border border-white/10 bg-black/40">
+                        <img src="/images/lakar/img-0012.jpeg" alt="Lakar Design project" className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity" />
                     </div>
                 </div>
             </section>
