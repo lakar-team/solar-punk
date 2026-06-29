@@ -94,6 +94,7 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
     const [streamingContent, setStreamingContent] = useState<string | null>(null);
     const [input, setInput] = useState('');
     const [isThinking, setIsThinking] = useState(false);
+    const [isMuted, setIsMuted] = useState(true);
 
     const { speak, speakQueue, stop, warmup, loading: ttsLoading, progress: ttsProgress, isSpeaking, error: ttsError } = useKokoroTTS();
 
@@ -172,7 +173,7 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
                                     const next = pendingText[i + 1];
                                     if (next === ' ' || next === '\n' || next === undefined) {
                                         const sentence = pendingText.slice(lastBoundary, i + 1).trim();
-                                        if (sentence.length > 3) speakQueue(sentence);
+                                        if (sentence.length > 3 && !isMuted) speakQueue(sentence);
                                         lastBoundary = i + 2;
                                     }
                                 }
@@ -184,7 +185,7 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
                             if (event.planet) setFocusedPlanet(event.planet);
                             // Speak any trailing text (last sentence without final punctuation).
                             const tail = pendingText.trim();
-                            if (tail.length > 2) speakQueue(tail);
+                            if (tail.length > 2 && !isMuted) speakQueue(tail);
                             setStreamingContent(null);
                             settled = true;
 
@@ -208,7 +209,7 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
         } finally {
             setIsThinking(false);
         }
-    }, [activePlanetId, speak, speakQueue, stop, setFocusedPlanet]);
+    }, [activePlanetId, speak, speakQueue, stop, setFocusedPlanet, isMuted]);
 
     // Greeting fires when panel first opens; warmup() moved to introComplete effect (FIX 5).
     useEffect(() => {
@@ -306,6 +307,11 @@ export default function AiboPanel({ isOpen }: AiboPanelProps) {
                     disabled={isThinking || !input.trim()}
                     className="px-3 py-2 rounded-full text-sm text-amber-400 border border-amber-500/40 hover:bg-amber-500/10 transition-colors disabled:opacity-30"
                 >&#x27A4;</button>
+                <button
+                    onClick={() => setIsMuted(m => !m)}
+                    className="px-3 py-2 rounded-full text-sm border border-amber-500/40 hover:bg-amber-500/10 transition-colors text-amber-400/70 hover:text-amber-400"
+                    title={isMuted ? 'Unmute voice' : 'Mute voice'}
+                >{isMuted ? '🔇' : '🔊'}</button>
             </div>
         </div>
     );
