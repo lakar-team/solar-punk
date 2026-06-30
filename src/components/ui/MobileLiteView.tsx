@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
-import { projects } from '@/data/projects';
+import { projects, categories } from '@/data/projects';
 import { profile } from '@/data/profile';
 import { Canvas } from '@react-three/fiber';
 import MobileAiboChat from './MobileAiboChat';
@@ -16,18 +16,33 @@ const PlanetPreview = dynamic(() => import('./PlanetPreview'), { ssr: false });
 const SunPreview = dynamic(() => import('./SunPreview'), { ssr: false });
 
 const MobileLiteView = () => {
-    // Add Core Profile as the first item
+    // Sun + Category planets + Moon planets — mirrors the desktop two-tier solar system
     const navItems = [
         {
             id: 'cv-core',
             name: profile.name,
             type: 'core',
             description: profile.bio,
-            emissiveColor: '#fbbf24', // Sun color
-            link: '/Adam_Tech_CV.pdf',
-            status: 'complete'
+            emissiveColor: '#fbbf24',
+            link: '/about',
+            status: 'complete',
+            detailPage: undefined as string | undefined,
         },
-        ...projects
+        ...categories.map(c => ({
+            id: c.id,
+            name: c.name,
+            type: 'category' as const,
+            description: c.description,
+            emissiveColor: c.emissiveColor,
+            link: null as string | null,
+            status: 'complete' as const,
+            detailPage: undefined as string | undefined,
+        })),
+        ...projects.map(p => ({
+            ...p,
+            // Resolve the best link: explicit link first, then detailPage route, then null
+            link: p.link ?? p.detailPage ?? null,
+        })),
     ];
 
     const [activeIndex, setActiveIndex] = useState(0);
@@ -137,7 +152,7 @@ const MobileLiteView = () => {
                                                         target={activeItem.link.startsWith('http') ? '_blank' : '_self'}
                                                         className="flex-1 py-3 px-4 bg-amber-500 hover:bg-amber-400 text-black text-center text-xs font-bold uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(245,158,11,0.2)]"
                                                     >
-                                                        {activeItem.id === 'cv-core' ? 'View Profile' : 'View Project'}
+                                                        {activeItem.id === 'cv-core' ? 'View Profile' : activeItem.type === 'category' ? 'Explore' : 'View Project'}
                                                     </a>
                                                 )}
 
@@ -229,7 +244,7 @@ const MobileLiteView = () => {
                                         <div className="flex justify-between items-start mb-3">
                                             <div className="flex items-center gap-3">
                                                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold border transition-colors ${activeIndex === index ? 'border-amber-500/50 bg-amber-500/10 text-amber-400' : 'border-white/10 bg-white/5 text-slate-500'}`}>
-                                                    {item.id === 'cv-core' ? '☀️' : (index).toString().padStart(2, '0')}
+                                                    {item.id === 'cv-core' ? '☀️' : item.type === 'category' ? '🪐' : (index).toString().padStart(2, '0')}
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <h4 className={`text-sm font-bold transition-colors ${activeIndex === index ? 'text-amber-400' : 'text-slate-300'}`}>

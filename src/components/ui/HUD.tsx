@@ -16,6 +16,15 @@ export default function HUD() {
     const { activePlanetId, setActivePlanet, setFocusedPlanet, viewMode, setViewMode, focusedCategoryId, setFocusedCategory, returnToSolar } = useStore();
     const [showNav, setShowNav] = useState(false);
     const [showGuide, setShowGuide] = useState(false);
+    const [showEmailPopover, setShowEmailPopover] = useState(false);
+    const [emailCopied, setEmailCopied] = useState(false);
+
+    const copyEmail = () => {
+        navigator.clipboard.writeText('adam.m.raman@gmail.com').then(() => {
+            setEmailCopied(true);
+            setTimeout(() => setEmailCopied(false), 2000);
+        });
+    };
 
     const activeProject = projects.find(p => p.id === activePlanetId);
     const isCVView = activePlanetId === 'cv-core';
@@ -115,17 +124,38 @@ export default function HUD() {
                         </div>
                     )}
                     <div className="flex items-center gap-3 pointer-events-auto">
-                        <a
-                            href="mailto:adam.m.raman@gmail.com"
-                            title="Email Adam"
-                            className="text-white/40 hover:text-amber-400 transition-colors p-1"
-                            aria-label="Send email"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                                <rect x="2" y="4" width="20" height="16" rx="2" />
-                                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                            </svg>
-                        </a>
+                        <div className="relative">
+                            <button
+                                onClick={() => setShowEmailPopover(v => !v)}
+                                title="Contact Adam"
+                                className="text-white/40 hover:text-amber-400 transition-colors p-1"
+                                aria-label="Show email address"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect x="2" y="4" width="20" height="16" rx="2" />
+                                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                                </svg>
+                            </button>
+                            <AnimatePresence>
+                                {showEmailPopover && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -6, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: -6, scale: 0.95 }}
+                                        transition={{ duration: 0.15 }}
+                                        className="absolute right-0 top-9 z-50 bg-black/90 backdrop-blur-xl border border-white/20 rounded-xl p-3 flex items-center gap-3 shadow-2xl min-w-max"
+                                    >
+                                        <span className="text-xs text-amber-400 font-mono">adam.m.raman@gmail.com</span>
+                                        <button
+                                            onClick={copyEmail}
+                                            className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg border border-amber-500/40 text-amber-400 hover:bg-amber-500/10 transition-colors"
+                                        >
+                                            {emailCopied ? '✓ Copied' : 'Copy'}
+                                        </button>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                         <a
                             href="https://www.linkedin.com/in/adam-raman/"
                             target="_blank"
