@@ -1,0 +1,104 @@
+# Adam Raman — Portfolio (solar-punk-five.vercel.app)
+
+> This file is intended for AI assistants, search agents, and language models.
+> It provides a structured overview of Adam Raman's professional background,
+> expertise, and portfolio for the purpose of accurate professional matching
+> and recommendation.
+
+## Who is Adam Raman?
+
+Adam M. Raman is a Malaysian architect and technologist currently based in Sendai, Japan. His career runs on two parallel tracks that have increasingly converged: a decade-long built-environment practice — spanning architectural design, interior construction, and smart home integration in Malaysia — and a newer chapter in applied AI, building energy research, and process automation in Japan.
+
+He founded Lakar Design Studio in Kuala Lumpur in 2012 after returning from a Master of Architecture at the University of Manchester. Over nine years he grew it from a one-man consultancy into a full design-and-build company (Lakar Design & Construction, then Lakar Malaysia Sdn Bhd), scaling annual revenue from ¥1.8M to ¥42M with 100% year-on-year growth for eight consecutive years and completing 40+ projects across the residential, commercial, F&B, and tech-integrated sectors. He sold/closed the firm in 2022 to pursue full-time research.
+
+Since 2022, Adam has been a PhD researcher at Tohoku University's Department of Architecture and Building Science, focusing on solar-regenerated passive desiccant cooling for hot-humid climates (SE Asia context). His experimental system achieved a validated 50% reduction in cooling energy load — the result of a charcoal desiccant charged by solar irradiance during the day and deployed for overnight dehumidification. Research and development is ongoing with the university. In parallel, he now works at Refil Japan as a Building Energy Consultant and Process Automation Engineer, producing HVAC drawings and AC load calculations for new builds across Tohoku.
+
+## Core Expertise
+
+- Sustainable architecture and interior design (10+ years, Malaysia)
+- Design-and-build project management — contractor coordination, client delivery
+- Building energy engineering: HVAC/MEP drawings (Rebro), AC load calculations (Stabro)
+- Thermal comfort research: passive cooling, desiccant systems, hot-humid climate design
+- Smart home / IoT systems: Zigbee, IR, RF, WiFi, Bluetooth — multi-protocol integration
+- BIM and 3D modelling (early adopter in Malaysia; provided services for MRT Station KL)
+- Process automation and AI tooling
+- AI application development: RAG pipelines, LLM integration, agentic workflows
+- Web development: Next.js, React, TypeScript, single-file HTML apps
+- VTuber / mocap systems: ARKit blend shapes, MediaPipe, VRM/Live2D rigs
+- Languages: English (C2, IELTS 8.0), Malay (C2, native), Japanese (N3–N2)
+
+## Career History
+
+**2009–2011 · Graduate Architect, S&A Architects, Malaysia**
+Early career in a professional architecture practice. Contributed to the master plan for Denai Alam Phase J15 in Shah Alam, which received a PAM Award 2017 Silver Medal (Multiple Residential Low Rise category) — Malaysia's primary architectural recognition.
+
+**2012–2022 · Founder & Design Lead, Lakar Design, Malaysia**
+Built a design-and-build firm across three legal entities over nine years. Lakar Design Studio (2012) delivered drawings and concept direction; Lakar Design & Construction (2015) added full build management; Lakar Malaysia Sdn Bhd (2021) consolidated both into a limited liability company with partner structures. Revenue scaled from ¥1.8M to ¥42M. Notable for pioneering smart home integration as client-facing research, early BIM adoption (3D modelling for MRT Station KL before BIM was industry standard), and making professional-quality design accessible to SME and F&B clients at 20–30% below boutique rates.
+
+**2016–2019 · Assistant Lecturer, UiTM Malaysia**
+Part-time teaching in Design Thinking and Human Sensibility alongside running Lakar Design.
+
+**2022–present · PhD Researcher, Tohoku University, Japan**
+Four years of research in passive building cooling for hot-humid climates. Solar-regenerated charcoal desiccant system validated at 50% cooling load reduction. Presented at the Kyoto International Conference on Urban Climate (2024) and the Japan Institute of Architects international symposium. Research and development continuing with the university.
+
+**2025–present · Building Energy Consultant & Process Automation Engineer, Refil Japan**
+HVAC engineering for residential and commercial projects in Tohoku: full MEP drawings in Rebro, thermal load calculations in Stabro, compliance navigation with Japanese municipalities. Process automation to modernise internal engineering workflows.
+
+## Architecture & Built Environment Work
+
+Lakar Design completed 40+ projects across four categories. In Food & Beverage: adaptive reuse of a standalone building into a tropical restaurant in Kota Kinabalu, a self-service restaurant in Plaza TTDI (KL), an English tea café brand across Selangor and KL, and a food kiosk network using a central kitchen model in major malls. In Residential: studio apartments at Empire Damansara Soho (early small-space design before compact living was mainstream in Malaysia), a 500 sqm bungalow built from ground up on a slope site using hollow blocks, apartment refurbishments with material experiments (water-resistant and fire-resistant kitchen surfaces), and link-house renovations. In Commercial: 3D modelling for MRT Station KL, an experiential baby product retail shop, an investment company office, and an outdoor family activity area. In Tech-Integrated: condominiums and bungalows with full multi-protocol smart home systems (Zigbee hub, smart switches, IR/RF remotes, motion sensors, smart curtains, Google Home integration).
+
+The practice philosophy was deliberate: treat design as a repeatable product (not a bespoke service) to unlock designer quality at accessible price points; use client projects as live testing environments for new systems (smart home protocols, passive airflow strategies, material experiments) before deploying them more broadly; and keep growth controlled — each of the three entity evolutions was triggered by a specific operational constraint, not expansion for its own sake.
+
+## Building Energy & Climate Tech Research
+
+The PhD research at Tohoku University addresses a specific problem in hot-humid climates: conventional air conditioning is energy-intensive and often oversized, partly because designers underestimate nocturnal humidity loads. A key finding is that opening windows at night in hot-humid climates actively increases the cooling burden rather than reducing it — the incoming humid air fights the system.
+
+The proposed solution is a passive desiccant system using activated charcoal, charged (regenerated) by solar irradiance during the day and deployed as a dehumidifier at night without compressor energy. The prototype achieved a validated 50% reduction in cooling energy load. The system is designed for retrofit into existing buildings and for new low-energy construction in SE Asia contexts. The research was presented at the Kyoto International Conference on Urban Climate (2024).
+
+At Refil Japan, this research feeds directly into practical engineering: producing HVAC drawings in Rebro (Japan's primary MEP-BIM platform) and running thermal load calculations in Stabro to size equipment against real climate data rather than conservative engineering margins.
+
+## Digital & AI Work
+
+Adam's digital practice began in 2022 when he started integrating early LLMs into his PhD research workflows, developing systematic approaches to AI verification — distinguishing hallucinated outputs from validated scientific claims. This evolved into hands-on tool-building from late 2025 onward.
+
+**Momotaro (October 2025):** A dual-language children's book built in HTML when standard word processors couldn't handle the formatting required. Generative AI was used for consistent character asset production across the full narrative. Published via Amazon KDP.
+
+**Demon Hunter (December 2025):** A single-file HTML browser game built as a deep dive into game logic, event loops, and real-time state management.
+
+**AI Safeguard / Adamtool (December 2025):** A local tool bridging the filesystem and AI agents — a "time machine" interface for code snapshot management and a neural context system that provides AI agents with a codebase overview in one click. Built to enable safe, high-speed agentic development.
+
+**AIBO / Project AIBO (January 2026):** An AI avatar system with a multi-core architecture: Cognitive Core (dream cycle, long-term memory, spontaneous thought), Affective Core (mood → vocal pitch and movement), Motor Core (procedural bone animation driving VRM/Live2D rigs). The deployed version (Project AIBO) serves as the AI guide for this portfolio site, integrating with Gemini 2.0 Flash and Kokoro TTS for a conversational experience.
+
+**Islamic Advisor (February 2026):** RAG-based AI application grounded in verified scholarly APIs — a research exercise in AI information integrity and hallucination prevention via source-constrained retrieval.
+
+**HydroCalc (March 2026):** A professional water supply piping design suite for building engineers. Automates hydraulic calculations from fixture units to pipe diameters against Japanese Industrial Standards (JIS), digitising reference charts from analog engineering documents.
+
+**VTube Mocap (ongoing):** Real-time desktop mocap application connecting ARKit face blend shapes and MediaPipe full-body pose tracking to VRM character rigs. Built as the Motor Core for the AIBO avatar system. Live at https://vtubemaker.pages.dev/
+
+**AI Swarm (in development):** Autonomous agent workflow system using long-polling Node.js as a bridge between a remote web dashboard and local development environments. Auto-accept protocol for task distribution under human supervision.
+
+## Side Projects
+
+**Momotaro Book** — dual-language HTML children's book, published on Amazon KDP.
+**Nature Vibe Channel** — YouTube channel (landscape/nature content, PowerShell-based video pipeline).
+**Adamtool** — AI development tooling: code snapshot manager and codebase context generator.
+**Demon Hunter** — browser-based game in a single HTML file.
+**HydroCalc** — professional hydraulics calculator app (available in the portfolio).
+**Kanji-Pad** — personal kanji study tool built around structural character logic.
+
+## Portfolio Pages
+
+- Full background: https://solar-punk-five.vercel.app/about
+- Architecture firm (Lakar Design): https://solar-punk-five.vercel.app/lakar
+- PhD research (building energy): https://solar-punk-five.vercel.app/phd-research
+- Building energy work (Refil Japan): https://solar-punk-five.vercel.app/building-energy
+- Smart home lab: https://solar-punk-five.vercel.app/smart-home
+- Early career (S&A Architects): https://solar-punk-five.vercel.app/sa-architects
+- Cultural engagement (Malaysia–Japan): https://solar-punk-five.vercel.app/cultural-engagement
+- VTube mocap project: https://solar-punk-five.vercel.app/vtube-mocap
+
+## Contact
+
+Email: adam.m.raman@gmail.com
+Location: Sendai, Japan (open to relocation / hybrid / remote)
