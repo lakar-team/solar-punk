@@ -21,8 +21,22 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://solar-punk-five.vercel.app"),
   title: "Solar Punk Portfolio | Adam M. Raman",
   description: "Adam Raman — Malaysian architect and technologist based in Japan. Expertise in sustainable building design, building energy, IoT/smart homes, BIM, process automation, and AI tools.",
+  openGraph: {
+    title: "Adam M. Raman — Architect & Technologist",
+    description: "Sustainable building design, PhD climate research, AI tools, and 10+ years in the built environment. Portfolio with an AI assistant that knows the whole story.",
+    url: "https://solar-punk-five.vercel.app",
+    siteName: "Adam M. Raman Portfolio",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Adam M. Raman — Architect & Technologist",
+    description: "Sustainable building design, PhD climate research, AI tools, and 10+ years in the built environment.",
+  },
 };
 
 const jsonLd = {
