@@ -299,7 +299,7 @@ export default function AboutPage() {
                             The years in the UK opened a door that hasn&apos;t closed. Europe on a student
                             budget: France, Spain, Germany, Croatia, Norway, Belgium, Netherlands, Monaco —
                             Sagrada Família before it was finished, the Louvre, the Leaning Tower on a grey
-                            Pisan morning. Since then: Florida, Los Angeles, Mauritius, Australia.
+                            Pisan morning. Southeast Asia, North America, Africa, Australia along the way.
                             Japan, properly, since 2022 — not just working there, but learning to live there:
                             onsen in falling snow, kanji practice notebooks, cycling Sendai&apos;s back roads.
                         </p>
@@ -336,8 +336,8 @@ export default function AboutPage() {
                         { src: '/personal/music-live.jpeg', label: 'Live music, Malaysia' },
                         { src: '/personal/japan-onsen.jpeg', label: 'Onsen in snow' },
                         { src: '/personal/japan-cycling.jpeg', label: 'Cycling, Sendai' },
-                        { src: '/personal/travel-sagrada.jpeg', label: 'Sagrada Família, Barcelona' },
-                        { src: '/personal/music-band-garden.jpeg', label: 'Band, garden gig' },
+                        { src: '/personal/japan-asimo.jpeg', label: 'ASIMO, Honda · Japan' },
+                        { src: '/personal/sketch.jpeg', label: 'Digital illustration' },
                         { src: '/personal/family-museum.jpeg', label: 'Dinosaur museum, Japan' },
                         { src: '/personal/travel-malta.jpeg', label: 'Valletta, Malta' },
                         { src: '/personal/onepiece.jpeg', label: 'One Piece, obviously' },
