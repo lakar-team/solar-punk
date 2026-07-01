@@ -296,12 +296,9 @@ export default function AboutPage() {
                             a decade and five continents between those two points.
                         </p>
                         <p>
-                            The years in the UK opened a door that hasn&apos;t closed. Europe on a student
-                            budget: France, Spain, Germany, Croatia, Norway, Belgium, Netherlands, Monaco —
-                            Sagrada Família before it was finished, the Louvre, the Leaning Tower on a grey
-                            Pisan morning. Southeast Asia, North America, Africa, Australia along the way.
-                            Japan, properly, since 2022 — not just working there, but learning to live there:
-                            onsen in falling snow, kanji practice notebooks, cycling Sendai&apos;s back roads.
+                            The UK years opened a door. Europe on a student budget — France, Spain, Germany,
+                            Croatia, Norway, Belgium, Netherlands, Monaco. Southeast Asia, North America,
+                            Africa, Australia. Japan since 2022 — onsen, cycling Sendai, kanji practice.
                         </p>
                         <p>
                             Music has been a constant. Bass — upright and electric — in bands since before
