@@ -284,6 +284,78 @@ export default function AboutPage() {
                 </div>
             </section>
 
+            {/* Personal — Beyond the Work */}
+            <section className="max-w-5xl mx-auto px-6 py-16 border-b border-white/8">
+                <div className="mb-10">
+                    <span className="text-[10px] uppercase tracking-[0.35em] text-white/25">Beyond the Work</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+                    <div className="space-y-4 text-gray-400 leading-relaxed">
+                        <p>
+                            Born in Malaysia. Architecture school in Manchester. Now based in Sendai —
+                            a decade and five continents between those two points.
+                        </p>
+                        <p>
+                            The years in the UK opened a door that hasn&apos;t closed. Europe on a student
+                            budget: France, Spain, Germany, Croatia, Norway, Belgium, Netherlands, Monaco —
+                            Sagrada Família before it was finished, the Louvre, the Leaning Tower on a grey
+                            Pisan morning. Since then: Florida, Los Angeles, Mauritius, Australia.
+                            Japan, properly, since 2022 — not just working there, but learning to live there:
+                            onsen in falling snow, kanji practice notebooks, cycling Sendai&apos;s back roads.
+                        </p>
+                        <p>
+                            Music has been a constant. Bass — upright and electric — in bands since before
+                            architecture school. History pulls just as hard: museums, archaeological sites,
+                            the physical evidence that people built things and solved problems long before
+                            anyone had a computer. I draw too — digital illustration, dark and detailed.
+                        </p>
+                        <p>
+                            I have a kid who is very serious about dinosaurs. I try to meet that energy.
+                        </p>
+                        <div className="flex flex-wrap gap-2 pt-2">
+                            {['Travel · 20+ countries', 'Bass guitar', 'Cycling', 'History & Museums', 'Digital illustration', 'Onsen', 'Camping'].map((tag, i) => (
+                                <span key={i} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs text-white/50">
+                                    {tag}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="relative rounded-2xl overflow-hidden" style={{ aspectRatio: '4/3' }}>
+                        <img
+                            src="/personal/travel-paris.jpeg"
+                            alt="Paris, Eiffel Tower"
+                            className="w-full h-full object-cover"
+                        />
+                        <div className="absolute bottom-3 left-3 text-[9px] uppercase tracking-widest text-white/60 bg-black/50 backdrop-blur-sm px-2 py-1 rounded">
+                            Paris · 2010s
+                        </div>
+                    </div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {[
+                        { src: '/personal/music-live.jpeg', label: 'Live music, Malaysia' },
+                        { src: '/personal/japan-onsen.jpeg', label: 'Onsen in snow' },
+                        { src: '/personal/japan-cycling.jpeg', label: 'Cycling, Sendai' },
+                        { src: '/personal/travel-sagrada.jpeg', label: 'Sagrada Família, Barcelona' },
+                        { src: '/personal/music-band-garden.jpeg', label: 'Band, garden gig' },
+                        { src: '/personal/family-museum.jpeg', label: 'Dinosaur museum, Japan' },
+                        { src: '/personal/travel-malta.jpeg', label: 'Valletta, Malta' },
+                        { src: '/personal/onepiece.jpeg', label: 'One Piece, obviously' },
+                    ].map((photo, i) => (
+                        <div key={i} className="relative rounded-xl overflow-hidden aspect-square group cursor-default">
+                            <img
+                                src={photo.src}
+                                alt={photo.label}
+                                className="w-full h-full object-cover grayscale-[15%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div className="absolute bottom-2 left-2 right-2 text-[9px] uppercase tracking-widest text-white/80">{photo.label}</div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
             {/* CV download */}
             <section className="max-w-5xl mx-auto px-6 py-16 border-b border-white/8">
                 <div className="mb-8 flex items-center justify-between">
