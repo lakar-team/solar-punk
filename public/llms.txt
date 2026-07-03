@@ -122,6 +122,7 @@ Adam has a sustained teaching and cultural engagement practice spanning three co
 - Sendai School Visits (MIA): https://solar-punk-five.vercel.app/teaching/sendai-school
 - Malaysia-Japan Bridge: https://solar-punk-five.vercel.app/teaching/malaysia-japan-bridge
 - Cultural engagement (legacy redirect): https://solar-punk-five.vercel.app/cultural-engagement
+- VTube mocap project: https://solar-punk-five.vercel.app/vtube-mocap
 
 ## Contact
 

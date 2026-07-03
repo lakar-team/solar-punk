@@ -435,6 +435,7 @@ export const projects: Project[] = [
         description: 'A browser-based real-time mocap app for VTuber streaming — MediaPipe tracks face, pose, and hands directly in the browser and drives a rigged GLB character model, no install required. Built as the Motor Core for the AIBO AI avatar system; runs entirely client-side for streamers and developers who need precise, low-latency avatar control without a cloud dependency.',
         orbitRadius: 68,
         orbitSpeed: 0.035,
+        detailPage: '/vtube-mocap',
         keyFacts: [
             'MediaPipe face, pose, and hand tracking',
             'Drives rigged GLB character models',
