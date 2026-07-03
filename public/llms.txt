@@ -24,7 +24,7 @@ Since 2022, Adam has been a PhD researcher at Tohoku University's Department of 
 - Process automation and AI tooling
 - AI application development: RAG pipelines, LLM integration, agentic workflows
 - Web development: Next.js, React, TypeScript, single-file HTML apps
-- VTuber / mocap systems: ARKit blend shapes, MediaPipe, VRM/Live2D rigs
+- VTuber / mocap systems: MediaPipe face/pose/hand tracking driving rigged GLB models
 - Languages: English (C2, IELTS 8.0), Malay (C2, native), Japanese (N3–N2)
 
 ## Career History
@@ -77,7 +77,7 @@ Adam's digital practice began in 2022 when he started integrating early LLMs int
 
 **HydroCalc (March 2026):** A professional water supply piping design suite for building engineers. Automates hydraulic calculations from fixture units to pipe diameters against Japanese Industrial Standards (JIS), digitising reference charts from analog engineering documents.
 
-**VTube Mocap (ongoing):** Real-time desktop mocap application connecting ARKit face blend shapes and MediaPipe full-body pose tracking to VRM character rigs. Built as the Motor Core for the AIBO avatar system. Live at https://vtubemaker.pages.dev/
+**VTube Mocap (ongoing):** Browser-based real-time mocap application using MediaPipe face, pose, and hand tracking to drive a rigged GLB character model — no install required. Built as the Motor Core for the AIBO avatar system. Live at https://vtubemaker.pages.dev/
 
 **AI Swarm (in development):** Autonomous agent workflow system using long-polling Node.js as a bridge between a remote web dashboard and local development environments. Auto-accept protocol for task distribution under human supervision.
 
@@ -122,7 +122,6 @@ Adam has a sustained teaching and cultural engagement practice spanning three co
 - Sendai School Visits (MIA): https://solar-punk-five.vercel.app/teaching/sendai-school
 - Malaysia-Japan Bridge: https://solar-punk-five.vercel.app/teaching/malaysia-japan-bridge
 - Cultural engagement (legacy redirect): https://solar-punk-five.vercel.app/cultural-engagement
-- VTube mocap project: https://solar-punk-five.vercel.app/vtube-mocap
 
 ## Contact
 
