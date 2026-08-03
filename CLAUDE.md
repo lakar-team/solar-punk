@@ -61,7 +61,7 @@ and the `wiki-chain` block below.
 
 <!-- wiki-chain
 id: solar-punk-claude
-status: Consolidated 2026-06-27 — solar-punk-portfolio renamed to solar-punk. Single git-linked folder, remote https://github.com/lakar-team/solar-punk.git.
-updated: 2026-06-27
+status: As of 2026-07-03. Since the 2026-06-27 rename, underwent a major site redesign: two-tier solar system (category planets + orbiting moon system replacing the old flat planet layout), inline content layer (keyFacts, image galleries, per-project detail pages, all 6 nested pages populated), Vercel Analytics + AI-discoverability files (llms.txt, sitemap.xml, JSON-LD), two-tier mobile navigation, teaching + personal-background sections. AIBO integration got 4 response-time optimizations (streaming, Gemini 2.0, prompt trim, deferred Kokoro TTS warmup moved to a Web Worker). vtube-mocap planet entry now links straight to vtubemaker.pages.dev (Launch App) instead of GitHub. Single git-linked folder, remote https://github.com/lakar-team/solar-punk.git.
+updated: 2026-07-03
 links: [project-aibo, ai-platforms-claude]
 -->
