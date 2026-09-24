@@ -1,0 +1,44 @@
+name: Production Health Check
+
+on:
+  schedule:
+    - cron: '20 */2 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  check-homepage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check homepage responds successfully
+        run: |
+          status_code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 'https://solar-punk-five.vercel.app/')
+          echo "HTTP status: $status_code"
+          if [ "$status_code" -ne 200 ]; then
+            echo "::error::Homepage returned HTTP $status_code"
+            exit 1
+          fi
+
+  check-brain-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check /api/brain (Web Witch chat) responds successfully
+        run: |
+          body=$(curl -s -X POST 'https://solar-punk-five.vercel.app/api/brain' \
+            -H 'Content-Type: application/json' \
+            -d '{"message":"Who is Adam?","activePlanetId":null,"history":[]}' \
+            --max-time 120)
+          echo "Response body:"
+          echo "$body"
+
+          if [ -z "$body" ]; then
+            echo "::error::Empty response from /api/brain"
+            exit 1
+          fi
+          if echo "$body" | grep -q '"error"'; then
+            echo "::error::/api/brain returned an error payload"
+            exit 1
+          fi
+          if ! echo "$body" | grep -q '"done":true'; then
+            echo "::error::/api/brain never sent a completed reply"
+            exit 1
+          fi
