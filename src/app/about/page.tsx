@@ -117,7 +117,7 @@ export default function AboutPage() {
                             In 2012 I spotted a gap in the market: people wanted designer interiors but couldn&apos;t justify
                             boutique prices. I founded Lakar Design to close that gap — building a scalable, repeatable
                             high-quality renovation system I could grow without sacrificing craft. The firm achieved
-                            100% year-on-year revenue growth for eight consecutive years, scaling from ¥1.8M to ¥42M
+                            100% year-on-year revenue growth for eight consecutive years, scaling from about RM10k to about RM1.5M (¥42M)
                             in annual revenue and eventually incorporating as three separate entities.
                         </p>
                         <p>
@@ -154,7 +154,7 @@ export default function AboutPage() {
                             { year: '2020', note: 'Smart home systems deployed at scale' },
                             { year: '2021', note: 'Incorporated Lakar (Malaysia) Sdn Bhd' },
                             { year: '2022', note: 'PhD begins at Tohoku University' },
-                            { year: '2023', note: 'Kyoto Conference presentation' },
+                            { year: '2024', note: 'Kyoto Conference presentation' },
                             { year: '2025', note: 'Building Energy & Automation Engineer, ReFiL (research ongoing)' },
                         ].map((m, i) => (
                             <div key={i} className="flex gap-3 text-sm">

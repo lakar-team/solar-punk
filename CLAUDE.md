@@ -34,7 +34,7 @@ there.
   - `games/` — Demon Hunter (116KB single HTML), Kanji Pad game.
   - `apps/hydrocalc/` — a full hydrology calculator app (pipe flow, fixtures).
   - `textures/` — planet textures and preview images (several MB each).
-  - `Adam_Tech_CV.md` + `Adam_Tech_CV.pdf` — downloadable CV.
+  - `Adam_Tech_CV.pdf` — downloadable CV (a print of the HTML CV).
 
 ## Key issues to fix (from 2026-06-24 code review)
 
