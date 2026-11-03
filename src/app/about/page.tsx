@@ -58,7 +58,7 @@ export default function AboutPage() {
                     {[
                         { value: '10+', label: 'Years Built Environment', sub: 'Architecture & Construction' },
                         { value: '¥42M', label: 'Peak Annual Revenue', sub: 'Lakar Design, 2021' },
-                        { value: '50%', label: 'Cooling Load Reduction', sub: 'PhD validated result' },
+                        { value: 'Up to 50%', label: 'Cooling Load Reduction', sub: 'PhD result, measured under specific conditions' },
                         { value: '5+', label: 'Years Applied AI & IoT', sub: 'Tools built and shipped' },
                     ].map((s, i) => (
                         <div key={i}>
@@ -87,7 +87,7 @@ export default function AboutPage() {
                             degree: '4 Years PhD Research · Building Energy Science',
                             institution: 'Tohoku University',
                             country: 'Japan · 2022–Present',
-                            detail: 'Research focus: solar-regenerated passive desiccant cooling for hot-humid climates. Engineered a charcoal desiccant system achieving a validated 50% reduction in cooling energy load. Presented at the Kyoto International Conference on Urban Climate. Ongoing research and development continuing with the university.',
+                            detail: 'Research focus: solar-regenerated passive desiccant cooling for hot-humid climates. Engineered a charcoal desiccant system achieving up to 50% reduction in cooling energy load, measured under specific conditions. Presented at the Kyoto International Conference on Urban Climate. Ongoing research and development continuing with the university.',
                         },
                     ].map((q, i) => (
                         <div key={i} className="p-6 bg-amber-500/5 border border-amber-500/15 rounded-2xl">
@@ -108,8 +108,8 @@ export default function AboutPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                     <div className="md:col-span-2 space-y-6 text-gray-400 leading-relaxed">
                         <p>
-                            I trained as an architect and within my first year as a graduate at S&A Architects in Malaysia,
-                            I designed a sustainable low-rise master plan that secured the PAM Silver Award 2017. The design
+                            I trained as an architect and worked at S&A Architects in Malaysia, returning as an architect in 2011 after my MArch,
+                            I designed a sustainable low-rise master plan that won a PAM Silver Award for innovation in design in 2017, once built. The design
                             anchored housing nodes around connected green ribbons leading to a central social hub — a concept
                             good enough to be adopted as a prototypical standard by one of Malaysia&apos;s largest property developers.
                         </p>
@@ -132,21 +132,21 @@ export default function AboutPage() {
                             all the technology available? The gap wasn&apos;t in the hardware — it was in the building
                             envelope itself. That question brought me to Tohoku University and a PhD focused on
                             solar-regenerated passive dehumidification for hot-humid climates. The result: a
-                            charcoal desiccant system with a validated 50% reduction in cooling energy load.
+                            charcoal desiccant system with up to 50% reduction in cooling energy load, measured under specific conditions.
                         </p>
                         <p>
                             I presented this research at the Kyoto International Conference and at the Japan
                             Institute of Architects international symposium, representing the Malaysian perspective
                             on cross-cultural design thinking. 4 years of PhD research at Tohoku University, with
                             ongoing research and development continuing with the university. Alongside this, I work
-                            as a Building Energy Consultant at Refil Japan — designing energy systems for new builds
+                            as a Building Energy & Automation Engineer at ReFiL — designing energy systems for new builds
                             and building internal automation tools that cut deliverable cycle times by 40%.
                         </p>
                     </div>
                     <div className="space-y-4">
                         <div className="text-[10px] uppercase tracking-widest text-white/25 mb-4">Milestones</div>
                         {[
-                            { year: '2009', note: 'Graduate Architect, S&A Architects' },
+                            { year: '2009', note: 'Assistant Architect, S&A Architects (Architect from 2011)' },
                             { year: '2011', note: 'PAM Award 2017 master plan designed' },
                             { year: '2012', note: 'Founded Lakar Design Studio' },
                             { year: '2015', note: 'Expanded to Design + Build firm' },
@@ -155,7 +155,7 @@ export default function AboutPage() {
                             { year: '2021', note: 'Incorporated Lakar (Malaysia) Sdn Bhd' },
                             { year: '2022', note: 'PhD begins at Tohoku University' },
                             { year: '2023', note: 'Kyoto Conference presentation' },
-                            { year: '2025', note: 'Building Energy Consultant, Refil Japan (research ongoing)' },
+                            { year: '2025', note: 'Building Energy & Automation Engineer, ReFiL (research ongoing)' },
                         ].map((m, i) => (
                             <div key={i} className="flex gap-3 text-sm">
                                 <span className="text-[10px] text-amber-400/40 font-mono shrink-0 w-10 mt-0.5">{m.year}</span>
@@ -175,7 +175,7 @@ export default function AboutPage() {
                     {[
                         {
                             period: '2025 – present',
-                            role: 'Building Energy Consultant & Process Automation',
+                            role: 'Building Energy & Automation Engineer',
                             org: 'Refil Japan',
                             detail: 'Designing HVAC and AC load calculations for residential and commercial new builds across Tohoku. Built internal tools ensuring JIS standards compliance — cutting deliverable cycle times by 40%. Tools: Rebro (MEP/BIM), Stabro (building energy).',
                         },
@@ -183,7 +183,7 @@ export default function AboutPage() {
                             period: '2022 – Present',
                             role: 'PhD Researcher',
                             org: 'Tohoku University, Japan',
-                            detail: '4 years of PhD research in solar-regenerated passive desiccant cooling for hot-humid climates. Engineered a charcoal desiccant system achieving a validated 50% reduction in cooling energy load. Presented at Kyoto International Conference and Japan Institute of Architects symposium. Ongoing research and development continuing with the university.',
+                            detail: '4 years of PhD research in solar-regenerated passive desiccant cooling for hot-humid climates. Engineered a charcoal desiccant system achieving up to 50% reduction in cooling energy load, measured under specific conditions. Presented at Kyoto International Conference and Japan Institute of Architects symposium. Ongoing research and development continuing with the university.',
                         },
                         {
                             period: '2012 – 2022',
@@ -198,10 +198,10 @@ export default function AboutPage() {
                             detail: 'Taught Design Thinking and Human Sensibility to architecture students alongside running Lakar Design.',
                         },
                         {
-                            period: '2009 – 2011',
-                            role: 'Graduate Architect',
+                            period: '2009; 2011 – 2012',
+                            role: 'Assistant Architect → Architect',
                             org: 'S&A Architects, Malaysia',
-                            detail: 'Designed the Denai Alam Phase J15 sustainable master plan in the first year — winning the PAM Silver Award 2017 and adopted as a developer standard.',
+                            detail: 'Designed the Denai Alam Phase J15 sustainable master plan in 2011 — it won a PAM Silver Award for innovation in design in 2017, once built, and was adopted as a developer standard.',
                         },
                     ].map((t, i, arr) => (
                         <div key={i} className="relative flex gap-6 md:gap-10 pb-12 last:pb-0">
@@ -244,7 +244,7 @@ export default function AboutPage() {
                         {
                             area: 'Technology & AI',
                             color: '#60a5fa',
-                            items: ['AI Workflows & RAG Systems', 'Smart Home / IoT (Zigbee, IR, RF)', 'TypeScript / React / Next.js', 'Process Automation', 'Product Strategy & P&L'],
+                            items: ['AI Workflows & Retrieval-grounded Apps', 'Smart Home / IoT (Zigbee, IR, RF)', 'TypeScript / React / Next.js', 'Process Automation', 'Product Strategy & P&L'],
                         },
                     ].map((group, i) => (
                         <div key={i} className="p-6 bg-white/[0.025] border border-white/8 rounded-2xl">

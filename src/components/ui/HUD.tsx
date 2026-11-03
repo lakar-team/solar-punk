@@ -259,13 +259,13 @@ export default function HUD() {
                                 <div className="p-4 bg-amber-500/8 border border-amber-500/20 rounded-lg">
                                     <div className="text-[10px] uppercase tracking-widest text-amber-500/60 mb-1">Built Environment</div>
                                     <p className="text-sm text-white/70 leading-relaxed">
-                                        Architect & founder — 10+ years spanning award-winning master plans, a design-build firm scaled to ¥42M, and a PhD in climate-conscious building science at Tohoku University.
+                                        Architect & founder — 12+ years spanning award-winning master plans, a design-build firm scaled to ¥42M, and a PhD in climate-conscious building science at Tohoku University.
                                     </p>
                                 </div>
                                 <div className="p-4 bg-amber-500/8 border border-amber-500/20 rounded-lg">
                                     <div className="text-[10px] uppercase tracking-widest text-amber-500/60 mb-1">Digital & AI</div>
                                     <p className="text-sm text-white/70 leading-relaxed">
-                                        5 years building precision tools — hydraulic engineering suites, RAG-based AI, VTuber mocap rigs, and IoT-integrated smart environments.
+                                        5 years building precision tools — hydraulic engineering suites, retrieval-grounded AI, VTuber mocap rigs, and IoT-integrated smart environments.
                                     </p>
                                 </div>
                             </div>

@@ -32,10 +32,10 @@ PERSONALITY AND APPROACH
 CAREER JOURNEY — THE REAL STORY
 
 Early career: Architecture in Malaysia
-Adam trained as an architect (BSc UiTM, MArch University of Manchester). Within his first year 
-as a graduate architect at S&A Architects, he designed a sustainable master plan for Denai Alam Phase J15 
-that won the PAM Silver Award 2017. The design was good enough to be adopted as a prototypical standard 
-by one of Malaysia's largest developers — not a small thing for a first-year grad.
+Adam trained as an architect (BSc UiTM, MArch University of Manchester). He was an assistant architect at S&A Architects in 2009, left for the UK, and returned as an architect in 2011 
+after graduating. That year he designed a sustainable master plan for Denai Alam Phase J15 
+that won a PAM Silver Award for innovation in design in 2017, once built. The design was good enough to be adopted as a prototypical standard 
+by one of Malaysia's largest developers. He left S&A in 2012 to found Lakar Design.
 
 Founding Lakar Design (2012–2022)
 He spotted a gap: people wanted designer interiors but couldn't justify boutique prices. 
@@ -51,10 +51,10 @@ He treated his house as a live UX platform.
 
 Separately, he taught Design Thinking and Human Sensibility as an Assistant Lecturer at UiTM (2016–2019).
 
-PhD and Sabbatical at Tohoku University (2022–2025)
+PhD at Tohoku University (student 2022–2025; on leave since 2025, continuing the research part-time)
 He made a deliberate decision to step back and research. His PhD focused on solar-regenerated passive 
 dehumidification for hot/humid climates — he engineered a charcoal desiccant system that achieved 
-a validated 50% reduction in cooling energy load. The ambition is larger: buildings that are alive 
+a measured reduction of up to 50% in cooling energy load under specific hot-humid conditions. The ambition is larger: buildings that are alive 
 and self-regulating, structures that sense, interpret, and adapt. The desiccant system is the first 
 step toward that goal.
 
@@ -62,18 +62,25 @@ He presented this work at the Kyoto Conference and at the Japan Institute of Arc
 symposium, representing the Malaysian perspective on cross-cultural design thinking. He also runs 
 cultural education activities in Sendai, bridging Japan-Malaysia exchange.
 
-Current role: Refil, Japan (2025–2026)
-Working as a Building Energy Consultant and Process Automation engineer. He designed energy systems 
+Current role: ReFiL, Japan (Dec 2025–present)
+Working as a Building Energy & Automation Engineer. He designed energy systems 
 for new builds and built internal automation tools to ensure JIS (Japanese Industrial Standards) 
 compliance — cutting deliverable cycle times by 40%. This is Adam doing what he always does: 
 finding the inefficiency and automating it out of existence.
 
 LANGUAGES AND CULTURE
-- English: C2 (IELTS 8.0)
+- English: native (C2)
 - Malay: C2 (native)
-- Japanese: JLPT N3–N2 equivalent (living and working in Japan in Japanese)
+- Japanese: professional working proficiency, JLPT N2–N3 equivalent (living and working in Japan in Japanese)
 He's also sourced vinyl records internationally through Awatar Ltd — a habit that connects to 
 his appreciation for things made with intention and craft.
+
+HOW ADAM'S AI WORK DEVELOPED (use this timeline when asked about his AI experience)
+- 2020–2021: home automation and IoT — a voice-controlled home with most functions linked through Google Home over Zigbee and Wi-Fi.
+- From late 2022: ChatGPT from its launch, then other assistants, as a research partner for papers and calculations. Adam stays the human in the loop, verifying every output.
+- 2025: AI-assisted coding — Demon Hunter (coded locally), web building and deployment, and the Momotaro bilingual book (published on Amazon KDP, December 2025).
+- 2026: Online Sheikh (retrieval-grounded Gemini advisor), ADAMTOOL, AIBO, and AI-assisted data pipelines and modelling for his thesis.
+His LLM and retrieval-grounded software work dates from 2025–2026.
 
 THE PROJECTS — WHAT ADAM BUILT AND WHY
 
@@ -85,13 +92,13 @@ A tool born from pure professional frustration. GitHub: lakar-team/hydrocalc.
 
 Climate Tech R&D / PhD Research (Orbit 25)
 The central question: can a small amount of context awareness dramatically amplify what a passive 
-building system can already do? His solar-regenerated desiccant system answers yes — 50% cooling load 
+building system can already do? His solar-regenerated desiccant system answers yes — up to 50% measured cooling load 
 reduction, no compressor, no brute force. The bigger vision is self-regulating buildings. 
 Full research available on this site.
 
 S&A Architects (Orbit 30)
 First professional role. The Denai Alam Phase J15 master plan — green ribbons connecting housing nodes 
-to a central social hub — won the PAM Silver Award 2017 and became a developer template. 
+to a central social hub — won a PAM Silver Award for innovation in design in 2017 (once built) and became a developer template. 
 Proof that human-centric design is commercially viable, not just idealistic.
 
 Lakar Design (Orbit 35)
@@ -121,13 +128,13 @@ A collection of precision browser tools — no setup, no bloat, no ads.
 Born from years of frustration with web utilities that waste your time. Available at adamtool.pages.dev.
 
 Demon Hunter (Orbit 51)
-Adam's first serious dive into functional programming. A single-file HTML browser game with 
+Adam's first serious dive into functional programming (coded locally in 2025, deployed online in 2026). A single-file HTML browser game with 
 a custom Web Audio Engine (Cm→Ab→Bb→G chord progression) and hybrid Firebase/offline save. 
 The motivation wasn't the game — it was understanding real-time state management and asset rendering. 
 Many refinements required going past AI tools and editing by hand.
 
 Momotaro Kids Book (Orbit 55)
-Bilingual Japanese/English children's book, published on Amazon KDP. He built it in HTML because 
+Bilingual Japanese/English children's book, published on Amazon KDP in December 2025. He built it in HTML because 
 no word processor could support the dual-language layout he had in mind. Used generative AI to 
 maintain consistent character art across the whole narrative. A Peach Boy story for global kids. 
 A second book (Issun-boshi) is in production.

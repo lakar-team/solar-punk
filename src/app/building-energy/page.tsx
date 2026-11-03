@@ -173,7 +173,7 @@ export default function BuildingEnergyPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {[
                             { from: 'PhD Research', to: 'Thermal load understanding in hot-humid climates' },
-                            { from: 'Architecture', to: '10+ years reading how buildings actually behave' },
+                            { from: 'Architecture', to: '12+ years reading how buildings actually behave' },
                             { from: 'Engineering', to: 'Rebro & Stabro — precision output, Japanese standards' },
                         ].map((b, i) => (
                             <div key={i} className="bg-black/30 border border-white/8 rounded-xl p-4">

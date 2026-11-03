@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   description: "Adam Raman — Malaysian architect and technologist based in Japan. Expertise in sustainable building design, building energy, IoT/smart homes, BIM, process automation, and AI tools.",
   openGraph: {
     title: "Adam M. Raman — Architect & Technologist",
-    description: "Sustainable building design, PhD climate research, AI tools, and 10+ years in the built environment. Portfolio with an AI assistant that knows the whole story.",
+    description: "Sustainable building design, PhD climate research, AI tools, and 12+ years in the built environment. Portfolio with an AI assistant that knows the whole story.",
     url: "https://solar-punk-five.vercel.app",
     siteName: "Adam M. Raman Portfolio",
     locale: "en_US",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Adam M. Raman — Architect & Technologist",
-    description: "Sustainable building design, PhD climate research, AI tools, and 10+ years in the built environment.",
+    description: "Sustainable building design, PhD climate research, AI tools, and 12+ years in the built environment.",
   },
 };
 
@@ -46,7 +46,7 @@ const jsonLd = {
   url: "https://solar-punk-five.vercel.app",
   email: "adam.m.raman@gmail.com",
   jobTitle: "Architect, Building Energy Consultant & AI Developer",
-  description: "Malaysian architect and technologist based in Sendai, Japan. Founder of Lakar Design (2012–2022). PhD researcher at Tohoku University specialising in passive desiccant cooling for hot-humid climates. Building Energy Consultant at Refil Japan. Developer of AI tools, smart home systems, and VTuber mocap software.",
+  description: "Malaysian architect and technologist based in Sendai, Japan. Founder of Lakar Design (2012–2022). PhD researcher at Tohoku University specialising in passive desiccant cooling for hot-humid climates. Building Energy & Automation Engineer at ReFiL. Developer of AI tools, smart home systems, and VTuber mocap software.",
   nationality: "Malaysian",
   workLocation: {
     "@type": "Place",
@@ -75,7 +75,7 @@ const jsonLd = {
     "Design-and-Build Project Management",
     "AI Application Development",
     "Large Language Models",
-    "RAG Pipelines",
+    "Retrieval-grounded AI Apps",
     "Process Automation",
     "Next.js",
     "React",

@@ -74,7 +74,7 @@ export default function PhDResearchPage() {
             <div className="border-y border-white/8 bg-white/[0.015]">
                 <div className="max-w-5xl mx-auto px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-8">
                     {[
-                        { value: '50%', label: 'Cooling Load Reduction', sub: 'validated result', color: 'text-cyan-400' },
+                        { value: 'Up to 50%', label: 'Cooling Load Reduction', sub: 'measured, specific conditions', color: 'text-cyan-400' },
                         { value: '40%', label: 'Humidity Reduction', sub: 'over 12-hour night cycle', color: 'text-cyan-300' },
                         { value: '9 kg', label: 'Charcoal Desiccant', sub: 'recycled wood charcoal', color: 'text-sky-400' },
                         { value: '5.6B', label: 'ACs by 2050', sub: 'IEA forecast — the problem', color: 'text-amber-400' },

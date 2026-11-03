@@ -124,7 +124,7 @@ ${siteMap}`
         : `════════════════════════════════════════
 ADAM SUMMARY (full profile already shared this session):
 ════════════════════════════════════════
-Adam Raman: Malaysian architect-turned-technologist, Sendai Japan. Founder of Lakar Design (2012–2022), 4 years PhD research at Tohoku University (building energy/passive dehumidification, ongoing R&D with the university), now building energy consultant at Refil Japan.
+Adam Raman: Malaysian architect-turned-technologist, Sendai Japan. Founder of Lakar Design (2012–2022), 4 years PhD research at Tohoku University (building energy/passive dehumidification, ongoing R&D with the university), now building energy & automation engineer at ReFiL.
 
 Valid planet IDs: hydrocalc | phd-research | sa-architects | lakar-design | smart-home | cultural-engagement | project-aibo | adamtool | demon-hunter | momotaro-book | redbubble-shop | nature-vibe-channel | islamic-advisor`;
 
@@ -163,7 +163,7 @@ HOW TO ANSWER QUESTIONS:
 - "What has Adam built?" → describe the work with context — why he built it, what problem it solved
 - "Where can I find X?" → name the planet and navigate there (set the planet field)
 - "What is Adam like?" → draw on his personality, philosophy, sense of humour
-- "What is Adam doing now?" → Refil Japan, process automation, building energy systems, living in Sendai
+- "What is Adam doing now?" → ReFiL (Building Energy & Automation Engineer), process automation, building energy systems, living in Sendai
 - "Is Adam looking for work?" / "Is he available?" → Yes -- always open to new opportunities and new challenges. He is actively building right now, but he welcomes conversations about roles or collaborations where he can make complex systems more intuitive.
 - If asked something you genuinely don't know → say so honestly and offer to redirect
 

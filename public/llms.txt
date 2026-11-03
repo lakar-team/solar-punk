@@ -11,26 +11,26 @@ Adam M. Raman is a Malaysian architect and technologist currently based in Senda
 
 He founded Lakar Design Studio in Kuala Lumpur in 2012 after returning from a Master of Architecture at the University of Manchester. Over nine years he grew it from a one-man consultancy into a full design-and-build company (Lakar Design & Construction, then Lakar Malaysia Sdn Bhd), scaling annual revenue from ¥1.8M to ¥42M with 100% year-on-year growth for eight consecutive years and completing 40+ projects across the residential, commercial, F&B, and tech-integrated sectors. He sold/closed the firm in 2022 to pursue full-time research.
 
-Since 2022, Adam has been a PhD researcher at Tohoku University's Department of Architecture and Building Science, focusing on solar-regenerated passive desiccant cooling for hot-humid climates (SE Asia context). His experimental system achieved a validated 50% reduction in cooling energy load — the result of a charcoal desiccant charged by solar irradiance during the day and deployed for overnight dehumidification. Research and development is ongoing with the university. In parallel, he now works at Refil Japan as a Building Energy Consultant and Process Automation Engineer, producing HVAC drawings and AC load calculations for new builds across Tohoku.
+Since 2022, Adam has been a PhD researcher at Tohoku University's Department of Architecture and Building Science, focusing on solar-regenerated passive desiccant cooling for hot-humid climates (SE Asia context). His experimental system achieved a measured reduction of up to 50% in cooling energy load under specific conditions — the result of a charcoal desiccant charged by solar irradiance during the day and deployed for overnight dehumidification. Research and development is ongoing with the university. In parallel, he now works at ReFiL Japan as a Building Energy & Automation Engineer, producing HVAC drawings and AC load calculations for new builds across Tohoku.
 
 ## Core Expertise
 
-- Sustainable architecture and interior design (10+ years, Malaysia)
+- Sustainable architecture and interior design (12+ years, Malaysia)
 - Design-and-build project management — contractor coordination, client delivery
 - Building energy engineering: HVAC/MEP drawings (Rebro), AC load calculations (Stabro)
 - Thermal comfort research: passive cooling, desiccant systems, hot-humid climate design
 - Smart home / IoT systems: Zigbee, IR, RF, WiFi, Bluetooth — multi-protocol integration
 - BIM and 3D modelling (early adopter in Malaysia; provided services for MRT Station KL)
 - Process automation and AI tooling
-- AI application development: RAG pipelines, LLM integration, agentic workflows
+- AI application development: retrieval-grounded apps, LLM integration, multi-step workflows
 - Web development: Next.js, React, TypeScript, single-file HTML apps
 - VTuber / mocap systems: MediaPipe face/pose/hand tracking driving rigged GLB models
 - Languages: English (C2, IELTS 8.0), Malay (C2, native), Japanese (N3–N2)
 
 ## Career History
 
-**2009–2011 · Graduate Architect, S&A Architects, Malaysia**
-Early career in a professional architecture practice. Contributed to the master plan for Denai Alam Phase J15 in Shah Alam, which received a PAM Award 2017 Silver Medal (Multiple Residential Low Rise category) — Malaysia's primary architectural recognition.
+**2009 & 2011–2012 · Assistant Architect → Architect, S&A Architects, Malaysia**
+Assistant architect in 2009; returned as architect in 2011 after his MArch and left in 2012 to found Lakar. Designed the master plan for Denai Alam Phase J15 in Shah Alam, which received a PAM Award for innovation in design in 2017 once built (Silver Medal, Multiple Residential Low Rise category) — Malaysia's primary architectural recognition.
 
 **2012–2022 · Founder & Design Lead, Lakar Design, Malaysia**
 Built a design-and-build firm across three legal entities over nine years. Lakar Design Studio (2012) delivered drawings and concept direction; Lakar Design & Construction (2015) added full build management; Lakar Malaysia Sdn Bhd (2021) consolidated both into a limited liability company with partner structures. Revenue scaled from ¥1.8M to ¥42M. Notable for pioneering smart home integration as client-facing research, early BIM adoption (3D modelling for MRT Station KL before BIM was industry standard), and making professional-quality design accessible to SME and F&B clients at 20–30% below boutique rates.
@@ -44,7 +44,7 @@ Four years of research in passive building cooling for hot-humid climates. Solar
 **2023–2025 · Teaching Assistant (ESL), Tohoku University, Japan**
 Formal credited English as a Second Language programme (graduation requirement), paid by the university. Taught classes, prepared quizzes and exams, marked and graded student work. A Malaysian teaching English — in Japanese — to Japanese students who needed it to graduate.
 
-**2025–present · Building Energy Consultant & Process Automation Engineer, Refil Japan**
+**Dec 2025–present · Building Energy & Automation Engineer, ReFiL Japan**
 HVAC engineering for residential and commercial projects in Tohoku: full MEP drawings in Rebro, thermal load calculations in Stabro, compliance navigation with Japanese municipalities. Process automation to modernise internal engineering workflows.
 
 ## Architecture & Built Environment Work
@@ -57,7 +57,7 @@ The practice philosophy was deliberate: treat design as a repeatable product (no
 
 The PhD research at Tohoku University addresses a specific problem in hot-humid climates: conventional air conditioning is energy-intensive and often oversized, partly because designers underestimate nocturnal humidity loads. A key finding is that opening windows at night in hot-humid climates actively increases the cooling burden rather than reducing it — the incoming humid air fights the system.
 
-The proposed solution is a passive desiccant system using activated charcoal, charged (regenerated) by solar irradiance during the day and deployed as a dehumidifier at night without compressor energy. The prototype achieved a validated 50% reduction in cooling energy load. The system is designed for retrofit into existing buildings and for new low-energy construction in SE Asia contexts. The research was presented at the Kyoto International Conference on Urban Climate (2024).
+The proposed solution is a passive desiccant system using activated charcoal, charged (regenerated) by solar irradiance during the day and deployed as a dehumidifier at night without compressor energy. The prototype achieved a measured reduction of up to 50% in cooling energy load under specific conditions. The system is designed for retrofit into existing buildings and for new low-energy construction in SE Asia contexts. The research was presented at the Kyoto International Conference on Urban Climate (2024).
 
 At Refil Japan, this research feeds directly into practical engineering: producing HVAC drawings in Rebro (Japan's primary MEP-BIM platform) and running thermal load calculations in Stabro to size equipment against real climate data rather than conservative engineering margins.
 
