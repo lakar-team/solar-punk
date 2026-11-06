@@ -111,6 +111,9 @@ Adam has a sustained teaching and cultural engagement practice spanning three co
 ## Portfolio Pages
 
 - Full background: https://solar-punk-five.vercel.app/about
+- CV (tech / product / AI roles): https://solar-punk-five.vercel.app/cv/tech
+- CV (architecture / building energy / MEP roles): https://solar-punk-five.vercel.app/cv/aec
+- Portfolio guide (how to explore this site, Japanese/English): https://solar-punk-five.vercel.app/guide
 - Architecture firm (Lakar Design): https://solar-punk-five.vercel.app/lakar
 - PhD research (building energy): https://solar-punk-five.vercel.app/phd-research
 - Building energy work (Refil Japan): https://solar-punk-five.vercel.app/building-energy

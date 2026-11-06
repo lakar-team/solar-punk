@@ -7,7 +7,7 @@ Images extracted using PyMuPDF to `content/<doc-name>/images/` (≥200×200px on
 | Folder | Source | Notes |
 |--------|--------|-------|
 | about | /about page | Manually written page narrative — PhD framing, career timeline |
-| adam-tech-cv | public/Adam_Tech_CV.pdf | Full CV with career history and skills |
+| adam-tech-cv | public/cv/tech.html, public/cv/aec.html | Full HTML CVs (Tech and AEC) with career history and skills |
 | coding-journey | public/docs/coding-journey.pdf | Journey from physical architecture to coding |
 | kyoto-conference | public/docs/kyoto-conference.pdf | Kyoto conference paper |
 | lakar-projects | public/docs/lakar-projects.pdf | Project portfolio + "What Made Lakar Different" narrative |

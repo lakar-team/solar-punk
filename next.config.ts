@@ -24,6 +24,23 @@ const nextConfig: NextConfig = {
     return config;
   },
 
+  // Short, shareable URLs for the standalone HTML pages in public/
+  // (CVs and the portfolio guide are linked directly from emails).
+  async rewrites() {
+    return [
+      { source: "/cv/tech", destination: "/cv/tech.html" },
+      { source: "/cv/aec", destination: "/cv/aec.html" },
+      { source: "/guide", destination: "/guide.html" },
+    ];
+  },
+
+  // The printed PDF CV was retired in favour of the HTML CVs; keep old links working.
+  async redirects() {
+    return [
+      { source: "/Adam_Tech_CV.pdf", destination: "/cv/tech", permanent: false },
+    ];
+  },
+
   async headers() {
     return [
       {

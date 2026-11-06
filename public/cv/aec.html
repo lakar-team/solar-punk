@@ -1,0 +1,1088 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>Adam Raman — Architecture | Building Energy &amp; MEP | Design-Build Delivery</title>
+<meta name="description" content="Adam Raman is an architect-trained design-build founder and building energy engineer in Sendai, Japan with 12+ years across design, construction and building services: 40+ projects with full P&amp;L, 20–30% project cost reductions, and doctoral research on passive cooling." />
+<meta name="author" content="Adam Raman" />
+<meta name="robots" content="index, follow" />
+<!-- Open Graph -->
+<meta property="og:type" content="profile" />
+<meta property="og:title" content="Adam Raman — Architecture | Building Energy &amp; MEP | Design-Build Delivery" />
+<meta property="og:description" content="Design-build founder and building energy engineer: 40+ projects, full P&amp;L, energy audits and HVAC / MEP proposals, and doctoral research on passive cooling. Based in Sendai, Japan." />
+<meta property="og:url" content="https://linktr.ee/adamraman" />
+<meta property="og:locale" content="en_GB" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Adam Raman — Architecture | Building Energy &amp; MEP | Design-Build Delivery" />
+<meta name="twitter:description" content="Architecture, building energy and design-build delivery. Sendai, Japan — open to relocation, hybrid and remote." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Serif:wght@500;600;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@600;700&display=swap" rel="stylesheet" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Adam Raman",
+  "jobTitle": "Architecture | Building Energy & MEP | Design-Build Delivery",
+  "description": "Architect-trained design-build founder and building energy engineer with 12+ years across design, construction and building services. Founded and ran Lakar Design for ten years (40+ projects, full P&L, 20–30% project cost reductions). Currently a Building Energy & Automation Engineer in Japan producing energy audits and HVAC / MEP system proposals, with doctoral research on solar-regenerated passive dehumidification.",
+  "email": "mailto:adam.m.raman@gmail.com",
+  "url": "https://linktr.ee/adamraman",
+  "nationality": {
+    "@type": "Country",
+    "name": "Malaysia"
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Sendai",
+    "addressCountry": "JP"
+  },
+  "alumniOf": [
+    {
+      "@type": "CollegeOrUniversity",
+      "name": "University of Manchester"
+    },
+    {
+      "@type": "CollegeOrUniversity",
+      "name": "Universiti Teknologi MARA"
+    },
+    {
+      "@type": "CollegeOrUniversity",
+      "name": "Tohoku University"
+    }
+  ],
+  "knowsAbout": [
+    "Architectural design",
+    "Design-build delivery",
+    "Project management",
+    "P&L management",
+    "Cost control",
+    "Stakeholder coordination",
+    "Building energy audits",
+    "HVAC and MEP system proposals",
+    "Thermal load calculations",
+    "JIS compliance",
+    "Passive cooling and dehumidification",
+    "Building energy modelling",
+    "BIM",
+    "Revit",
+    "AutoCAD",
+    "Rhino",
+    "Grasshopper",
+    "IoT and smart building systems",
+    "Process automation",
+    "AI-assisted workflows",
+    "Python"
+  ],
+  "knowsLanguage": ["English", "Malay", "Japanese"],
+  "sameAs": [
+    "https://www.linkedin.com/in/adam-raman",
+    "https://linktr.ee/adamraman"
+  ]
+}
+</script>
+
+<style>
+  :root{
+    --bg:#ffffff;
+    --bg-soft:#f6f7f6;
+    --text:#121614;
+    --muted:#55605c;
+    --faint:#6b7773;
+    --line:#e3e7e4;
+    --line-strong:#cdd4d0;
+    --accent:#0e6b5e;
+    --accent-hover:#0a554b;
+    --accent-soft:#e6f2ef;
+    --accent-ink:#ffffff;
+    --card:#ffffff;
+    --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0e1210;
+      --bg-soft:#141917;
+      --text:#eef2f0;
+      --muted:#a8b5b0;
+      --faint:#8a9792;
+      --line:#232c28;
+      --line-strong:#33403b;
+      --accent:#2fbfa8;
+      --accent-hover:#4dd3bd;
+      --accent-soft:#122824;
+      --accent-ink:#06110e;
+      --card:#131816;
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:"IBM Plex Sans", system-ui, -apple-system, Segoe UI, sans-serif;
+    font-size:17px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent); text-decoration-thickness:1px; text-underline-offset:3px}
+  a:hover{color:var(--accent-hover)}
+  ::selection{background:var(--accent); color:var(--accent-ink)}
+
+  .wrap{max-width:880px; margin:0 auto; padding:0 24px}
+  @media (max-width:560px){ .wrap{padding:0 20px} body{font-size:16px} }
+
+  /* Top nav — minimal, text only */
+  .topbar{
+    border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:10;
+    background:color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  }
+  .topbar-inner{display:flex; align-items:center; justify-content:space-between; gap:16px; padding-top:14px; padding-bottom:14px}
+  .brand{font-family:"IBM Plex Mono", monospace; font-size:13px; letter-spacing:.08em; text-transform:uppercase; color:var(--text); text-decoration:none; font-weight:500}
+  .brand span{color:var(--accent)}
+  nav{display:flex; gap:22px; flex-wrap:wrap}
+  nav a{color:var(--text); text-decoration:none; font-size:14px; font-weight:500; padding:6px 13px; border:1px solid var(--line-strong); border-radius:999px; line-height:1.2}
+  nav a:hover{color:var(--accent); border-color:var(--accent); background:var(--accent-soft)}
+  @media (max-width:640px){
+    .topbar-inner{flex-direction:column; align-items:flex-start; gap:8px; padding-top:12px; padding-bottom:12px}
+    .brand{font-size:12px; white-space:nowrap}
+    nav{gap:6px 16px}
+    nav a{font-size:13.5px; padding:5px 11px}
+  }
+
+  /* Hero */
+  header.hero{padding:64px 0 0}
+  @media (max-width:560px){ header.hero{padding:40px 0 0} }
+  .availability{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:"IBM Plex Mono", monospace; font-size:12.5px; letter-spacing:.02em;
+    color:var(--accent); background:var(--accent-soft);
+    border:1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+    padding:6px 12px; border-radius:999px; margin-bottom:26px;
+  }
+  .availability::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--accent); flex:none}
+  h1{
+    font-family:"IBM Plex Serif", Georgia, serif;
+    font-size:clamp(2.6rem, 6vw, 4rem);
+    line-height:1.05; letter-spacing:-.02em; font-weight:700;
+    margin:0 0 14px;
+  }
+  .role{
+    font-size:clamp(1.1rem, 2.6vw, 1.35rem);
+    line-height:1.4; font-weight:600; color:var(--text); margin:0 0 8px;
+  }
+  .role em{font-style:normal; color:var(--accent)}
+  .meta-line{color:var(--muted); font-size:15.5px; margin:0 0 28px}
+  .meta-line strong{color:var(--text); font-weight:600}
+  .lead{font-size:1.08rem; line-height:1.75; color:var(--text); max-width:68ch; margin:0 0 18px}
+  .lead + .lead{color:var(--muted); font-size:1rem}
+  .lead strong{font-weight:600}
+
+  .actions{display:flex; flex-wrap:wrap; gap:12px; margin:32px 0 8px}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:12px 20px; border-radius:999px; font-size:15px; font-weight:600;
+    text-decoration:none; border:1px solid transparent; line-height:1;
+  }
+  .btn-primary{background:var(--accent); color:var(--accent-ink)}
+  .btn-primary:hover{background:var(--accent-hover); color:var(--accent-ink)}
+  .btn-secondary{background:transparent; color:var(--text); border-color:var(--line-strong)}
+  .btn-secondary:hover{border-color:var(--text); color:var(--text)}
+  .btn svg{width:16px; height:16px; flex:none}
+
+  .facts{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:0;
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    margin:44px 0 0; padding:22px 0;
+  }
+  .fact{padding:0 18px; border-left:1px solid var(--line)}
+  .fact:first-child{padding-left:0; border-left:none}
+  .fact dt{font-family:"IBM Plex Mono", monospace; font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--faint); margin:0 0 6px}
+  .fact dd{margin:0; font-size:14.5px; line-height:1.45; font-weight:500}
+  @media (max-width:700px){
+    .facts{grid-template-columns:1fr 1fr; gap:20px 0}
+    .fact:nth-child(3){padding-left:0; border-left:none}
+  }
+
+  main{padding-bottom:8px}
+  section{padding:56px 0 4px}
+  section + section{margin-top:8px}
+  .section-head{margin-bottom:28px}
+  .kicker{font-family:"IBM Plex Mono", monospace; font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin:0 0 10px; font-weight:500}
+  h2{font-family:"IBM Plex Serif", Georgia, serif; font-size:clamp(1.7rem, 3.5vw, 2.15rem); line-height:1.15; letter-spacing:-.01em; margin:0 0 10px; font-weight:700}
+  .section-intro{color:var(--muted); max-width:66ch; margin:0; font-size:16.5px}
+  h3{font-size:17px; line-height:1.35; margin:0 0 6px; font-weight:600}
+
+  /* Practice list */
+  .practice{display:grid; gap:0; border-top:1px solid var(--line)}
+  .practice article{
+    display:grid; grid-template-columns:52px 1fr; gap:18px;
+    padding:24px 0; border-bottom:1px solid var(--line);
+  }
+  .num{font-family:"IBM Plex Mono", monospace; font-size:13px; color:var(--accent); padding-top:4px; font-weight:500}
+  .practice p{margin:0; color:var(--muted); font-size:16px; max-width:62ch}
+  .practice p strong{color:var(--text); font-weight:600}
+  @media (max-width:560px){ .practice article{grid-template-columns:36px 1fr; gap:12px; padding:20px 0} }
+
+  .thread{
+    margin-top:28px; background:var(--bg-soft); border:1px solid var(--line);
+    border-radius:var(--radius); padding:26px 28px;
+  }
+  .thread p{margin:0; font-size:16.5px; line-height:1.7}
+  .thread .label{font-family:"IBM Plex Mono", monospace; font-size:11.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--accent); display:block; margin-bottom:10px; font-weight:500}
+  @media (max-width:560px){ .thread{padding:22px 20px} }
+
+  /* Skills */
+  .skills-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px}
+  @media (max-width:760px){ .skills-grid{grid-template-columns:1fr} }
+  .skill-card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:24px}
+  .skill-card h3{font-size:15px; margin-bottom:14px}
+  .skill-card h3 span{display:block; font-family:"IBM Plex Mono", monospace; font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--accent); font-weight:500; margin-bottom:6px}
+  .tags{display:flex; flex-wrap:wrap; gap:7px; margin:0; padding:0; list-style:none}
+  .tags li{font-size:13.5px; line-height:1; padding:7px 11px; border-radius:999px; background:var(--bg-soft); border:1px solid var(--line); color:var(--text)}
+  .skill-card p{color:var(--muted); font-size:14.5px; margin:14px 0 0; line-height:1.6}
+
+  /* Experience */
+  .timeline{border-top:1px solid var(--line)}
+  .job{padding:28px 0; border-bottom:1px solid var(--line); display:grid; grid-template-columns:190px 1fr; gap:28px}
+  @media (max-width:700px){ .job{grid-template-columns:1fr; gap:8px; padding:24px 0} }
+  .job-when{font-family:"IBM Plex Mono", monospace; font-size:13px; color:var(--faint); line-height:1.5; padding-top:3px}
+  .job-when strong{display:block; color:var(--muted); font-weight:500}
+  .job h3{font-size:17.5px}
+  .job .org{color:var(--accent); font-weight:600; font-size:15.5px; margin:0 0 10px}
+  .job p, .job li{color:var(--muted); font-size:16px}
+  .job p{margin:0 0 8px; max-width:62ch}
+  .job ul{margin:8px 0 0; padding-left:20px}
+  .job li{margin-bottom:5px; max-width:62ch}
+  .job li::marker{color:var(--accent)}
+  .metrics{display:flex; flex-wrap:wrap; gap:10px; margin-top:14px}
+  .metric{border:1px solid var(--line); background:var(--bg-soft); border-radius:10px; padding:10px 14px}
+  .metric b{display:block; font-size:17px; line-height:1.2}
+  .metric span{font-size:12.5px; color:var(--muted)}
+
+  /* Education */
+  .edu-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px}
+  @media (max-width:700px){ .edu-grid{grid-template-columns:1fr} }
+  .edu-card{border:1px solid var(--line); border-radius:var(--radius); padding:24px; background:var(--card)}
+  .edu-card h3{margin-bottom:4px}
+  .edu-card .sub{color:var(--muted); font-size:15px; margin:0}
+  .edu-card .detail{color:var(--muted); font-size:14.5px; margin:10px 0 0; line-height:1.6}
+  .plain-list{margin:0; padding:0; list-style:none}
+  .plain-list li{padding:13px 0; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; gap:16px; font-size:15.5px}
+  .plain-list li:last-child{border-bottom:none}
+  .plain-list li span:first-child{font-weight:500}
+  .plain-list li span:last-child{color:var(--muted); text-align:right}
+
+  /* Contact */
+  .contact-box{
+    border:1px solid var(--line-strong); border-radius:18px;
+    padding:36px; margin-top:8px; background:var(--bg-soft);
+  }
+  @media (max-width:560px){ .contact-box{padding:26px 22px} }
+  .contact-box h2{margin-bottom:12px}
+  .contact-box p{color:var(--muted); max-width:58ch; margin:0 0 24px}
+  .contact-links{display:grid; gap:0; border-top:1px solid var(--line)}
+  .contact-links a{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:16px 2px; border-bottom:1px solid var(--line); text-decoration:none; color:var(--text);
+  }
+  .contact-links a:hover{color:var(--accent)}
+  .contact-links .cl-label{font-family:"IBM Plex Mono", monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); display:block; margin-bottom:2px}
+  .contact-links .cl-value{font-weight:600; font-size:16px; word-break:break-all}
+  .contact-links .arrow{color:var(--accent); font-size:20px; flex:none}
+
+  footer{border-top:1px solid var(--line); margin-top:64px; padding:28px 0 40px}
+  footer .wrap{display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap}
+  footer p{margin:0; color:var(--faint); font-size:13.5px}
+  footer a{color:var(--muted)}
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+  }
+
+  .print-contact{display:none}
+  .print-url{color:var(--faint); font-size:13px; font-weight:400}
+  .btn-url{font-family:"IBM Plex Mono", monospace; font-size:12.5px; font-weight:500; opacity:.85}
+  section, header.hero{scroll-margin-top:64px}
+  /* Language toggle (English / Japanese) */
+  .brand{white-space:nowrap}
+  .lang-toggle{display:inline-flex; border:1px solid var(--line-strong); border-radius:999px; padding:3px; background:var(--bg-soft); flex:none}
+  .lang-toggle button{font-family:"IBM Plex Sans","Noto Sans JP",system-ui,sans-serif; font-size:13px; font-weight:600; line-height:1; padding:7px 14px; border:0; border-radius:999px; background:transparent; color:var(--muted); cursor:pointer}
+  .lang-toggle button[aria-pressed="true"]{background:var(--accent); color:var(--accent-ink)}
+  .lang-toggle button:not([aria-pressed="true"]):hover{color:var(--text)}
+  .lang-toggle button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  @media (max-width:640px){
+    .topbar-inner{flex-direction:row; flex-wrap:wrap; align-items:center; gap:8px 12px}
+    .brand{order:1}
+    .lang-toggle{order:2; margin-left:auto}
+    nav{order:3; width:100%}
+  }
+  html[lang="ja"] body{font-family:"IBM Plex Sans","Noto Sans JP","Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",Meiryo,sans-serif; line-height:1.8}
+  html[lang="ja"] h1, html[lang="ja"] h2{font-family:"IBM Plex Serif","Noto Serif JP","Hiragino Mincho ProN","Yu Mincho",serif; letter-spacing:0}
+  html[lang="ja"] .kicker, html[lang="ja"] .fact dt, html[lang="ja"] .brand, html[lang="ja"] .thread .label, html[lang="ja"] .cl-label, html[lang="ja"] .skill-card h3 span{letter-spacing:.04em; text-transform:none}
+  html[lang="ja"] .lead, html[lang="ja"] .practice p, html[lang="ja"] .section-intro, html[lang="ja"] .job p, html[lang="ja"] .job li, html[lang="ja"] .contact-box p{max-width:none}
+  @media print{ html[lang="ja"] body{line-height:1.6} }
+
+  /* ---------- Print: this page is the CV ---------- */
+  @page{
+    size:A4;
+    margin:15mm 14mm 16mm;
+  }
+  @media print{
+    :root{
+      color-scheme:light;
+      --bg:#ffffff;
+      --bg-soft:#ffffff;
+      --text:#111111;
+      --muted:#3d4541;
+      --faint:#5c6662;
+      --line:#d8dcd9;
+      --line-strong:#b9c0bb;
+      --accent:#0b574c;
+      --accent-hover:#0b574c;
+      --accent-soft:#ffffff;
+      --accent-ink:#ffffff;
+      --card:#ffffff;
+    }
+    html{scroll-behavior:auto}
+    body{
+      font-size:10.5pt;
+      line-height:1.5;
+      print-color-adjust:economy;
+      -webkit-print-color-adjust:economy;
+    }
+    a{color:var(--text); text-decoration:none}
+
+    /* Hide screen-only chrome */
+    .topbar, .actions, .availability{display:none !important}
+
+    .wrap{max-width:none; padding:0}
+
+    /* Header block */
+    header.hero{padding:0}
+    h1{font-size:26pt; margin:0 0 4pt}
+    .role{font-size:12pt; margin:0 0 4pt}
+    .role em{color:var(--text)}
+    .meta-line{font-size:9.5pt; margin:0 0 4pt; color:var(--muted)}
+    .print-contact{display:block; font-size:9.5pt; margin:0 0 10pt}
+    .print-url{font-size:8.5pt; color:var(--muted); font-weight:400}
+    .lead{font-size:10.5pt; line-height:1.55; max-width:none; margin:0 0 7pt}
+    .lead + .lead{font-size:10.5pt; color:var(--text)}
+
+    .facts{margin:12pt 0 0; padding:10pt 0}
+    .fact dd{font-size:9.5pt}
+    .fact dt{font-size:8pt}
+
+    /* Sections */
+    section{padding:18pt 0 0; break-inside:auto}
+    section + section{margin-top:0}
+    .section-head{margin-bottom:10pt}
+    .kicker{font-size:8pt; margin-bottom:4pt; color:var(--muted)}
+    h2{font-size:15pt; margin:0 0 4pt; break-after:avoid}
+    h3{font-size:10.5pt; margin:0 0 3pt; break-after:avoid}
+    .section-intro{font-size:10pt; max-width:none}
+
+    /* Practice */
+    .practice article{padding:8pt 0; grid-template-columns:30pt 1fr; gap:10pt; break-inside:avoid}
+    .num{font-size:9pt; padding-top:2pt}
+    .practice p{font-size:10pt; max-width:none}
+
+    .thread{
+      margin-top:12pt; padding:10pt 12pt; border-radius:6pt;
+      background:#ffffff; break-inside:avoid;
+    }
+    .thread p{font-size:10pt; line-height:1.55}
+    .thread .label{font-size:8pt; margin-bottom:5pt; color:var(--muted)}
+
+    /* Skills */
+    .skills-grid{gap:10pt}
+    .skill-card{padding:10pt 12pt; border-radius:6pt; break-inside:avoid}
+    .skill-card h3{font-size:10pt; margin-bottom:8pt}
+    .skill-card h3 span{font-size:7.5pt; color:var(--muted)}
+    .tags{gap:4pt}
+    .tags li{font-size:8.5pt; padding:3.5pt 7pt; background:#ffffff}
+    .skill-card p{font-size:9pt; margin-top:8pt}
+
+    /* Experience */
+    .job{padding:10pt 0; grid-template-columns:105pt 1fr; gap:16pt; break-inside:avoid}
+    .job-when{font-size:8.5pt}
+    .job h3{font-size:11pt}
+    .job .org{font-size:9.5pt; margin-bottom:5pt; color:var(--text)}
+    .job p, .job li{font-size:10pt}
+    .job ul{margin-top:4pt}
+    .job li{margin-bottom:2pt; max-width:none}
+    .job p{max-width:none}
+    .metrics{gap:6pt; margin-top:8pt}
+    .metric{padding:6pt 9pt; border-radius:5pt; background:#ffffff}
+    .metric b{font-size:11pt}
+    .metric span{font-size:8pt}
+
+    /* Education */
+    .edu-grid{gap:10pt}
+    .edu-card{padding:10pt 12pt; border-radius:6pt; break-inside:avoid}
+    .edu-card .sub{font-size:9.5pt}
+    .edu-card .detail{font-size:9pt; margin-top:6pt}
+    .plain-list li{padding:6pt 0; font-size:9.5pt}
+
+    /* Contact — plain document block, links shown as text */
+    .contact-box{
+      border:none; border-top:1pt solid var(--line-strong);
+      border-radius:0; padding:14pt 0 0; background:#ffffff;
+      break-inside:avoid;
+    }
+    .contact-box p{font-size:10pt; max-width:none; margin-bottom:10pt}
+    .contact-links a{padding:6pt 0}
+    .contact-links .arrow{display:none}
+    .contact-links .cl-label{font-size:7.5pt}
+    .contact-links .cl-value{font-size:10pt}
+
+    footer{margin-top:20pt; padding:10pt 0 0}
+    footer p{font-size:8.5pt}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="#top">Adam Raman <span>/ Portfolio</span></a>
+    <nav aria-label="Page sections">
+      <a href="#strengths">Strengths</a>
+      <a href="#experience">Experience</a>
+      <a href="#skills">Skills</a>
+      <a href="#digital">Digital &amp; AI</a>
+      <a href="#education">Education</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="lang-toggle" role="group" aria-label="Language / 言語">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="ja" aria-pressed="false" lang="ja">日本語</button>
+    </div>
+
+  </div>
+</div>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <p class="availability">Open to relocation · Hybrid · Remote</p>
+    <h1>Adam Raman</h1>
+    <p class="role">Architecture <em>|</em> Building Energy &amp; MEP <em>|</em> Design-Build Delivery</p>
+    <p class="meta-line"><strong>Sendai, Japan</strong> &nbsp;·&nbsp; Malaysian &nbsp;·&nbsp; English (native) · Malay (native) · Japanese (professional working proficiency)</p>
+
+    <p class="lead">Architect-trained design-build founder and building energy engineer with <strong>12+ years across design, construction and building services</strong>. I founded and ran Lakar Design for ten years — 40+ projects with full P&amp;L responsibility, annual revenue growing from about RM10k to about RM1.5M, profitable throughout — and cut project costs 20–30% through process redesign, BIM-based workflows and new contract formats.</p>
+    <p class="lead">Today I am a <strong>Building Energy &amp; Automation Engineer at ReFiL in Japan</strong>: energy audits, HVAC / MEP system proposals, JIS-based calculators, and deliverable cycle times cut by 40%. Alongside, I continue doctoral research at Tohoku University on passive dehumidification, with up to 50% lower cooling energy load measured under specific conditions.</p>
+
+    <p class="print-contact"><a href="mailto:adam.m.raman@gmail.com">adam.m.raman@gmail.com</a> &nbsp;·&nbsp; <a href="https://www.linkedin.com/in/adam-raman">linkedin.com/in/adam-raman</a> &nbsp;·&nbsp; <a href="https://solar-punk-five.vercel.app">solar-punk-five.vercel.app</a></p>
+
+    <div class="actions">
+      <a class="btn btn-primary" href="https://solar-punk-five.vercel.app" target="_blank" rel="noopener">Portfolio site <span class="btn-url">solar-punk-five.vercel.app</span></a>
+      <a class="btn btn-secondary" href="https://www.linkedin.com/in/adam-raman" target="_blank" rel="noopener">LinkedIn <span class="btn-url">linkedin.com/in/adam-raman</span></a>
+      <a class="btn btn-secondary" href="mailto:adam.m.raman@gmail.com">adam.m.raman@gmail.com</a>
+    </div>
+
+    <dl class="facts" aria-label="Key facts">
+      <div class="fact"><dt>Experience</dt><dd>12+ years across architecture, design-build &amp; building energy</dd></div>
+      <div class="fact"><dt>Delivery Record</dt><dd>40+ projects, full P&amp;L, 20–30% cost reduction</dd></div>
+      <div class="fact"><dt>Energy Research</dt><dd>Up to 50% lower cooling load, measured</dd></div>
+      <div class="fact"><dt>Based in</dt><dd>Sendai, Japan — open worldwide</dd></div>
+    </dl>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <!-- STRENGTHS -->
+    <section id="strengths" aria-labelledby="strengths-heading">
+      <div class="section-head">
+        <p class="kicker">What I bring</p>
+        <h2 id="strengths-heading">Core Strengths</h2>
+        <p class="section-intro">Ten years running a design-build practice, now applied to building energy and services in Japan — supported by research and digital tools.</p>
+      </div>
+
+      <div class="practice">
+        <article>
+          <span class="num" aria-hidden="true">01</span>
+          <div>
+            <h3>Design-build delivery &amp; commercial management</h3>
+            <p>Grew Lakar Design from a one-person studio into a design-and-build company (build management added in 2015), delivering <strong>40+ projects</strong> across residential, commercial fit-out, F&amp;B and smart-home work. Full P&amp;L, cashflow and resource allocation, with day-to-day coordination of clients, suppliers, consultants and subcontractors across concurrent projects.</p>
+          </div>
+        </article>
+        <article>
+          <span class="num" aria-hidden="true">02</span>
+          <div>
+            <h3>Cost and process improvement</h3>
+            <p><strong>Project costs cut 20–30%</strong> through process redesign, a BIM-based workflow and new contract formats — an affordable designer-renovation model that kept design quality high. Revenue grew from about RM10k (2012) to about RM1.5M, roughly doubling for eight consecutive years, profitable throughout.</p>
+          </div>
+        </article>
+        <article>
+          <span class="num" aria-hidden="true">03</span>
+          <div>
+            <h3>Building energy &amp; services engineering</h3>
+            <p>At ReFiL: <strong>energy audits and HVAC / mechanical–electrical system proposals</strong> for new builds, thermal load calculations, and calculators built from Japanese Industrial Standards (JIS) for benchmarking and regulatory compliance. <strong>Deliverable cycle times cut by 40%</strong> by removing layers of the chain of command and going straight to build.</p>
+          </div>
+        </article>
+        <article>
+          <span class="num" aria-hidden="true">04</span>
+          <div>
+            <h3>Research-led energy design</h3>
+            <p>Doctoral research at Tohoku University: a <strong>solar-regenerated charcoal desiccant system</strong> for passive dehumidification in hot, humid climates, with up to 50% lower cooling energy load measured under specific conditions. Presented at the Kyoto International Conference (2024) and the Japan Institute of Architects international symposium. My Manchester dissertation examined barriers to energy efficiency in existing housing.</p>
+          </div>
+        </article>
+        <article>
+          <span class="num" aria-hidden="true">05</span>
+          <div>
+            <h3>Design quality &amp; recognition</h3>
+            <p>Designed the Denai Alam Phase J15 housing master plan (2011), which won a <strong>PAM Award for innovation in design</strong> in 2017 once built, and was later adopted as a template by a major Malaysian developer.</p>
+          </div>
+        </article>
+        <article>
+          <span class="num" aria-hidden="true">06</span>
+          <div>
+            <h3>BIM workflows &amp; smart buildings</h3>
+            <p>An early BIM-based 3D workflow — including 3D modelling for the Malaysian MRT system in 2012, ahead of government BIM adoption — and smart-home integration (Google Home, Zigbee) offered as a free add-on with every Lakar home renovation.</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="thread">
+        <span class="label">How I work</span>
+        <p>I work where design, cost and buildability meet: finding the pattern in messy site, cost and energy data, then turning it into a repeatable process the whole team can follow. It is how I scaled a design-build practice, how I cut delivery cycle times, and how I approach research.</p>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience" aria-labelledby="experience-heading">
+      <div class="section-head">
+        <p class="kicker">Career</p>
+        <h2 id="experience-heading">Experience</h2>
+        <p class="section-intro">From architecture practice to founding a design-build company, to building energy engineering and research in Japan. The roles change; the work — redesign the process, deliver the building — stays the same.</p>
+      </div>
+
+      <div class="timeline">
+        <article class="job">
+          <div class="job-when"><strong>Dec 2025 — Present</strong>Sendai, Japan</div>
+          <div>
+            <h3>Building Energy &amp; Automation Engineer</h3>
+            <p class="org">ReFiL G.K.</p>
+            <p>Building energy and services engineering inside a working design practice.</p>
+            <ul>
+              <li>Energy audits and HVAC / mechanical–electrical system proposals for new builds</li>
+              <li>Produces HVAC drawings in Rebro and thermal load calculations in Stabro</li>
+              <li>Builds calculators from Japanese Industrial Standards (JIS) for benchmarking and regulatory compliance</li>
+              <li>Cut deliverable cycle times by 40% by removing layers of the chain of command and going straight to build</li>
+              <li>Builds AI-assisted documentation workflows</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="job">
+          <div class="job-when"><strong>2022 — Present</strong>Student 2022–2025; on leave since 2025, researching part-time<br />Sendai, Japan</div>
+          <div>
+            <h3>Doctoral Researcher</h3>
+            <p class="org">Tohoku University</p>
+            <p>Doctoral research on a solar-regenerated charcoal desiccant system for passive dehumidification in hot, humid climates — cooling energy load reductions of up to 50% measured under specific hot, humid conditions. Experiments and heat-and-moisture modelling.</p>
+            <ul>
+              <li>Teaching Assistant (English as a second language), 2023–2025</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="job">
+          <div class="job-when"><strong>2012 — 2022</strong>Malaysia</div>
+          <div>
+            <h3>Founder, Managing Director &amp; Design Lead</h3>
+            <p class="org">Lakar Design</p>
+            <p>Founded and ran a design-build practice for ten years with full P&amp;L responsibility across delivery, clients and commercial growth.</p>
+            <ul>
+              <li>40+ design-build projects delivered (residential, commercial fit-outs, F&amp;B, smart homes)</li>
+              <li>Expanded from design studio to full design-and-build, adding in-house build management (2015)</li>
+              <li>Grew annual revenue from ~RM10k (2012) to ~RM1.5M, roughly doubling for eight consecutive years, profitable throughout</li>
+              <li>Process redesign, BIM workflow and new contract formats cut project costs 20–30%</li>
+              <li>Coordinated clients, suppliers, consultants and subcontractors across concurrent design and construction projects, managing margins, cashflow and resources</li>
+              <li>Integrated lightweight fireproof structures and smart-home systems with local suppliers; BIM-based 3D workflow adopted across the practice and, in 2012, helped build the 3D model of the Malaysian MRT system, ahead of government BIM adoption</li>
+            </ul>
+            <div class="metrics" aria-label="Founder highlights">
+              <div class="metric"><b>8 years</b><span>Revenue roughly doubling yearly, all profitable</span></div>
+              <div class="metric"><b>20–30%</b><span>Project costs cut via process, BIM and contracts</span></div>
+              <div class="metric"><b>40+</b><span>Design-build projects, full P&amp;L</span></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="job">
+          <div class="job-when"><strong>2016 — 2019</strong>Malaysia</div>
+          <div>
+            <h3>Assistant Lecturer &amp; Facilitator</h3>
+            <p class="org">Universiti Teknologi MARA (UiTM)</p>
+            <ul>
+              <li>Design thinking curriculum development and delivery</li>
+              <li>Mentored 200+ students</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="job">
+          <div class="job-when"><strong>2009 &amp; 2011–2012</strong>Malaysia (MArch in the UK between)</div>
+          <div>
+            <h3>Assistant Architect → Architect</h3>
+            <p class="org">S&amp;A Architects</p>
+            <p>Assistant architect in 2009; returned as architect in 2011 after completing my MArch, and left in 2012 to found Lakar Design. The low-rise housing master plan I designed in 2011 (Denai Alam, Phase J15) won a PAM Award for innovation in design in 2017, once construction was complete.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills" aria-labelledby="skills-heading">
+      <div class="section-head">
+        <p class="kicker">Capabilities</p>
+        <h2 id="skills-heading">Skills</h2>
+        <p class="section-intro">Design and delivery experience from running a practice, building-services depth from energy engineering and research, and digital tools that make both faster.</p>
+      </div>
+
+      <div class="skills-grid">
+        <article class="skill-card">
+          <h3><span>Design &amp; Delivery</span>Practice &amp; Project Leadership</h3>
+          <ul class="tags">
+            <li>Architectural design</li>
+            <li>Design-build management</li>
+            <li>P&amp;L &amp; cashflow</li>
+            <li>Cost control</li>
+            <li>Contractor &amp; consultant coordination</li>
+            <li>Client relations</li>
+            <li>Business development</li>
+          </ul>
+          <p>Ten years running a practice with full P&amp;L responsibility — from design through construction, across residential, commercial and F&amp;B projects.</p>
+        </article>
+
+        <article class="skill-card">
+          <h3><span>Building Energy &amp; Services</span>Energy &amp; MEP Engineering</h3>
+          <ul class="tags">
+            <li>Energy audits</li>
+            <li>HVAC / MEP proposals</li>
+            <li>Load calculations (Stabro)</li>
+            <li>MEP drawings (Rebro)</li>
+            <li>JIS compliance</li>
+            <li>Passive cooling &amp; dehumidification</li>
+            <li>Renewable energy systems</li>
+          </ul>
+          <p>Energy audits, system proposals and calculations for new builds in Japan, backed by doctoral research in passive cooling.</p>
+        </article>
+
+        <article class="skill-card">
+          <h3><span>Digital Tools</span>BIM, Automation &amp; AI</h3>
+          <ul class="tags">
+            <li>BIM workflows — early adopter</li>
+            <li>AutoCAD — advanced</li>
+            <li>Revit (basic)</li>
+            <li>Rhino / Grasshopper (PhD lab)</li>
+            <li>IoT &amp; smart buildings</li>
+            <li>Python / process automation</li>
+            <li>AI-assisted workflows</li>
+          </ul>
+          <p>Early BIM adoption, parametric design, smart-home integration, and calculators and AI-assisted workflows that speed up delivery.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- DIGITAL & AI -->
+    <section id="digital" aria-labelledby="digital-heading">
+      <div class="section-head">
+        <p class="kicker">2020 — Present</p>
+        <h2 id="digital-heading">Digital Tools &amp; AI</h2>
+        <p class="section-intro">Automation and AI applied to building work — home automation, accuracy-checked research and calculation, and tools built and shipped online.</p>
+      </div>
+
+      <div class="practice">
+        <article>
+          <span class="num" aria-hidden="true">2020</span>
+          <div>
+            <h3>Home automation &amp; IoT</h3>
+            <p>A <strong>voice-controlled home</strong> by 2021, with most functions linked through Google Home over Zigbee and Wi-Fi — and offered as a free smart-home add-on with every Lakar home renovation.</p>
+          </div>
+        </article>
+        <article>
+          <span class="num" aria-hidden="true">2022</span>
+          <div>
+            <h3>AI-assisted research with accuracy-checking workflows</h3>
+            <p>From the launch of ChatGPT in late 2022, and later other assistants, I used AI to <strong>research, draft and refine papers and calculations</strong> — while developing workflows that test the accuracy of what the AI produces against sources and calculations.</p>
+          </div>
+        </article>
+        <article>
+          <span class="num" aria-hidden="true">2025</span>
+          <div>
+            <h3>AI-built tools for building work</h3>
+            <p><strong>HydroCalc</strong> digitises JIS pipe-flow charts into a live calculator for water-supply network design. Further JIS-based calculators followed, built with AI after studying the standard chapter by chapter in NotebookLM. For my doctoral research, <strong>data tools</strong> turn raw readings from many different sensors into clean, usable datasets, and <strong>computer models</strong> predict how heat and moisture behave inside my solar-powered dehumidifier prototype.</p>
+          </div>
+        </article>
+        <article>
+          <span class="num" aria-hidden="true">2026</span>
+          <div>
+            <h3>Accuracy-first AI applications, live on the web</h3>
+            <p><strong>Online Sheikh</strong>: a multi-step Gemini workflow that draws on trusted sources of information, then runs a second checking loop to further ensure the answer shown to users is accurate. Plus <strong>AIBO</strong>, a Gemini-powered receptionist on my portfolio site, and <strong>ADAMTOOL</strong>, a directory of small web tools.</p>
+          </div>
+        </article>
+      </div>
+
+      <div style="margin-top:28px">
+        <h3>Live on the web</h3>
+        <ul class="plain-list">
+          <li><span><a href="https://github.com/lakar-team/hydrocalc" target="_blank" rel="noopener">HydroCalc</a><span class="print-url"> — github.com/lakar-team/hydrocalc</span></span><span>JIS pipe-flow calculator · GitHub</span></li>
+          <li><span><a href="https://solar-punk-five.vercel.app" target="_blank" rel="noopener">Portfolio site + AIBO receptionist</a><span class="print-url"> — solar-punk-five.vercel.app</span></span><span>Next.js · Vercel · Gemini</span></li>
+          <li><span><a href="https://islamic-advisor.pages.dev" target="_blank" rel="noopener">Online Sheikh</a><span class="print-url"> — islamic-advisor.pages.dev</span></span><span>Cloudflare Pages + Functions · Gemini</span></li>
+          <li><span><a href="https://adamtool.pages.dev" target="_blank" rel="noopener">ADAMTOOL</a><span class="print-url"> — adamtool.pages.dev</span></span><span>Cloudflare Pages · Supabase</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- EDUCATION -->
+    <section id="education" aria-labelledby="education-heading">
+      <div class="section-head">
+        <p class="kicker">Background</p>
+        <h2 id="education-heading">Education &amp; Credentials</h2>
+      </div>
+
+      <div class="edu-grid">
+        <article class="edu-card">
+          <h3>MArch (Part 2) — 2011</h3>
+          <p class="sub">University of Manchester</p>
+          <p class="detail">Dissertation: “Barriers to Energy Efficiency in Existing Housing Stock” — the starting point for a career-long focus on energy, buildings and systems.</p>
+        </article>
+        <article class="edu-card">
+          <h3>BSc Architecture (Part 1) — 2008</h3>
+          <p class="sub">Universiti Teknologi MARA (UiTM)</p>
+          <p class="detail">Dean’s Award, top of class.</p>
+        </article>
+      </div>
+
+      <div style="margin-top:28px">
+        <ul class="plain-list">
+          <li><span>Doctoral research</span><span>Tohoku University — solar-regenerated passive dehumidification (ongoing, part-time)</span></li>
+          <li><span>Qualifications</span><span>ARB/RIBA Part 2 (UK) · LAM Part 2 (Malaysia)</span></li>
+          <li><span>English</span><span>Native (C2)</span></li>
+          <li><span>Malay</span><span>Native</span></li>
+          <li><span>Japanese</span><span>Professional working proficiency (JLPT N2–N3 equivalent)</span></li>
+          <li><span>Nationality</span><span>Malaysian</span></li>
+          <li><span>Location</span><span>Sendai, Japan — open to relocation / hybrid / remote</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" aria-labelledby="contact-heading">
+      <div class="contact-box">
+        <p class="kicker">Get in touch</p>
+        <h2 id="contact-heading">Contact</h2>
+        <p>I’m interested in architecture, building-energy and design-build roles — especially where delivery, cost and performance need to come together. The fastest way to reach me is email or LinkedIn.</p>
+        <div class="contact-links">
+          <a href="mailto:adam.m.raman@gmail.com">
+            <span><span class="cl-label">Email</span><span class="cl-value">adam.m.raman@gmail.com</span></span>
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+          <a href="https://www.linkedin.com/in/adam-raman" target="_blank" rel="noopener">
+            <span><span class="cl-label">LinkedIn</span><span class="cl-value">linkedin.com/in/adam-raman</span></span>
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+          <a href="https://solar-punk-five.vercel.app" target="_blank" rel="noopener">
+            <span><span class="cl-label">Portfolio site</span><span class="cl-value">solar-punk-five.vercel.app</span></span>
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+          <a href="https://linktr.ee/adamraman" target="_blank" rel="noopener">
+            <span><span class="cl-label">Links</span><span class="cl-value">linktr.ee/adamraman</span></span>
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>© Adam Raman · Sendai, Japan</p>
+    <p><a href="https://www.linkedin.com/in/adam-raman" target="_blank" rel="noopener">LinkedIn</a> &nbsp;·&nbsp; <a href="https://linktr.ee/adamraman" target="_blank" rel="noopener">Linktree</a> &nbsp;·&nbsp; <a href="mailto:adam.m.raman@gmail.com">Email</a></p>
+  </div>
+</footer>
+
+<script>
+  // In-page section links scroll directly, so they also work when the page is embedded or previewed
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var id = a.getAttribute('href').slice(1);
+    var el = id ? document.getElementById(id) : document.body;
+    if (!el) return;
+    e.preventDefault();
+    var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'start' });
+  });
+</script>
+
+
+
+<script>
+  // English / Japanese toggle. Japanese text is stored here and swapped in place; printing uses whichever language is showing.
+  (function () {
+    var JA = {
+"Adam Raman / Portfolio": "Adam Raman <span>/ ポートフォリオ</span>",
+"AI Practice": "AI実践",
+"Skills": "スキル",
+"Experience": "職歴",
+"Education": "学歴・資格",
+"Contact": "連絡先",
+"Strengths": "強み",
+"Digital & AI": "デジタル・AI",
+"Open to relocation · Hybrid · Remote": "転居・ハイブリッド・リモート勤務に対応可",
+"Product Strategy | AI Innovation | Built Environment Technology": "プロダクト戦略 <em>|</em> AIイノベーション <em>|</em> 建築環境テクノロジー",
+"Architecture | Building Energy & MEP | Design-Build Delivery": "建築設計 <em>|</em> 建築エネルギー・設備（MEP） <em>|</em> 設計施工マネジメント",
+"Sendai, Japan · Malaysian · English (native) · Malay (native) · Japanese (professional working proficiency)": "<strong>日本・仙台</strong> &nbsp;·&nbsp; マレーシア国籍 &nbsp;·&nbsp; 英語（ネイティブ）・マレー語（ネイティブ）・日本語（実務対応レベル）",
+"Innovation strategist and former founder with 12+ years bridging physical infrastructure and digital solutions. I founded and ran a design-build practice for ten years — growing revenue roughly twofold each year for eight consecutive years, profitably, and cutting project costs 20–30% through process redesign, early BIM-based workflows and new contract formats.": "建築などの物理的なインフラとデジタルソリューションの橋渡しに<strong>12年以上</strong>取り組んできた、イノベーション戦略家・元創業者です。設計施工事務所を10年間創業・経営し、8年連続でほぼ毎年売上を倍増させながら黒字を維持し、プロセスの再設計、早期のBIMベースのワークフロー、新しい契約形態によってプロジェクトコストを20〜30%削減しました。",
+"Since 2020 I have applied automation and AI to real problems: a voice-controlled Zigbee / Google Home smart home, AI-assisted research and calculation backed by workflows that verify accuracy, and — from 2025 — AI-assisted software deployed to production, including an AI advisor that checks its own answers, a tools directory and a bilingual book. I am currently a Building Energy & Automation Engineer in Japan, building internal automation and AI documentation tools, with doctoral research on solar-regenerated passive dehumidification.": "2020年以降、自動化とAIを現実の課題に応用してきました。<strong>音声操作のZigbee／Google Homeスマートホーム、正確性を検証するワークフローに支えられたAI活用のリサーチと計算、そして2025年からは本番環境で稼働するAI支援ソフトウェア</strong>（自らの回答を検証するAIアドバイザー、ツールのディレクトリ、バイリンガルの絵本を含む）です。現在は日本で建築エネルギー・オートメーションエンジニアとして、社内の自動化ツールとAIによるドキュメント作成ツールを構築しながら、太陽熱再生式のパッシブ除湿に関する博士研究を続けています。",
+"Architect-trained design-build founder and building energy engineer with 12+ years across design, construction and building services. I founded and ran Lakar Design for ten years — 40+ projects with full P&L responsibility, annual revenue growing from about RM10k to about RM1.5M, profitable throughout — and cut project costs 20–30% through process redesign, BIM-based workflows and new contract formats.": "建築設計の訓練を受けた設計施工の創業者であり建築エネルギーエンジニアとして、設計・施工・建築設備にわたり<strong>12年以上の経験</strong>があります。Lakar Designを10年間創業・経営し、40件以上のプロジェクトを損益責任のもとで手がけ、年間売上を約RM1万から約RM150万へ伸ばしながら一貫して黒字を維持。プロセスの再設計、BIMベースのワークフロー、新しい契約形態により、プロジェクトコストを20〜30%削減しました。",
+"Today I am a Building Energy & Automation Engineer at ReFiL in Japan: energy audits, HVAC / MEP system proposals, JIS-based calculators, and deliverable cycle times cut by 40%. Alongside, I continue doctoral research at Tohoku University on passive dehumidification, with up to 50% lower cooling energy load measured under specific conditions.": "現在は日本のReFil合同会社で<strong>建築エネルギー・オートメーションエンジニア</strong>として、省エネルギー診断、空調・設備（MEP）システムの提案、JISにもとづく計算ツールの構築を行い、成果物の納期を40%短縮しました。並行して東北大学でパッシブ除湿の博士研究を続けており、特定条件下で冷房エネルギー負荷を最大50%削減できることを実測で確認しています。",
+"Portfolio site solar-punk-five.vercel.app": "ポートフォリオ <span class='btn-url'>solar-punk-five.vercel.app</span>",
+"12+ years across architecture, product & AI": "建築・プロダクト・AIにわたる12年以上",
+"12+ years across architecture, design-build & building energy": "建築・設計施工・建築エネルギーにわたる12年以上",
+"5 years — home automation, AI-assisted research, AI-built software": "5年 — ホームオートメーション、AI活用リサーチ、AI開発ソフトウェア",
+"Founder Record": "創業実績",
+"40+ design-build projects, full P&L": "設計施工プロジェクト40件以上、損益責任",
+"Delivery Record": "実績",
+"40+ projects, full P&L, 20–30% cost reduction": "40件以上のプロジェクト、損益責任、コスト20〜30%削減",
+"Energy Research": "エネルギー研究",
+"Up to 50% lower cooling load, measured": "冷房負荷を最大50%削減（実測）",
+"Based in": "拠点",
+"Sendai, Japan — open worldwide": "日本・仙台 — 世界各地で対応可",
+"2020 — Present": "2020年〜現在",
+"AI & Technology Practice": "AI・テクノロジーの実践",
+"Applied automation and AI built alongside professional roles and research — in stages, from a voice-controlled home to software deployed in production. This is the core of my current direction: product and innovation roles where AI has to work in the real world.": "職務や研究と並行して、自動化とAIを段階的に発展させてきました。音声操作の住まいから、本番環境で稼働するソフトウェアまで。AIが実社会で機能しなければならないプロダクト・イノベーション分野の職務が、現在の私の中心的な方向性です。",
+"Home automation & IoT": "ホームオートメーションとIoT",
+"A voice-controlled home by 2021, with most functions linked through Google Home over Zigbee and Wi-Fi — and offered as a free smart-home add-on with every Lakar home renovation.": "2021年までに、ZigbeeとWi-Fi経由でGoogle Homeに主要機能を連携させた<strong>音声操作の住まい</strong>を実現し、Lakarの住宅リノベーションには無償のスマートホームオプションとして提供しました。",
+"AI-assisted research with accuracy-checking workflows": "AI活用リサーチと正確性検証ワークフロー",
+"From the launch of ChatGPT in late 2022, and later other assistants, I used AI to research, draft and refine papers and calculations — while developing workflows that test the accuracy of what the AI produces against sources and calculations.": "2022年後半のChatGPT公開以降、のちに他のアシスタントも用いて、AIで<strong>論文や計算の調査・下書き・推敲</strong>を行ってきました。同時に、AIの出力が情報源や計算結果と合っているかを検証するワークフローを開発しています。",
+"AI-assisted software, taken to finished products": "AI支援開発による完成プロダクト",
+"From 2025, AI-assisted coding from idea to finished product: Demon Hunter, a browser game with a custom Web Audio engine (built locally in 2025, deployed online in 2026); and the bilingual Momotaro children’s book — HTML-coded layout, AI illustration — published on Amazon KDP in December 2025.": "2025年から、AI支援コーディングでアイデアから完成品まで仕上げてきました。独自のWebオーディオエンジンを備えたブラウザゲーム<strong>Demon Hunter</strong>（2025年にローカルで開発、2026年にオンライン公開）と、日英バイリンガルの絵本<strong>『桃太郎』</strong>（HTMLによるレイアウト、AIイラスト）は<strong>2025年12月にAmazon KDPで出版</strong>しました。",
+"Accuracy-first AI & LLM workflows": "正確性を最優先したAI・LLMワークフロー",
+"Online Sheikh: a multi-step Gemini workflow that draws on trusted sources of information, then runs a second checking loop to further ensure the answer shown to users is accurate. Plus AIBO, a Gemini-powered receptionist that greets and guides visitors on my portfolio site.": "<strong>Online Sheikh</strong>：信頼できる情報源を参照したうえで、さらに二次チェックのループを回し、ユーザーに表示する回答の正確性を高める多段階のGeminiワークフローです。加えて、ポートフォリオサイト上で訪問者を迎え案内する、Gemini搭載の受付係<strong>AIBO</strong>も開発しました。",
+"Process automation from standards": "規格にもとづく業務自動化",
+"HydroCalc digitises Japanese Industrial Standards (JIS) pipe-flow charts into a live calculator for water-supply network design. Further JIS-based calculators followed, built with AI after studying the standard chapter by chapter in NotebookLM.": "<strong>HydroCalc</strong>は、日本産業規格（JIS）の管路流量チャートを、給水ネットワーク設計向けのライブ計算ツールにデジタル化したものです。その後、JIS規格をNotebookLMで章ごとに読み込み、AIを使って関連するJIS準拠の計算ツールを追加で開発しました。",
+"PhD": "博士",
+"Research data & modelling, AI-assisted": "研究データとモデリング（AI支援）",
+"For my doctoral research: data tools that turn raw readings from many different sensors into clean, usable datasets, and computer models that predict how heat and moisture behave inside my solar-powered dehumidifier prototype — built with AI assistance and checked against real measurements.": "博士研究では、さまざまなセンサーの生データを整理されたデータセットに変換する<strong>データツール</strong>と、自作の太陽光駆動除湿試作機内の熱と湿気の挙動を予測する<strong>コンピュータモデル</strong>を、AIの支援を受けて構築し、実測値と照合しています。",
+"Live on the web": "公開中のサービス",
+"Portfolio site + AIBO receptionist": "ポートフォリオサイト＋受付AI「AIBO」",
+"PDF → DXF converter": "PDF→DXF変換ツール",
+"JIS pipe-flow calculator · GitHub": "JIS管路流量計算ツール · GitHub",
+"The thread through it all": "すべてに通じる軸",
+"Taking messy real-world data and processes, finding the underlying pattern, and teaching AI to handle them in defined, repeatable steps. That pattern runs through my design work, my teaching, and my applied AI builds — it is how I approach product problems.": "現実世界の雑然としたデータやプロセスから根底にあるパターンを見つけ、定義された再現可能なステップでAIに処理させること。このパターンは、設計の仕事、教育、AIの開発のすべてに共通しており、プロダクトの課題に取り組む際の私の方法でもあります。",
+"Capabilities": "スキルセット",
+"A portable mix: deep technical fluency in AI and the built environment, plus the product, commercial and leadership skills that come from running a practice.": "AIと建築環境に関する深い技術的知見に、事務所経営で培ったプロダクト・ビジネス・リーダーシップのスキルを組み合わせた、どこでも活かせるスキルセットです。",
+"AI & Data Applied AI & Engineering": "<span>AI・データ</span>AI活用とエンジニアリング",
+"Retrieval-grounded AI apps": "情報源参照型AIアプリ",
+"LLM workflows": "LLMワークフロー",
+"AI-assisted development": "AI支援開発",
+"Data structuring": "データ構造化",
+"Process automation": "業務自動化",
+"Simulation & modelling": "シミュレーション・モデリング",
+"Retrieval-grounded Gemini apps, LLM workflows, sensor-data preparation and standards-based calculators — shipped to production on Vercel and Cloudflare.": "情報源参照型のGeminiアプリ、LLMワークフロー、センサーデータの整備、規格にもとづく計算ツール — VercelとCloudflareで本番公開しています。",
+"Product & Strategy Product & Leadership": "<span>プロダクト・戦略</span>プロダクトとリーダーシップ",
+"Human-centric design": "人間中心設計",
+"Design thinking": "デザイン思考",
+"Product-market fit": "プロダクト・マーケットフィット",
+"Business development": "事業開発",
+"P&L management": "損益管理（P&L）",
+"Stakeholder management": "ステークホルダー管理",
+"Mentorship": "メンタリング",
+"Ten years running a practice with full P&L responsibility — finding fit, redesigning processes, and leading multidisciplinary teams and stakeholders.": "10年間にわたり損益責任を負って事務所を経営 — 市場適合の発見、プロセスの再設計、多分野のチームとステークホルダーのリードを担ってきました。",
+"Built Environment Tech Domain Technology": "<span>建築環境テック</span>専門領域の技術",
+"BIM workflows — early adopter": "BIMワークフロー（早期導入）",
+"Revit (basic)": "Revit（基礎）",
+"AutoCAD — advanced": "AutoCAD（上級）",
+"Rhino / Grasshopper (PhD lab)": "Rhino / Grasshopper（博士研究室）",
+"IoT & smart buildings": "IoT・スマートビルディング",
+"Energy systems design": "エネルギーシステム設計",
+"Early BIM adoption, parametric design, IoT smart-home integration, and energy systems — the domain depth behind the technology work.": "BIMの早期導入、パラメトリック設計、IoTスマートホーム統合、エネルギーシステム — テクノロジーの仕事を支える専門領域の深さです。",
+"Career": "経歴",
+"From architecture practice to founding a design-build company, to research and applied AI in Japan. The roles change; the work — redesign the process, build the system — stays the same.": "建築設計の実務から設計施工会社の創業、そして日本での研究とAI活用へ。役割は変わっても、仕事の本質 — プロセスを再設計し、仕組みを築くこと — は変わりません。",
+"From architecture practice to founding a design-build company, to building energy engineering and research in Japan. The roles change; the work — redesign the process, deliver the building — stays the same.": "建築設計の実務から設計施工会社の創業、そして日本での建築エネルギーエンジニアリングと研究へ。役割は変わっても、仕事の本質 — プロセスを再設計し、建物を完成させること — は変わりません。",
+"Dec 2025 — Present Sendai, Japan": "<strong>2025年12月〜現在</strong>日本・仙台",
+"Building Energy & Automation Engineer": "建築エネルギー・オートメーションエンジニア",
+"Building internal automation and AI tools inside a working design practice.": "稼働中の設計事務所の内部で、社内の自動化ツールとAIツールを構築しています。",
+"Builds calculators from Japanese Industrial Standards (JIS) for benchmarking and regulatory compliance": "日本産業規格（JIS）にもとづき、ベンチマークと法規適合確認のための計算ツールを構築",
+"Builds AI-assisted documentation workflows": "AIを活用したドキュメント作成ワークフローを構築",
+"Cut deliverable cycle times by 40% by removing layers of the chain of command and going straight to build": "指揮命令系統の階層を減らし、直接施工に着手することで、成果物の納期を40%短縮",
+"Energy audits and mechanical / electrical system proposals": "省エネルギー診断と機械・電気設備システムの提案",
+"2022 — Present Student 2022–2025; on leave since 2025, researching part-time Sendai, Japan": "<strong>2022年〜現在</strong>在籍2022〜2025年、2025年より休学しパートタイムで研究継続<br />日本・仙台",
+"Doctoral Researcher": "博士課程研究員",
+"Tohoku University": "東北大学",
+"ReFiL G.K.": "ReFil 合同会社",
+"Doctoral research on a solar-regenerated charcoal desiccant system for passive dehumidification in hot, humid climates — cooling energy load reductions of up to 50% measured under specific hot, humid conditions. Experiments and heat-and-moisture modelling.": "高温多湿の気候におけるパッシブ除湿のための、太陽熱で再生する木炭デシカントシステムに関する博士研究。特定の高温多湿条件下で、冷房エネルギー負荷を最大50%削減できることを実測で確認。実験と熱・湿気のモデリングを実施。",
+"Teaching Assistant (English as a second language), 2023–2025": "ティーチングアシスタント（第二言語としての英語）、2023〜2025年",
+"2012 — 2022 Malaysia": "<strong>2012年〜2022年</strong>マレーシア",
+"Founder, Managing Director & Design Lead": "創業者・代表取締役・デザインリード",
+"Founded and ran a design-build practice for ten years with full P&L responsibility across delivery, clients and commercial growth.": "10年間にわたり設計施工事務所を創業・経営し、施工、顧客対応、事業成長の全般に損益責任を負いました。",
+"40+ design-build projects delivered (residential, commercial fit-outs, smart homes)": "設計施工プロジェクト40件以上を完工（住宅、商業内装、スマートホーム）",
+"40+ design-build projects delivered (residential, commercial fit-outs, F&B, smart homes)": "設計施工プロジェクト40件以上を完工（住宅、商業内装、飲食店、スマートホーム）",
+"BIM-based 3D workflow adopted across the practice; in 2012, helped build the 3D model of the Malaysian MRT system, ahead of government BIM adoption": "事務所全体でBIMベースの3Dワークフローを採用。2012年にはマレーシア政府のBIM導入に先駆け、マレーシアMRTシステムの3Dモデル作成に参画",
+"Smart-home integration (Google Home, Zigbee) offered as a free add-on with every home renovation": "スマートホーム統合（Google Home、Zigbee）を、すべての住宅リノベーションに無償オプションとして提供",
+"Grew annual revenue from ~RM10k (2012) to ~RM1.5M, roughly doubling for eight consecutive years, profitable throughout": "年間売上を2012年の約RM1万から約RM150万へ拡大。8年連続でほぼ毎年倍増し、一貫して黒字",
+"Process redesign, BIM workflow and new contract formats cut project costs 20–30%": "プロセスの再設計、BIMワークフロー、新しい契約形態によりプロジェクトコストを20〜30%削減",
+"8 years": "8年",
+"Revenue roughly doubling yearly, all profitable": "売上がほぼ毎年倍増、すべて黒字",
+"Project costs cut via process, BIM and contracts": "プロセス・BIM・契約でプロジェクトコストを削減",
+"Design-build projects, full P&L": "設計施工プロジェクト、損益責任",
+"2016 — 2019 Malaysia": "<strong>2016年〜2019年</strong>マレーシア",
+"Assistant Lecturer & Facilitator": "アシスタントレクチャラー・ファシリテーター",
+"Universiti Teknologi MARA (UiTM)": "マラ工科大学（UiTM）",
+"Design thinking curriculum development and delivery": "デザイン思考のカリキュラム開発と授業実施",
+"Mentored 200+ students": "200人以上の学生を指導",
+"2009 & 2011–2012 Malaysia (MArch in the UK between)": "<strong>2009年・2011〜2012年</strong>マレーシア（間に英国で建築修士課程）",
+"Assistant Architect → Architect": "アシスタントアーキテクト → アーキテクト",
+"Assistant architect in 2009; returned as architect in 2011 after completing my MArch, and left in 2012 to found Lakar Design. The low-rise housing master plan I designed in 2011 (Denai Alam, Phase J15) won a PAM Award for innovation in design in 2017, once construction was complete.": "2009年にアシスタントアーキテクトとして勤務し、建築修士課程の修了後、2011年にアーキテクトとして復帰、2012年にLakar Designを創業するため退職しました。2011年に設計した低層住宅のマスタープラン（デナイ・アラム、フェーズJ15）は、竣工後の2017年にデザインの革新性を評価され、マレーシア建築家協会（PAM）アワードを受賞しました。",
+"Background": "背景",
+"Education & Credentials": "学歴・資格",
+"MArch (Part 2) — 2011": "建築修士（MArch、Part 2）— 2011年",
+"University of Manchester": "マンチェスター大学",
+"Dissertation: “Barriers to Energy Efficiency in Existing Housing Stock” — the starting point for a career-long focus on energy, buildings and systems.": "論文：「既存住宅ストックにおけるエネルギー効率化の障壁」 — エネルギー、建物、システムを軸とするキャリアの出発点です。",
+"BSc Architecture (Part 1) — 2008": "建築学士（BSc、Part 1）— 2008年",
+"Dean’s Award, top of class.": "学部長賞、首席。",
+"Qualifications": "資格",
+"ARB/RIBA Part 2 (UK) · LAM Part 2 (Malaysia)": "ARB/RIBA Part 2（英国）・LAM Part 2（マレーシア）",
+"English": "英語",
+"Native (C2)": "ネイティブ（C2）",
+"Malay": "マレー語",
+"Native": "ネイティブ",
+"Japanese": "日本語",
+"Professional working proficiency (JLPT N2–N3 equivalent)": "実務対応レベル（日本語能力試験N2〜N3相当）",
+"Nationality": "国籍",
+"Malaysian": "マレーシア",
+"Location": "所在地",
+"Sendai, Japan — open to relocation / hybrid / remote": "日本・仙台 — 転居・ハイブリッド・リモート勤務に対応可",
+"Get in touch": "お問い合わせ",
+"I’m interested in product strategy, AI innovation and built-environment technology roles — especially where messy operational reality needs to become a clear, repeatable system. The fastest way to reach me is email or LinkedIn.": "プロダクト戦略、AIイノベーション、建築環境テクノロジーの職務に関心があります。とりわけ、雑然とした現場の実態を、明確で再現可能な仕組みに変える必要がある場面に惹かれます。ご連絡はメールまたはLinkedInが最も確実です。",
+"I’m interested in architecture, building-energy and design-build roles — especially where delivery, cost and performance need to come together. The fastest way to reach me is email or LinkedIn.": "建築設計、建築エネルギー、設計施工の職務に関心があります。とりわけ、施工、コスト、性能を一つにまとめる必要がある場面に惹かれます。ご連絡はメールまたはLinkedInが最も確実です。",
+"Email": "メール",
+"Portfolio site": "ポートフォリオサイト",
+"Links": "リンク",
+"© Adam Raman · Sendai, Japan": "© Adam Raman · 日本・仙台",
+"LinkedIn · Linktree · Email": "<a href='https://www.linkedin.com/in/adam-raman' target='_blank' rel='noopener'>LinkedIn</a> &nbsp;·&nbsp; <a href='https://linktr.ee/adamraman' target='_blank' rel='noopener'>Linktree</a> &nbsp;·&nbsp; <a href='mailto:adam.m.raman@gmail.com'>メール</a>",
+"What I bring": "提供できる価値",
+"Core Strengths": "主な強み",
+"Ten years running a design-build practice, now applied to building energy and services in Japan — supported by research and digital tools.": "設計施工事務所を10年間経営した経験を、現在は日本の建築エネルギー・建築設備の分野に活かしています。研究とデジタルツールがそれを支えています。",
+"Design-build delivery & commercial management": "設計施工の遂行と事業マネジメント",
+"Grew Lakar Design from a one-person studio into a design-and-build company (build management added in 2015), delivering 40+ projects across residential, commercial fit-out, F&B and smart-home work. Full P&L, cashflow and resource allocation, with day-to-day coordination of clients, suppliers, consultants and subcontractors across concurrent projects.": "Lakar Designを一人のスタジオから設計施工会社へと成長させ（2015年に施工管理機能を追加）、住宅、商業内装、飲食店、スマートホームにわたる<strong>40件以上のプロジェクト</strong>を完工しました。損益、キャッシュフロー、リソース配分に責任を持ち、並行する複数案件で顧客、サプライヤー、コンサルタント、協力会社の日々の調整を担いました。",
+"Cost and process improvement": "コストとプロセスの改善",
+"Project costs cut 20–30% through process redesign, a BIM-based workflow and new contract formats — an affordable designer-renovation model that kept design quality high. Revenue grew from about RM10k (2012) to about RM1.5M, roughly doubling for eight consecutive years, profitable throughout.": "プロセスの再設計、BIMベースのワークフロー、新しい契約形態により、<strong>プロジェクトコストを20〜30%削減</strong>しました。デザインの質を高く保ったまま手の届く価格を実現するリノベーションモデルです。売上は2012年の約RM1万から約RM150万へ、8年連続でほぼ毎年倍増し、一貫して黒字でした。",
+"Building energy & services engineering": "建築エネルギー・設備エンジニアリング",
+"At ReFiL: energy audits and HVAC / mechanical–electrical system proposals for new builds, thermal load calculations, and calculators built from Japanese Industrial Standards (JIS) for benchmarking and regulatory compliance. Deliverable cycle times cut by 40% by removing layers of the chain of command and going straight to build.": "ReFil合同会社では、新築物件の<strong>省エネルギー診断と、空調・機械電気設備システムの提案</strong>、熱負荷計算、そして日本産業規格（JIS）にもとづくベンチマークと法規適合確認のための計算ツールを担当しています。指揮命令系統の階層を減らし、直接施工に着手することで、<strong>成果物の納期を40%短縮</strong>しました。",
+"Research-led energy design": "研究にもとづくエネルギー設計",
+"Doctoral research at Tohoku University: a solar-regenerated charcoal desiccant system for passive dehumidification in hot, humid climates, with up to 50% lower cooling energy load measured under specific conditions. Presented at the Kyoto International Conference (2024) and the Japan Institute of Architects international symposium. My Manchester dissertation examined barriers to energy efficiency in existing housing.": "東北大学での博士研究：高温多湿の気候におけるパッシブ除湿のための<strong>太陽熱再生式の木炭デシカントシステム</strong>で、特定条件下で冷房エネルギー負荷を最大50%削減できることを実測で確認しました。京都の国際会議（2024年）と日本建築家協会の国際シンポジウムで発表。マンチェスター大学の修士論文では、既存住宅ストックにおけるエネルギー効率化の障壁を扱いました。",
+"Design quality & recognition": "デザインの質と評価",
+"Designed the Denai Alam Phase J15 housing master plan (2011), which won a PAM Award for innovation in design in 2017 once built, and was later adopted as a template by a major Malaysian developer.": "デナイ・アラム フェーズJ15の住宅マスタープラン（2011年）を設計し、竣工後の2017年に<strong>デザインの革新性でPAMアワード</strong>を受賞。のちにマレーシアの大手デベロッパーにテンプレートとして採用されました。",
+"BIM workflows & smart buildings": "BIMワークフローとスマートビルディング",
+"An early BIM-based 3D workflow — including 3D modelling for the Malaysian MRT system in 2012, ahead of government BIM adoption — and smart-home integration (Google Home, Zigbee) offered as a free add-on with every Lakar home renovation.": "早期のBIMベース3Dワークフロー（2012年のマレーシアMRTシステムの3Dモデル作成を含み、政府のBIM導入に先行）と、Lakarの住宅リノベーションに無償オプションとして提供したスマートホーム統合（Google Home、Zigbee）。",
+"How I work": "仕事の進め方",
+"I work where design, cost and buildability meet: finding the pattern in messy site, cost and energy data, then turning it into a repeatable process the whole team can follow. It is how I scaled a design-build practice, how I cut delivery cycle times, and how I approach research.": "設計、コスト、施工性が交わる領域で、現場、コスト、エネルギーの雑然としたデータからパターンを見つけ、チーム全員が従える再現可能なプロセスに落とし込みます。設計施工事務所の成長、納期の短縮、そして研究へのアプローチも、この方法によるものです。",
+"Produces HVAC drawings in Rebro and thermal load calculations in Stabro": "Rebroによる空調設備図面と、Stabroによる熱負荷計算を作成",
+"Building energy and services engineering inside a working design practice.": "稼働中の設計事務所の内部で、建築エネルギー・建築設備のエンジニアリングを担当しています。",
+"Energy audits and HVAC / mechanical–electrical system proposals for new builds": "新築物件の省エネルギー診断と、空調・機械電気設備システムの提案",
+"Expanded from design studio to full design-and-build, adding in-house build management (2015)": "設計事務所から設計施工会社へ拡大し、社内に施工管理機能を追加（2015年）",
+"Coordinated clients, suppliers, consultants and subcontractors across concurrent design and construction projects, managing margins, cashflow and resources": "並行する設計・施工プロジェクトで、顧客、サプライヤー、コンサルタント、協力会社を調整し、利益率、キャッシュフロー、リソースを管理",
+"Integrated lightweight fireproof structures and smart-home systems with local suppliers; BIM-based 3D workflow adopted across the practice and, in 2012, helped build the 3D model of the Malaysian MRT system, ahead of government BIM adoption": "現地サプライヤーと連携し、軽量耐火構造とスマートホームシステムを導入。事務所全体でBIMベースの3Dワークフローを採用し、2012年にはマレーシア政府のBIM導入に先駆け、マレーシアMRTシステムの3Dモデル作成に参画",
+"Design and delivery experience from running a practice, building-services depth from energy engineering and research, and digital tools that make both faster.": "事務所経営で培った設計・施工の経験、エネルギーエンジニアリングと研究で得た建築設備の知見、そしてその両方を加速するデジタルツールです。",
+"Design & Delivery Practice & Project Leadership": "<span>設計・施工管理</span>事務所経営とプロジェクトリーダーシップ",
+"Architectural design": "建築設計",
+"Design-build management": "設計施工マネジメント",
+"P&L & cashflow": "損益・キャッシュフロー",
+"Cost control": "コスト管理",
+"Contractor & consultant coordination": "施工者・コンサルタント調整",
+"Client relations": "顧客対応",
+"Ten years running a practice with full P&L responsibility — from design through construction, across residential, commercial and F&B projects.": "10年間にわたり損益責任を負って事務所を経営 — 設計から施工まで、住宅・商業・飲食のプロジェクトを手がけてきました。",
+"Building Energy & Services Energy & MEP Engineering": "<span>建築エネルギー・設備</span>エネルギー・MEPエンジニアリング",
+"Energy audits": "省エネルギー診断",
+"HVAC / MEP proposals": "空調・設備（MEP）提案",
+"Load calculations (Stabro)": "熱負荷計算（Stabro）",
+"MEP drawings (Rebro)": "設備図面（Rebro）",
+"JIS compliance": "JIS適合",
+"Passive cooling & dehumidification": "パッシブ冷房・除湿",
+"Renewable energy systems": "再生可能エネルギーシステム",
+"Energy audits, system proposals and calculations for new builds in Japan, backed by doctoral research in passive cooling.": "日本の新築物件に対する省エネルギー診断、システム提案、計算を、パッシブ冷房の博士研究に裏付けられて行っています。",
+"Digital Tools BIM, Automation & AI": "<span>デジタルツール</span>BIM・自動化・AI",
+"Python / process automation": "Python／業務自動化",
+"AI-assisted workflows": "AI支援ワークフロー",
+"Early BIM adoption, parametric design, smart-home integration, and calculators and AI-assisted workflows that speed up delivery.": "BIMの早期導入、パラメトリック設計、スマートホーム統合、そして業務を加速する計算ツールとAI支援ワークフローです。",
+"Digital Tools & AI": "デジタルツールとAI",
+"Automation and AI applied to building work — home automation, accuracy-checked research and calculation, and tools built and shipped online.": "自動化とAIを建築の仕事に応用しています。ホームオートメーション、正確性を検証したリサーチと計算、そしてオンラインで公開したツール。",
+"AI-built tools for building work": "建築業務のためのAI開発ツール",
+"HydroCalc digitises JIS pipe-flow charts into a live calculator for water-supply network design. Further JIS-based calculators followed, built with AI after studying the standard chapter by chapter in NotebookLM. For my doctoral research, data tools turn raw readings from many different sensors into clean, usable datasets, and computer models predict how heat and moisture behave inside my solar-powered dehumidifier prototype.": "<strong>HydroCalc</strong>は、JISの管路流量チャートを給水ネットワーク設計向けのライブ計算ツールにデジタル化したものです。その後、JIS規格をNotebookLMで章ごとに読み込み、AIを使って関連するJIS準拠の計算ツールを開発しました。博士研究では、さまざまなセンサーの生データを整理されたデータセットに変換する<strong>データツール</strong>と、自作の太陽光駆動除湿試作機内の熱と湿気の挙動を予測する<strong>コンピュータモデル</strong>も作成しています。",
+"Accuracy-first AI applications, live on the web": "正確性を最優先したAIアプリケーション（公開中）",
+"Online Sheikh: a multi-step Gemini workflow that draws on trusted sources of information, then runs a second checking loop to further ensure the answer shown to users is accurate. Plus AIBO, a Gemini-powered receptionist on my portfolio site, and ADAMTOOL, a directory of small web tools.": "<strong>Online Sheikh</strong>：信頼できる情報源を参照したうえで、さらに二次チェックのループを回し、ユーザーに表示する回答の正確性を高める多段階のGeminiワークフローです。加えて、ポートフォリオサイトの受付係であるGemini搭載の<strong>AIBO</strong>と、小さなWebツールのディレクトリ<strong>ADAMTOOL</strong>があります。",
+"Doctoral research": "博士研究",
+"Tohoku University — solar-regenerated passive dehumidification (ongoing, part-time)": "東北大学 — 太陽熱再生式パッシブ除湿（継続中・パートタイム）"
+};
+    var TITLE_JA = "Adam Raman — 建築設計 | 建築エネルギー・設備 | 設計施工マネジメント";
+    var root = document.documentElement;
+    var titleEn = document.title;
+
+    function norm(s) { return s.replace(/\s+/g, ' ').trim(); }
+    function keyOf(el) {
+      var out = '';
+      (function walk(n) {
+        if (n.nodeType === 3) { out += n.nodeValue; return; }
+        if (n.nodeType !== 1) return;
+        if (n.tagName === 'BR') { out += ' '; return; }
+        for (var c = n.firstChild; c; c = c.nextSibling) walk(c);
+        if (n !== el && ((n.tagName === 'STRONG' && n.parentNode.classList.contains('job-when')) ||
+            (n.tagName === 'SPAN' && n.parentNode.tagName === 'H3' && n === n.parentNode.firstElementChild))) out += ' ';
+      })(el);
+      return norm(out);
+    }
+    function hasDirectText(el) {
+      for (var c = el.firstChild; c; c = c.nextSibling) {
+        if (c.nodeType === 3 && /\S/.test(c.nodeValue)) return true;
+      }
+      return false;
+    }
+
+    var entries = [];
+    function scan(el) {
+      if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') return;
+      if (hasDirectText(el)) {
+        var k = keyOf(el);
+        if (Object.prototype.hasOwnProperty.call(JA, k)) { entries.push({ el: el, en: el.innerHTML, ja: JA[k] }); return; }
+      }
+      for (var c = el.firstElementChild; c; c = c.nextElementSibling) scan(c);
+    }
+    scan(document.body);
+
+    var buttons = document.querySelectorAll('.lang-toggle button');
+    function setLang(lang, save) {
+      for (var i = 0; i < entries.length; i++) entries[i].el.innerHTML = lang === 'ja' ? entries[i].ja : entries[i].en;
+      root.lang = lang;
+      document.title = lang === 'ja' ? TITLE_JA : titleEn;
+      for (var j = 0; j < buttons.length; j++) buttons[j].setAttribute('aria-pressed', String(buttons[j].getAttribute('data-lang') === lang));
+      if (save) { try { localStorage.setItem('cv-lang', lang); } catch (e) {} }
+    }
+    for (var b = 0; b < buttons.length; b++) {
+      (function (btn) { btn.addEventListener('click', function () { setLang(btn.getAttribute('data-lang'), true); }); })(buttons[b]);
+    }
+
+    var initial = 'en';
+    try {
+      var q = new URLSearchParams(location.search).get('lang');
+      if (q === 'ja' || q === 'en') initial = q;
+      else { var s = localStorage.getItem('cv-lang'); if (s === 'ja' || s === 'en') initial = s; }
+    } catch (e) {}
+    if (initial === 'ja') setLang('ja', false);
+  })();
+</script>
+
+</body>
+</html>
