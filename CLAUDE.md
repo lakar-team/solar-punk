@@ -34,7 +34,13 @@ there.
   - `games/` — Demon Hunter (116KB single HTML), Kanji Pad game.
   - `apps/hydrocalc/` — a full hydrology calculator app (pipe flow, fixtures).
   - `textures/` — planet textures and preview images (several MB each).
-  - `Adam_Tech_CV.pdf` — downloadable CV (a print of the HTML CV).
+  - `cv/tech.html`, `cv/aec.html` — the two HTML CVs, copied verbatim from
+    Drive `RESUME/adamCV202610 Tech.html` / `adamCV202610AEC.html`. Served at
+    `/cv/tech` and `/cv/aec` (rewrites in `next.config.ts`), embedded on
+    `/about#cv`. These URLs go out in emails — don't rename them.
+  - `guide.html` — bilingual portfolio guide (Drive
+    `RESUME/Portfolio_Guide_Adam202610.html`), served at `/guide`, linked from
+    the ? icon in the HUD header. The old `/Adam_Tech_CV.pdf` redirects to `/cv/tech`.
 
 ## Key issues to fix (from 2026-06-24 code review)
 

@@ -251,13 +251,23 @@ const MobileLiteView = () => {
                 <section className="mt-16 p-6 rounded-3xl bg-white/[0.02] border border-white/[0.05]">
                     <h3 className="text-xl font-bold text-white mb-2">{profile.name}</h3>
                     <p className="text-xs text-slate-500 leading-relaxed mb-6">{profile.title}</p>
-                    <Link
-                        href="/Adam_Tech_CV.pdf"
-                        target="_blank"
-                        className="inline-block py-2 px-4 bg-white/5 border border-white/10 rounded-lg text-xs font-bold uppercase tracking-widest text-white hover:bg-white/10 transition-colors"
-                    >
-                        View Full CV
-                    </Link>
+                    <div className="flex flex-wrap gap-2">
+                        {[
+                            { href: '/cv/tech', label: 'Tech CV' },
+                            { href: '/cv/aec', label: 'AEC CV' },
+                            { href: '/guide', label: 'Portfolio Guide' },
+                        ].map(link => (
+                            <a
+                                key={link.href}
+                                href={link.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-block py-2 px-4 bg-white/5 border border-white/10 rounded-lg text-xs font-bold uppercase tracking-widest text-white hover:bg-white/10 transition-colors"
+                            >
+                                {link.label}
+                            </a>
+                        ))}
+                    </div>
                 </section>
 
                 {/* System Index — two-tier: categories → moons */}

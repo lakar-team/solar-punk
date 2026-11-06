@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
+import CvViewer from '@/components/ui/CvViewer';
 
 export const metadata: Metadata = {
     title: 'About Adam M. Raman | Portfolio',
@@ -353,29 +354,12 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* CV download */}
-            <section className="max-w-5xl mx-auto px-6 py-16 border-b border-white/8">
-                <div className="mb-8 flex items-center justify-between">
-                    <span className="text-[10px] uppercase tracking-[0.35em] text-white/25">Tech CV</span>
-                    <a href="/Adam_Tech_CV.pdf" target="_blank" rel="noopener noreferrer" className="text-[10px] text-amber-400 hover:text-amber-300 underline uppercase tracking-widest">Open Full Screen</a>
+            {/* CVs (hosted HTML, shareable at /cv/tech and /cv/aec) */}
+            <section id="cv" className="max-w-5xl mx-auto px-6 py-16 border-b border-white/8">
+                <div className="mb-8">
+                    <span className="text-[10px] uppercase tracking-[0.35em] text-white/25">Curriculum Vitae</span>
                 </div>
-                <div className="mb-6">
-                    <a
-                        href="/Adam_Tech_CV.pdf"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-3 px-6 py-3 bg-amber-600 hover:bg-amber-500 text-black font-bold uppercase tracking-wider transition-colors rounded-lg"
-                    >
-                        Download Tech CV (PDF)
-                    </a>
-                </div>
-                <div className="rounded-2xl overflow-hidden border border-white/10 bg-black/40">
-                    <iframe
-                        src="/Adam_Tech_CV.pdf#navpanes=0&toolbar=0&view=FitH"
-                        className="w-full h-[700px]"
-                        title="Adam M. Raman Tech CV"
-                    />
-                </div>
+                <CvViewer />
             </section>
 
             {/* Career Background document */}

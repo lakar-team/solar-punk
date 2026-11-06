@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ポートフォリオガイド — Adam Raman</title>
+<meta name="description" content="A guide to Adam Raman's interactive 3D portfolio: how the sun, planets and moons are organised, what the four categories are, and how to explore the site.">
+<style>
+  :root{
+    --ink:#101418;
+    --paper:#f7f4ee;
+    --solar:#e8a33d;
+    --solar-deep:#c47b16;
+    --moss:#3e6b4f;
+    --line:#d8d2c4;
+    --muted:#5b6470;
+    --c-arch:#f59e0b;
+    --c-digital:#3b82f6;
+    --c-products:#22c55e;
+    --c-teach:#7c3aed;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html[lang="ja"] .en{display:none;}
+  html[lang="en"] .jp{display:none;}
+  body{
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic UI","Yu Gothic","Noto Sans JP",sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.75;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  html[lang="en"] body{font-family:"Segoe UI","Helvetica Neue",Arial,"Hiragino Sans","Yu Gothic UI",sans-serif;}
+  /* ---------- TOPBAR / TOGGLE ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    display:flex; justify-content:space-between; align-items:center; gap:12px;
+    background:rgba(16,20,24,.94); color:#f7f4ee;
+    padding:10px 8vw;
+  }
+  .topbar .brand{font-size:13px; letter-spacing:.28em; font-weight:700; white-space:nowrap;}
+  .toggle{display:flex; border:1px solid rgba(247,244,238,.35); border-radius:999px; overflow:hidden; flex:none;}
+  .toggle button{
+    appearance:none; border:0; background:transparent; color:#cfd6cf;
+    font:inherit; font-size:13px; font-weight:700; letter-spacing:.08em;
+    padding:6px 18px; cursor:pointer;
+  }
+  .toggle button.active{background:var(--solar); color:#14100a;}
+  .toggle button:focus-visible{outline:2px solid var(--solar); outline-offset:2px;}
+  /* ---------- HERO ---------- */
+  .hero{
+    background:
+      radial-gradient(1100px 480px at 85% -10%, rgba(232,163,61,.38), transparent 60%),
+      radial-gradient(700px 500px at -10% 110%, rgba(62,107,79,.45), transparent 55%),
+      linear-gradient(135deg,#101418 0%,#182026 55%,#1d2a24 100%);
+    color:#f7f4ee;
+    padding:72px 8vw 68px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; right:-120px; top:-120px;
+    width:420px; height:420px; border-radius:50%;
+    border:64px solid rgba(232,163,61,.16);
+  }
+  .hero .kicker{
+    letter-spacing:.42em; font-size:12px; color:var(--solar);
+    text-transform:uppercase; font-weight:700; margin-bottom:26px;
+  }
+  .hero h1{
+    font-size:clamp(44px,7.5vw,84px);
+    line-height:1.06; font-weight:800; letter-spacing:.01em;
+  }
+  .hero h1 .thin{display:block; font-weight:300; font-size:.42em; letter-spacing:.3em; margin-top:14px; color:#cfd6cf;}
+  .hero .roles{margin-top:30px; font-size:clamp(15px,2vw,19px); color:#e9e2d2;}
+  .hero .roles b{color:var(--solar); font-weight:700;}
+  .hero .intro{margin-top:22px; max-width:660px; font-size:15.5px; color:#c9cfc9;}
+  /* ---------- CTA ---------- */
+  .cta{margin-top:42px;}
+  .cta a.main{
+    display:inline-block; background:var(--solar); color:#14100a;
+    font-weight:800; font-size:18px; letter-spacing:.04em;
+    padding:18px 38px; border-radius:999px; text-decoration:none;
+    box-shadow:0 10px 28px rgba(232,163,61,.35);
+    transition:transform .15s ease, background .15s ease;
+  }
+  .cta a.main:hover{background:#f2b354; transform:translateY(-2px);}
+  .cta .fulllink{margin-top:18px; font-size:15px; color:#e9e2d2;}
+  .cta .fulllink .lbl{color:#aeb8ae; font-size:13px; letter-spacing:.06em; display:block; margin-bottom:2px;}
+  .cta .fulllink a{color:var(--solar); font-weight:700; word-break:break-all; text-decoration:none; border-bottom:1px dotted rgba(232,163,61,.6);}
+  /* ---------- SECTIONS ---------- */
+  main{padding:64px 8vw 10px; max-width:1180px; margin:0 auto;}
+  section + section{margin-top:64px;}
+  h2{
+    font-size:13px; letter-spacing:.38em; color:var(--solar-deep);
+    text-transform:uppercase; margin-bottom:10px; font-weight:800;
+  }
+  .lead{font-size:clamp(21px,3vw,28px); font-weight:700; line-height:1.5; margin-bottom:18px;}
+  .body-copy{color:#333a41; font-size:15.5px; max-width:760px;}
+  /* ---------- DIAGRAM ---------- */
+  .diagram{
+    margin:30px 0 8px; background:#fff; border:1px solid var(--line); border-radius:14px;
+    padding:18px 18px 10px;
+  }
+  .diagram svg{display:block; width:100%; height:auto; max-height:420px;}
+  .diagram .cap{font-size:12.5px; color:var(--muted); text-align:center; margin-top:6px;}
+  .diagram text{font-family:inherit;}
+  /* ---------- LEVEL CARDS ---------- */
+  .levels{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:18px; margin:26px 0 0;
+  }
+  .lvl{
+    background:#fff; border:1px solid var(--line); border-radius:14px;
+    padding:24px 22px 20px; position:relative; overflow:hidden;
+  }
+  .lvl::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:5px;
+    background:linear-gradient(var(--solar),var(--moss));
+  }
+  .lvl .tag{font-size:11.5px; letter-spacing:.24em; color:var(--muted); font-weight:700; text-transform:uppercase;}
+  .lvl h3{font-size:18px; margin:6px 0 8px;}
+  .lvl p{font-size:14px; color:#454d55;}
+  /* ---------- PLANETS ---------- */
+  .planets{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:20px; margin:30px 0 0;
+  }
+  .planet{
+    background:#fff; border:1px solid var(--line); border-radius:14px;
+    padding:0 0 18px; overflow:hidden;
+  }
+  .planet .bar{height:8px; background:var(--pc);}
+  .planet .inner{padding:20px 22px 0;}
+  .planet .pnum{font-size:12px; letter-spacing:.3em; color:var(--muted); font-weight:700;}
+  .planet h3{font-size:20px; margin:4px 0 6px; display:flex; align-items:center; gap:10px;}
+  .planet h3 i{display:inline-block; width:14px; height:14px; border-radius:50%; background:var(--pc); flex:none;}
+  .planet .pdesc{font-size:14px; color:#454d55; margin-bottom:12px;}
+  .moons{list-style:none; border-top:1px solid var(--line);}
+  .moons li{padding:9px 0; border-bottom:1px solid var(--line); font-size:13.5px; color:#454d55; line-height:1.55;}
+  .moons li:last-child{border-bottom:0;}
+  .moons li b{color:var(--ink); display:block; font-size:14px;}
+  .moons li b::before{
+    content:""; display:inline-block; width:8px; height:8px; border-radius:50%;
+    background:var(--pc); margin-right:8px; opacity:.75;
+  }
+  /* ---------- STEPS ---------- */
+  .steps{margin:30px 0 0;}
+  .step{
+    display:flex; gap:22px; padding:20px 0; border-top:1px solid var(--line);
+    align-items:flex-start;
+  }
+  .step:last-child{border-bottom:1px solid var(--line);}
+  .step .badge{
+    flex:0 0 auto; width:44px; height:44px; border-radius:50%;
+    background:var(--ink); color:var(--solar); display:flex;
+    align-items:center; justify-content:center; font-weight:800; font-size:16px;
+  }
+  .step h3{font-size:16.5px; margin-bottom:4px;}
+  .step p{font-size:14.5px; color:#454d55; max-width:740px;}
+  .step a{color:var(--solar-deep); font-weight:700; word-break:break-all;}
+  /* ---------- START HERE ---------- */
+  .route{
+    display:grid; grid-template-columns:minmax(150px,.9fr) 1.1fr 1.6fr; gap:0 18px;
+    padding:13px 0; border-top:1px solid var(--line); font-size:14.5px; align-items:baseline;
+  }
+  .routes{margin-top:26px;}
+  .routes .route:last-child{border-bottom:1px solid var(--line);}
+  .route .want{font-weight:700;}
+  .route .go{color:var(--solar-deep); font-weight:700;}
+  .route .go span.arrow{color:var(--muted); margin-right:6px;}
+  .route .what{color:#454d55;}
+  @media (max-width:720px){
+    .route{grid-template-columns:1fr; gap:2px;}
+  }
+  /* ---------- FOOTER ---------- */
+  footer{
+    margin-top:64px; background:var(--ink); color:#dfe3dc;
+    padding:44px 8vw 50px;
+  }
+  footer .name{font-size:20px; font-weight:800; letter-spacing:.06em;}
+  footer .grid{display:flex; flex-wrap:wrap; gap:14px 44px; margin-top:14px; font-size:14px;}
+  footer a{color:var(--solar); text-decoration:none; word-break:break-all;}
+  footer .note{margin-top:20px; font-size:12.5px; color:#8d968d; max-width:680px;}
+  @page{size:A4; margin:12mm;}
+  @media print{
+    .topbar{display:none;}
+    .hero{padding:44px 8vw 38px;}
+    .hero::after{display:none;}
+    main{padding-top:34px;}
+    section + section{margin-top:40px;}
+    .cta a.main{box-shadow:none;}
+    .planet, .lvl, .step, .diagram, .route{break-inside:avoid;}
+    h2, .lead{break-after:avoid;}
+    footer{margin-top:28px; padding:28px 8vw 30px;}
+    body{line-height:1.55;}
+    .hero{padding:30px 8vw 28px;}
+    .hero h1{font-size:46px;}
+    .hero .roles{margin-top:16px; font-size:14px;}
+    .hero .intro{margin-top:12px; font-size:13px; max-width:none;}
+    .hero .kicker{margin-bottom:12px;}
+    .cta{margin-top:20px;}
+    .cta a.main{font-size:15px; padding:12px 26px;}
+    .cta .fulllink{margin-top:10px; font-size:13px;}
+    main{padding:22px 8vw 0;}
+    section + section{margin-top:26px;}
+    .lead{font-size:19px; margin-bottom:8px;}
+    .body-copy{font-size:12.5px;}
+    .diagram{margin:14px 0 6px; padding:10px 12px 6px;}
+    .diagram svg{max-height:250px;}
+    .levels{grid-template-columns:1fr 1fr; gap:10px; margin-top:12px;}
+    .lvl{padding:14px 14px 12px;}
+    .lvl h3{font-size:15px; margin:3px 0 4px;}
+    .lvl p{font-size:11.5px;}
+    .planets{grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;}
+    .planet .inner{padding:12px 14px 0;}
+    .planet h3{font-size:16px;}
+    .planet .pdesc{font-size:11.5px; margin-bottom:6px;}
+    .moons{margin:0 14px !important;}
+    .moons li{padding:5px 0; font-size:10.5px; line-height:1.4;}
+    .moons li b{font-size:11.5px;}
+    .steps{margin-top:14px;}
+    .step{padding:7px 0; gap:14px;}
+    .route{padding:5px 0 !important;}
+    .moons li{padding:4px 0 !important;}
+    .diagram svg{max-height:225px !important;}
+    .step p{font-size:11px !important;}
+    section + section{margin-top:20px !important;}
+    footer{margin-top:16px !important; break-inside:avoid;}
+    .step .badge{width:32px; height:32px; font-size:13px;}
+    .step h3{font-size:13.5px; margin-bottom:2px;}
+    .step p{font-size:11.5px;}
+    .routes{margin-top:12px;}
+    .route{padding:7px 0; font-size:11.5px; gap:0 12px;}
+    footer .name{font-size:16px;}
+    footer .grid{font-size:12px; margin-top:8px; gap:6px 28px;}
+    footer .note{font-size:11px; margin-top:10px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">ADAM RAMAN — PORTFOLIO GUIDE</div>
+  <div class="toggle" role="group" aria-label="Language / 言語">
+    <button id="btn-jp" class="active" type="button" aria-pressed="true">日本語</button>
+    <button id="btn-en" type="button" aria-pressed="false">ENGLISH</button>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="kicker">Portfolio Guide</div>
+  <h1>ADAM RAMAN<span class="thin"><span class="jp">ポートフォリオガイド</span><span class="en">PORTFOLIO GUIDE</span></span></h1>
+  <p class="roles">
+    <span class="jp">建築 <b>|</b> 建築環境・エネルギー <b>|</b> 設計施工 <b>|</b> デジタル・AI</span>
+    <span class="en">Architecture <b>|</b> Building Energy <b>|</b> Design-Build <b>|</b> Digital &amp; AI</span>
+  </p>
+  <p class="intro">
+    <span class="jp">私のポートフォリオは、小さな太陽系として作られた3Dのインタラクティブサイトです。このガイドでは、サイトの構成と見方を説明します。どこに何があるかが分かるので、関心のある分野へすぐにたどり着けます。</span>
+    <span class="en">My portfolio is an interactive 3D website built as a small solar system. This guide explains how it is organised and how to explore it, so you can go straight to the part that interests you.</span>
+  </p>
+  <div class="cta">
+    <a class="main" href="https://solar-punk-five.vercel.app" target="_blank" rel="noopener"><span class="jp">ポートフォリオを開く →</span><span class="en">Open the portfolio →</span></a>
+    <p class="fulllink">
+      <span class="lbl"><span class="jp">リンクが開かない場合は、次のURLをブラウザに入力してください</span><span class="en">If the button does not open, type this address into your browser</span></span>
+      <a href="https://solar-punk-five.vercel.app" target="_blank" rel="noopener">https://solar-punk-five.vercel.app</a>
+    </p>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===== STRUCTURE ===== -->
+  <section>
+    <h2>The Structure</h2>
+    <p class="lead"><span class="jp">太陽・惑星・衛星、そして案内役のAIBO</span><span class="en">A sun, planets, moons — and a guide called AIBO</span></p>
+    <p class="body-copy">
+      <span class="jp">サイトは、私自身を中心にした太陽系になっています。仕事は4つの分野（惑星）に分かれ、それぞれの惑星のまわりを、個別のプロジェクト（衛星）が回っています。</span>
+      <span class="en">The site is a solar system with me at the centre. My work is divided into four categories — the planets — and each planet is orbited by individual projects — its moons.</span>
+    </p>
+
+    <div class="diagram" role="img" aria-label="Diagram: the sun at the centre, four category planets on orbits, and one planet enlarged to show its project moons">
+      <svg viewBox="0 0 560 372" xmlns="http://www.w3.org/2000/svg">
+        <!-- orbits -->
+        <g fill="none" stroke="#d8d2c4" stroke-width="1.2">
+          <circle cx="150" cy="185" r="55"/>
+          <circle cx="150" cy="185" r="95"/>
+          <circle cx="150" cy="185" r="135"/>
+          <circle cx="150" cy="185" r="175"/>
+        </g>
+        <!-- sun -->
+        <circle cx="150" cy="185" r="34" fill="#e8a33d" opacity=".22"/>
+        <circle cx="150" cy="185" r="24" fill="#e8a33d"/>
+        <text x="150" y="189" text-anchor="middle" font-size="10.5" font-weight="800" fill="#14100a" letter-spacing="1">ADAM</text>
+        <!-- planets -->
+        <circle cx="195" cy="153.5" r="12" fill="#f59e0b"/>
+        <circle cx="232" cy="232.5" r="10" fill="#3b82f6"/>
+        <circle cx="217.5" cy="68" r="8" fill="#22c55e"/>
+        <circle cx="284" cy="297.5" r="9" fill="#7c3aed"/>
+        <g font-size="11.5" font-weight="700" fill="#101418" style="paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round">
+          <text x="195" y="133" text-anchor="middle">Architecture</text>
+          <text x="246" y="236">Digital</text>
+          <text x="230" y="64">Products</text>
+          <text x="298" y="301">Teaching &amp; Diplomacy</text>
+        </g>
+        <!-- labels: sun / planets -->
+        <g font-size="11" fill="#5b6470">
+          <text x="150" y="228" text-anchor="middle"><tspan class="jp">太陽 = 私</tspan><tspan class="en">Sun = me</tspan></text>
+        </g>
+        <!-- zoom connector -->
+        <line x1="208" y1="152" x2="402" y2="150" stroke="#c47b16" stroke-width="1.4" stroke-dasharray="5 4"/>
+        <text x="312" y="141" text-anchor="middle" font-size="11" fill="#c47b16" font-weight="700"><tspan class="jp">惑星をクリックすると拡大</tspan><tspan class="en">click a planet to zoom in</tspan></text>
+        <!-- enlarged planet with moons -->
+        <circle cx="470" cy="150" r="66" fill="none" stroke="#c47b16" stroke-width="1.2" stroke-dasharray="3 4"/>
+        <circle cx="470" cy="150" r="34" fill="#f59e0b"/>
+        <text x="470" y="154" text-anchor="middle" font-size="11" font-weight="800" fill="#14100a">Architecture</text>
+        <g fill="#fcd9a0" stroke="#c47b16" stroke-width="1.4">
+          <circle cx="536" cy="150" r="8"/>
+          <circle cx="490.4" cy="212.8" r="8"/>
+          <circle cx="416.6" cy="188.8" r="8"/>
+          <circle cx="416.6" cy="111.2" r="8"/>
+          <circle cx="490.4" cy="87.2" r="8"/>
+        </g>
+        <text x="470" y="250" text-anchor="middle" font-size="12" font-weight="700" fill="#101418"><tspan class="jp">衛星 = 1つのプロジェクト</tspan><tspan class="en">Moons = one project each</tspan></text>
+        <text x="470" y="268" text-anchor="middle" font-size="11" fill="#5b6470">Lakar Design · Building Energy · …</text>
+        <!-- AIBO -->
+        <rect x="14" y="328" width="132" height="32" rx="16" fill="#101418"/>
+        <circle cx="34" cy="344" r="5" fill="none" stroke="#e8a33d" stroke-width="1.6"/>
+        <text x="48" y="348" font-size="12" font-weight="800" fill="#e8a33d" letter-spacing=".8">ASK AIBO</text>
+        <text x="158" y="348" font-size="11" fill="#5b6470"><tspan class="jp">案内役。サイトのどこからでも呼び出せます</tspan><tspan class="en">your guide, available anywhere on the site</tspan></text>
+      </svg>
+      <p class="cap"><span class="jp">サイトの構成イメージ（実際の画面は3Dで動きます）</span><span class="en">A schematic of the site's structure (the real site is animated in 3D)</span></p>
+    </div>
+
+    <div class="levels">
+      <div class="lvl">
+        <div class="tag"><span class="jp">案内役</span><span class="en">Guide</span></div>
+        <h3>AIBO</h3>
+        <p>
+          <span class="jp">サイトのAIガイド。アニメーションのキャラクターと会話でき、プロジェクトについて質問すると、答えと該当の場所を案内してくれます。画面左下の「Ask Aibo」から開きます。音声での読み上げも可能です（初期設定はミュート）。</span>
+          <span class="en">The site's AI guide — an animated character you can chat with. Ask about any project and it will answer and point you to the right place. Open it from “Ask Aibo” at the bottom left. Replies can also be read aloud (voice starts muted).</span>
+        </p>
+      </div>
+      <div class="lvl">
+        <div class="tag"><span class="jp">中心</span><span class="en">Centre</span></div>
+        <h3><span class="jp">太陽（私）</span><span class="en">The Sun (me)</span></h3>
+        <p>
+          <span class="jp">システムの中心は私自身です。クリックするとプロフィールの要約が開き、CVを含む詳しい経歴ページへ進めます。</span>
+          <span class="en">The centre of the system is me. Click it for a profile summary and a link to my full background page, which includes my CV.</span>
+        </p>
+      </div>
+      <div class="lvl">
+        <div class="tag"><span class="jp">分野</span><span class="en">Categories</span></div>
+        <h3><span class="jp">惑星（4つ）</span><span class="en">Planets (four)</span></h3>
+        <p>
+          <span class="jp">Architecture、Digital、Products、Teaching &amp; Diplomacy の4分野です。クリックすると画面がその惑星に近づき、分野の説明と衛星の一覧が表示されます。</span>
+          <span class="en">Architecture, Digital, Products, and Teaching &amp; Diplomacy. Click one and the view moves in, showing a description of the category and a list of its moons.</span>
+        </p>
+      </div>
+      <div class="lvl">
+        <div class="tag"><span class="jp">プロジェクト</span><span class="en">Projects</span></div>
+        <h3><span class="jp">衛星</span><span class="en">Moons</span></h3>
+        <p>
+          <span class="jp">各衛星が1つのプロジェクトです。クリックすると、説明、主なポイント、画像、リンクが表示されます。専用ページがあるものは「Explore →」から詳しく見られます。</span>
+          <span class="en">Each moon is one project. Click it to see a description, key facts, images and links. Projects with a dedicated page offer an “Explore →” button.</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PLANETS ===== -->
+  <section>
+    <h2>The Four Planets</h2>
+    <p class="lead"><span class="jp">4つの惑星と、その衛星（プロジェクト）</span><span class="en">Four planets, and the moons (projects) around each</span></p>
+    <p class="body-copy">
+      <span class="jp">各惑星の名前はサイト上の表記のままです。衛星の名前の下に、それぞれの内容を一行で示しています。</span>
+      <span class="en">Names are shown as they appear on the site. Under each moon's name is a one-line description of what it is.</span>
+    </p>
+
+    <div class="planets">
+
+      <div class="planet" style="--pc:var(--c-arch)">
+        <div class="bar"></div>
+        <div class="inner">
+          <div class="pnum">PLANET 01</div>
+          <h3><i></i>Architecture</h3>
+          <p class="pdesc"><span class="jp">建築環境の仕事：実務、建築エネルギー、研究。</span><span class="en">Built-environment work: practice, building energy and research.</span></p>
+        </div>
+        <ul class="moons" style="margin:0 22px">
+          <li><b>Lakar Design</b><span class="jp">マレーシアで創業した設計施工事務所（2012〜2022年）。</span><span class="en">The design-build practice I founded in Malaysia (2012–2022).</span></li>
+          <li><b>S&amp;A Architects</b><span class="jp">初期の実務。受賞したデナイ・アラムのマスタープランを含みます。</span><span class="en">Early practice, including the award-winning Denai Alam master plan.</span></li>
+          <li><b>Building Energy</b><span class="jp">日本の新築物件における空調設備と熱負荷計算のエンジニアリング。</span><span class="en">HVAC and load-calculation engineering for new builds in Japan.</span></li>
+          <li><b>Climate Tech R&amp;D</b><span class="jp">太陽熱再生式パッシブ除湿に関する博士研究。</span><span class="en">Doctoral research on solar-regenerated passive dehumidification.</span></li>
+          <li><b>Smart Home Lab</b><span class="jp">Google HomeとZigbeeによるホームオートメーション。Lakarのリノベーションで提供。</span><span class="en">Home automation with Google Home and Zigbee, offered with Lakar renovations.</span></li>
+        </ul>
+      </div>
+
+      <div class="planet" style="--pc:var(--c-digital)">
+        <div class="bar"></div>
+        <div class="inner">
+          <div class="pnum">PLANET 02</div>
+          <h3><i></i>Digital</h3>
+          <p class="pdesc"><span class="jp">AI、ソフトウェア、エンジニアリングツール。</span><span class="en">AI, software and engineering tools.</span></p>
+        </div>
+        <ul class="moons" style="margin:0 22px">
+          <li><b>Project Aibo</b><span class="jp">このサイトのAIアバター兼ガイド。</span><span class="en">The AI avatar and guide of this site.</span></li>
+          <li><b>Online Sheikh AI</b><span class="jp">信頼できる情報源を参照し、回答を二重に検証するAIアドバイザー。</span><span class="en">An AI advisor that draws on trusted sources and double-checks its answers.</span></li>
+          <li><b>HydroCalc v2</b><span class="jp">JIS管路流量規格をデジタル化した、給水設計用の計算ツール。</span><span class="en">A calculator that digitises JIS pipe-flow standards for water-supply design.</span></li>
+          <li><b>Adamtool</b><span class="jp">小さく実用的なWebツールのディレクトリ。</span><span class="en">A directory of small, focused web tools.</span></li>
+          <li><b>Demon Hunter</b><span class="jp">独自のオーディオエンジンを備えたブラウザゲーム。</span><span class="en">A browser game with a custom audio engine.</span></li>
+          <li><b>VTube Mocap</b><span class="jp">3Dキャラクターを動かす、ブラウザ上のモーションキャプチャ。</span><span class="en">Browser-based motion capture that animates a 3D character.</span></li>
+        </ul>
+      </div>
+
+      <div class="planet" style="--pc:var(--c-products)">
+        <div class="bar"></div>
+        <div class="inner">
+          <div class="pnum">PLANET 03</div>
+          <h3><i></i>Products</h3>
+          <p class="pdesc"><span class="jp">書籍、グッズ、メディア。</span><span class="en">Books, merchandise and media.</span></p>
+        </div>
+        <ul class="moons" style="margin:0 22px">
+          <li><b>Momotaro Kids Book</b><span class="jp">Amazon KDPで出版した、日英バイリンガルの絵本。</span><span class="en">A bilingual Japanese–English children's book published on Amazon KDP.</span></li>
+          <li><b>Merchandising</b><span class="jp">オンデマンド印刷のショップ（Redbubble）。</span><span class="en">A print-on-demand shop (Redbubble).</span></li>
+          <li><b>Nature Vibe YouTube</b><span class="jp">自然をテーマにしたアンビエント系のYouTubeチャンネル。</span><span class="en">An ambient nature channel on YouTube.</span></li>
+        </ul>
+      </div>
+
+      <div class="planet" style="--pc:var(--c-teach)">
+        <div class="bar"></div>
+        <div class="inner">
+          <div class="pnum">PLANET 04</div>
+          <h3><i></i>Teaching &amp; Diplomacy</h3>
+          <p class="pdesc"><span class="jp">マレーシアと日本をまたぐ、教育と文化交流。</span><span class="en">Teaching and cultural exchange across Malaysia and Japan.</span></p>
+        </div>
+        <ul class="moons" style="margin:0 22px">
+          <li><b>UiTM Lecturer</b><span class="jp">マレーシアの建築学生へのデザイン思考の授業（2016〜2019年）。</span><span class="en">Design thinking taught to architecture students in Malaysia (2016–2019).</span></li>
+          <li><b>Architecture Talks</b><span class="jp">仙台での建築に関する講演（日本建築家協会を含む）。</span><span class="en">Architecture talks in Sendai, including the Japan Institute of Architects.</span></li>
+          <li><b>Tohoku Teaching</b><span class="jp">東北大学での英語ティーチングアシスタント（2023〜2025年）。</span><span class="en">English teaching assistant at Tohoku University (2023–2025).</span></li>
+          <li><b>Sendai School Visits</b><span class="jp">地元の児童にマレーシアを紹介するワークショップ。</span><span class="en">Workshops introducing Malaysia to local schoolchildren.</span></li>
+          <li><b>Malaysia-Japan Bridge</b><span class="jp">マレーシアと仙台をつなぐ文化交流とコミュニティづくり。</span><span class="en">Cultural exchange and community building between Malaysia and Sendai.</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ===== HOW TO EXPLORE ===== -->
+  <section>
+    <h2>How to Explore</h2>
+    <p class="lead"><span class="jp">サイトの見方：6つのステップ</span><span class="en">Six steps to find your way around</span></p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="badge">1</div>
+        <div>
+          <h3><span class="jp">サイトを開く</span><span class="en">Open the site</span></h3>
+          <p>
+            <span class="jp">最初に名前のカードが表示されます。スクロールすると短いオープニングが始まり、AIBOの紹介で終わります。その後は自由に探索できます。インストールや登録は不要です。</span>
+            <span class="en">A name card appears first. Scroll to play a short opening sequence that ends with an introduction to AIBO. After that, explore freely. No installation or registration is needed.</span><br>
+            <a href="https://solar-punk-five.vercel.app" target="_blank" rel="noopener">https://solar-punk-five.vercel.app</a>
+          </p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="badge">2</div>
+        <div>
+          <h3><span class="jp">視点を動かす</span><span class="en">Look around</span></h3>
+          <p>
+            <span class="jp">ドラッグで視点を回転、スクロールまたはピンチでズームできます。</span>
+            <span class="en">Drag to rotate the view; scroll or pinch to zoom.</span>
+          </p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="badge">3</div>
+        <div>
+          <h3><span class="jp">太陽・惑星・衛星をクリック</span><span class="en">Click the sun, a planet or a moon</span></h3>
+          <p>
+            <span class="jp">クリックした対象にカメラが近づき、右側にパネルが開きます。パネル内の矢印（‹ ›）で隣の項目へ移動でき、戻るボタンで全体表示に戻れます。</span>
+            <span class="en">The camera moves to what you click and a panel opens on the right. Use the arrows (‹ ›) in the panel to step to the next item, and the back button to return to the full view.</span>
+          </p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="badge">4</div>
+        <div>
+          <h3><span class="jp">「Navigate」メニューを使う</span><span class="en">Use the Navigate menu</span></h3>
+          <p>
+            <span class="jp">左上の「☰ Navigate」を押すと、プロフィールとすべてのプロジェクトの一覧が開き、見たい場所へ直接移動できます。</span>
+            <span class="en">“☰ Navigate” at the top left opens a list of the profile and every project, so you can jump straight to the one you want.</span>
+          </p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="badge">5</div>
+        <div>
+          <h3><span class="jp">AIBOに聞く</span><span class="en">Ask AIBO</span></h3>
+          <p>
+            <span class="jp">左下の「Ask Aibo」から会話を始め、ポートフォリオについて質問できます。例：「建築の実績はどこで見られますか？」「AIの取り組みはどこですか？」</span>
+            <span class="en">Start a chat from “Ask Aibo” at the bottom left and ask about the portfolio — for example, “Where can I see the architecture work?” or “Where is the AI work?”</span>
+          </p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="badge">6</div>
+        <div>
+          <h3><span class="jp">スマートフォンの場合</span><span class="en">On a phone</span></h3>
+          <p>
+            <span class="jp">スマートフォンでは、同じ分野とプロジェクトを一覧で見られる簡易表示が開きます。「Full 3D」ボタンで3D表示に切り替えられます（パソコンでの閲覧を推奨します）。</span>
+            <span class="en">On a phone, a simplified list of the same categories and projects opens. The “Full 3D” button switches to the 3D view (a computer is recommended for the full experience).</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WHERE TO START ===== -->
+  <section>
+    <h2>Where to Start</h2>
+    <p class="lead"><span class="jp">関心のある分野から入る</span><span class="en">Start from what interests you</span></p>
+    <div class="routes">
+      <div class="route">
+        <div class="want"><span class="jp">建築・設計の実績を見たい</span><span class="en">Buildings and design</span></div>
+        <div class="go"><span class="arrow">→</span>Architecture</div>
+        <div class="what">Lakar Design · S&amp;A Architects</div>
+      </div>
+      <div class="route">
+        <div class="want"><span class="jp">建築エネルギー・設備、研究を知りたい</span><span class="en">Building energy and research</span></div>
+        <div class="go"><span class="arrow">→</span>Architecture</div>
+        <div class="what">Building Energy · Climate Tech R&amp;D · Smart Home Lab</div>
+      </div>
+      <div class="route">
+        <div class="want"><span class="jp">AI・ソフトウェアの取り組みを見たい</span><span class="en">AI and software</span></div>
+        <div class="go"><span class="arrow">→</span>Digital</div>
+        <div class="what">Online Sheikh AI · Project Aibo · HydroCalc v2 · Adamtool</div>
+      </div>
+      <div class="route">
+        <div class="want"><span class="jp">書籍やメディアを見たい</span><span class="en">Books, merchandise and media</span></div>
+        <div class="go"><span class="arrow">→</span>Products</div>
+        <div class="what">Momotaro Kids Book · Merchandising · Nature Vibe YouTube</div>
+      </div>
+      <div class="route">
+        <div class="want"><span class="jp">教育・文化交流の活動を知りたい</span><span class="en">Teaching and cultural exchange</span></div>
+        <div class="go"><span class="arrow">→</span>Teaching &amp; Diplomacy</div>
+        <div class="what">UiTM Lecturer · Tohoku Teaching · Malaysia-Japan Bridge</div>
+      </div>
+      <div class="route">
+        <div class="want"><span class="jp">私自身について知りたい</span><span class="en">About me</span></div>
+        <div class="go"><span class="arrow">→</span><span class="jp">太陽</span><span class="en">The Sun</span></div>
+        <div class="what"><span class="jp">プロフィールの要約と、詳しい経歴ページ</span><span class="en">Profile summary and the full background page</span></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="name">ADAM RAMAN — <span class="jp">ポートフォリオガイド</span><span class="en">Portfolio Guide</span></div>
+  <div class="grid">
+    <div><span class="jp">所在地：仙台市</span><span class="en">Based in: Sendai, Japan</span></div>
+    <div><span class="jp">メール：</span><span class="en">Email: </span><a href="mailto:adam.m.raman@gmail.com">adam.m.raman@gmail.com</a></div>
+    <div><span class="jp">サイト：</span><span class="en">Site: </span><a href="https://solar-punk-five.vercel.app" target="_blank" rel="noopener">solar-punk-five.vercel.app</a></div>
+    <div>LinkedIn: <a href="https://www.linkedin.com/in/adam-raman" target="_blank" rel="noopener">linkedin.com/in/adam-raman</a></div>
+    <div>Links: <a href="https://linktr.ee/adamraman" target="_blank" rel="noopener">linktr.ee/adamraman</a></div>
+  </div>
+  <p class="note">
+    <span class="jp">ポートフォリオやこのガイドについてのご質問、リンクが開かない場合は、上記のメールアドレスまでご連絡ください。</span>
+    <span class="en">Questions about the portfolio or this guide, or a link that will not open? Please email me at the address above.</span>
+  </p>
+</footer>
+
+<script>
+  (function () {
+    var TITLES = { ja: 'ポートフォリオガイド — Adam Raman', en: 'Portfolio Guide — Adam Raman' };
+    var btnJp = document.getElementById('btn-jp');
+    var btnEn = document.getElementById('btn-en');
+    function setLang(lang, save) {
+      document.documentElement.lang = lang;
+      document.title = TITLES[lang];
+      btnJp.classList.toggle('active', lang === 'ja');
+      btnEn.classList.toggle('active', lang === 'en');
+      btnJp.setAttribute('aria-pressed', String(lang === 'ja'));
+      btnEn.setAttribute('aria-pressed', String(lang === 'en'));
+      if (save) { try { localStorage.setItem('guide-lang', lang); } catch (e) {} }
+    }
+    btnJp.addEventListener('click', function () { setLang('ja', true); });
+    btnEn.addEventListener('click', function () { setLang('en', true); });
+    var initial = 'ja';
+    try {
+      var q = new URLSearchParams(location.search).get('lang');
+      if (q === 'ja' || q === 'en') initial = q;
+      else { var s = localStorage.getItem('guide-lang'); if (s === 'ja' || s === 'en') initial = s; }
+    } catch (e) {}
+    if (initial === 'en') setLang('en', false);
+  })();
+</script>
+
+</body>
+</html>
