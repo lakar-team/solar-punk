@@ -255,6 +255,7 @@ const MobileLiteView = () => {
                         {[
                             { href: '/cv/tech', label: 'Tech CV' },
                             { href: '/cv/aec', label: 'AEC CV' },
+                            { href: '/cv/jp', label: '履歴書' },
                             { href: '/guide', label: 'Portfolio Guide' },
                         ].map(link => (
                             <a

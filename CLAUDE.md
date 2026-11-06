@@ -38,6 +38,14 @@ there.
     Drive `RESUME/adamCV202610 Tech.html` / `adamCV202610AEC.html`. Served at
     `/cv/tech` and `/cv/aec` (rewrites in `next.config.ts`), embedded on
     `/about#cv`. These URLs go out in emails — don't rename them.
+  - `cv/jp.html` — 履歴書 + 自己紹介書 (Japanese-format resume), Japanese
+    only, served at `/cv/jp`. Hand-built from Drive
+    `履歴書_キャリア採用＿AdamRaman 2609.docx/.pdf` (no Drive HTML source);
+    print CSS reproduces the Word layout (2 pages). The form keeps every row
+    of the original, but the values for home address (+ reading), phone,
+    birth date and residence status/expiry are intentionally BLANK so Adam
+    can write them in by hand after printing (repo is public) — never fill
+    them in here. It is `noindex` and NOT listed in `llms.txt`.
   - `guide.html` — bilingual portfolio guide (Drive
     `RESUME/Portfolio_Guide_Adam202610.html`), served at `/guide`, linked from
     the ? icon in the HUD header. The old `/Adam_Tech_CV.pdf` redirects to `/cv/tech`.
