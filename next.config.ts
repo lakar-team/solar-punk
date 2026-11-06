@@ -30,6 +30,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/cv/tech", destination: "/cv/tech.html" },
       { source: "/cv/aec", destination: "/cv/aec.html" },
+      { source: "/cv/jp", destination: "/cv/jp.html" },
       { source: "/guide", destination: "/guide.html" },
     ];
   },

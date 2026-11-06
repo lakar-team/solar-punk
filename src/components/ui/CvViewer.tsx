@@ -5,6 +5,7 @@ import { useState } from 'react';
 const CVS = [
     { id: 'tech', label: 'Tech CV', subtitle: 'Product Strategy · AI Innovation · Built Environment Technology', path: '/cv/tech' },
     { id: 'aec', label: 'AEC CV', subtitle: 'Architecture · Building Energy & MEP · Design-Build Delivery', path: '/cv/aec' },
+    { id: 'jp', label: '履歴書 / Japanese CV', subtitle: 'Japanese-format resume · 日本語', path: '/cv/jp' },
 ] as const;
 
 export default function CvViewer() {
@@ -21,7 +22,7 @@ export default function CvViewer() {
 
     return (
         <>
-            <div className="mb-6 grid gap-3 sm:grid-cols-2">
+            <div className="mb-6 grid gap-3 sm:grid-cols-3">
                 {CVS.map(cv => (
                     <div
                         key={cv.id}
