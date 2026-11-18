@@ -89,6 +89,18 @@
   .cta .fulllink{margin-top:18px; font-size:15px; color:#e9e2d2;}
   .cta .fulllink .lbl{color:#aeb8ae; font-size:13px; letter-spacing:.06em; display:block; margin-bottom:2px;}
   .cta .fulllink a{color:var(--solar); font-weight:700; word-break:break-all; text-decoration:none; border-bottom:1px dotted rgba(232,163,61,.6);}
+  /* ---------- LANGUAGE NOTE (browser translation) ---------- */
+  .langnote{
+    margin-top:34px; max-width:760px; padding:16px 20px 14px;
+    border:1px solid rgba(232,163,61,.55); border-radius:12px; background:rgba(232,163,61,.10);
+  }
+  .langnote .ln-title{font-size:15px; font-weight:800; color:var(--solar); letter-spacing:.04em; margin:0 0 6px}
+  .langnote p{font-size:14px; color:#e9e2d2; margin:0}
+  .langnote ul{list-style:none; margin:8px 0 6px}
+  .langnote li{position:relative; font-size:13.5px; color:#dfe3dc; padding:2px 0 2px 1.1em; line-height:1.6}
+  .langnote li::before{content:"•"; position:absolute; left:0; color:var(--solar); font-weight:700}
+  .langnote li b{color:#fff}
+  .langnote .ln-small{font-size:12.5px; color:#aeb8ae}
   /* ---------- SECTIONS ---------- */
   main{padding:64px 8vw 10px; max-width:1180px; margin:0 auto;}
   section + section{margin-top:64px;}
@@ -192,6 +204,7 @@
     section + section{margin-top:40px;}
     .cta a.main{box-shadow:none;}
     .planet, .lvl, .step, .diagram, .route{break-inside:avoid;}
+    section.keep{break-inside:avoid;}
     h2, .lead{break-after:avoid;}
     footer{margin-top:28px; padding:28px 8vw 30px;}
     body{line-height:1.55;}
@@ -236,6 +249,12 @@
     footer .name{font-size:16px;}
     footer .grid{font-size:12px; margin-top:8px; gap:6px 28px;}
     footer .note{font-size:11px; margin-top:10px;}
+    .langnote{margin-top:12px; padding:8px 12px 7px; border-radius:8px; break-inside:avoid}
+    .langnote .ln-title{font-size:12.5px; margin-bottom:3px}
+    .langnote p{font-size:11.5px}
+    .langnote ul{margin:4px 0 3px}
+    .langnote li{font-size:11px; padding:1px 0 1px 1em; line-height:1.45}
+    .langnote .ln-small{font-size:10px}
   }
 </style>
 </head>
@@ -267,6 +286,20 @@
       <a href="https://solar-punk-five.vercel.app" target="_blank" rel="noopener">https://solar-punk-five.vercel.app</a>
     </p>
   </div>
+
+  <aside class="langnote" aria-labelledby="ln-title">
+    <p class="ln-title" id="ln-title"><span class="jp">日本語で見るには（ブラウザの翻訳機能）</span><span class="en">Viewing the site in Japanese (browser translation)</span></p>
+    <p>
+      <span class="jp">このサイトの画面表示は英語です。お使いのブラウザに内蔵されている翻訳機能で、日本語に切り替えて見ることができます。</span>
+      <span class="en">The site's on-screen text is in English. Your browser's built-in translator can show it in Japanese.</span>
+    </p>
+    <ul>
+      <li><span class="jp"><b>Chrome</b>（パソコン／Android）：ページ上で右クリック →「日本語に翻訳」。またはアドレスバー右端の翻訳アイコンをクリック。</span><span class="en"><b>Chrome</b> (computer / Android): right-click the page → “Translate to Japanese”, or click the translate icon at the right of the address bar.</span></li>
+      <li><span class="jp"><b>Edge</b>：アドレスバー右端の翻訳アイコン →「日本語」→「翻訳」。</span><span class="en"><b>Edge</b>: translate icon at the right of the address bar → Japanese → Translate.</span></li>
+      <li><span class="jp"><b>Safari</b>（iPhone／Mac）：アドレスバー左側の「ぁあ」（または「aA」）ボタン →「日本語に翻訳」。</span><span class="en"><b>Safari</b> (iPhone / Mac): the “aA” button in the address bar → “Translate to Japanese”.</span></li>
+    </ul>
+    <p class="ln-small"><span class="jp">※ 機械翻訳のため、画面上の名前（Architecture など）が日本語に置き換わったり、不自然な表現になったりする場合があります。メニューの表示はブラウザのバージョンにより異なります。</span><span class="en">Machine translation may replace on-screen names (such as “Architecture”) or read unnaturally. Menu wording varies by browser version.</span></p>
+  </aside>
 </header>
 
 <main>
@@ -517,7 +550,7 @@
   </section>
 
   <!-- ===== WHERE TO START ===== -->
-  <section>
+  <section class="keep">
     <h2>Where to Start</h2>
     <p class="lead"><span class="jp">関心のある分野から入る</span><span class="en">Start from what interests you</span></p>
     <div class="routes">
